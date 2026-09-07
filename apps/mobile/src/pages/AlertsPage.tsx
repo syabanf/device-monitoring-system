@@ -4,6 +4,7 @@ import { BellOff } from 'lucide-react';
 import { useAuth } from '../auth/auth';
 import { useMobileScope, useReadAlerts } from '../state/app-state';
 import { AlertCard } from '../components/AlertCard';
+import { LoadMore, useInfiniteList } from '../components/useInfiniteList';
 
 export function AlertsPage() {
   const { user: employee } = useAuth();
@@ -14,7 +15,9 @@ export function AlertsPage() {
   const open = list.filter((a) => a.status === 'TRIGGERED');
   const responded = list.filter((a) => a.status === 'RESPONDED');
   const clearedAll = list.filter((a) => a.status === 'CLEARED');
-  const cleared = clearedAll.slice(0, 15);
+  const openList = useInfiniteList(open, 8);
+  const respondedList = useInfiniteList(responded, 8);
+  const clearedList = useInfiniteList(clearedAll, 10);
   const firstName = employee?.name.split(' ')[0] ?? 'there';
 
   return (
@@ -40,9 +43,9 @@ export function AlertsPage() {
       </div>
 
       {list.length === 0 ? <EmptyState icon={<BellOff />} title="No alerts" description="Everything is normal at your outlets." /> : null}
-      {open.length ? <Section title="Needs response" count={open.length}>{open.map((a) => <AlertCard key={a.id} alert={a} unread={!read.has(a.id)} />)}</Section> : null}
-      {responded.length ? <Section title="Responded" count={responded.length}>{responded.map((a) => <AlertCard key={a.id} alert={a} />)}</Section> : null}
-      {cleared.length ? <Section title="Cleared" count={clearedAll.length}>{cleared.map((a) => <AlertCard key={a.id} alert={a} />)}</Section> : null}
+      {open.length ? <Section title="Needs response" count={open.length}>{openList.visible.map((a) => <AlertCard key={a.id} alert={a} unread={!read.has(a.id)} />)}<LoadMore hasMore={openList.hasMore} onLoad={openList.loadMore} remaining={openList.remaining} /></Section> : null}
+      {responded.length ? <Section title="Responded" count={responded.length}>{respondedList.visible.map((a) => <AlertCard key={a.id} alert={a} />)}<LoadMore hasMore={respondedList.hasMore} onLoad={respondedList.loadMore} remaining={respondedList.remaining} /></Section> : null}
+      {clearedAll.length ? <Section title="Cleared" count={clearedAll.length}>{clearedList.visible.map((a) => <AlertCard key={a.id} alert={a} />)}<LoadMore hasMore={clearedList.hasMore} onLoad={clearedList.loadMore} remaining={clearedList.remaining} /></Section> : null}
     </div>
   );
 }

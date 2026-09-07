@@ -7,6 +7,7 @@ import { deviceHealth, isTicketOpen, isTicketOverdue, outletById } from '@monito
 import { useAuth } from '../auth/auth';
 import { useMobileScope } from '../state/app-state';
 import { TicketCard } from '../components/TicketCard';
+import { LoadMore, useInfiniteList } from '../components/useInfiniteList';
 
 type Filter = 'mine' | 'open' | 'done';
 
@@ -21,6 +22,7 @@ export function MaintenancePage() {
   const overdue = mine.filter(isTicketOverdue);
   const list = filter === 'done' ? tickets.filter((t) => t.status === 'DONE') : filter === 'mine' ? mine : open;
   const critical = health.filter((h) => h.status === 'critical').length;
+  const paged = useInfiniteList(list, 8);
 
   return (
     <div className="space-y-6">
@@ -65,7 +67,7 @@ export function MaintenancePage() {
             ))}
           </div>
         </div>
-        {list.length === 0 ? <EmptyState icon={<Wrench />} title="No tickets" description={isTech ? 'Nothing assigned to you right now.' : 'No maintenance tickets for your outlets.'} /> : <div className="space-y-3">{list.map((t) => <TicketCard key={t.id} ticket={t} />)}</div>}
+        {list.length === 0 ? <EmptyState icon={<Wrench />} title="No tickets" description={isTech ? 'Nothing assigned to you right now.' : 'No maintenance tickets for your outlets.'} /> : <div className="space-y-3">{paged.visible.map((t) => <TicketCard key={t.id} ticket={t} />)}<LoadMore hasMore={paged.hasMore} onLoad={paged.loadMore} remaining={paged.remaining} /></div>}
       </section>
 
       {!isTech ? (

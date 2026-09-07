@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router';
+import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router';
 import { Eye, EyeOff, ShieldCheck, Thermometer, Wifi } from 'lucide-react';
 import { Button, FormField, Input, WitMark } from '@monitoring/ui';
 import { DEMO_ACCOUNTS } from '@monitoring/fixtures';
@@ -13,8 +13,15 @@ export function LoginPage() {
   const [token, setToken] = React.useState('');
   const [show, setShow] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [params] = useSearchParams();
+  // magic-link login: /login?email=…&token=…&next=/path (admin invite links, demos)
+  React.useEffect(() => {
+    const e = params.get('email'); const t = params.get('token');
+    if (e && t) { const r = login(e, t); if (r.ok) navigate(params.get('next') ?? '/', { replace: true }); else setError(r.error); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  if (session) return <Navigate to="/" replace />;
+  if (session) return <Navigate to={params.get('next') ?? '/'} replace />;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();

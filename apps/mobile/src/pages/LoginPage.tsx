@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router';
+import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, FormField, Input, WitMark } from '@monitoring/ui';
 import { DEMO_ACCOUNTS } from '@monitoring/fixtures';
 import { useAuth } from '../auth/auth';
+import { PhoneFrame } from '../layouts/MobileLayout';
 
 export function LoginPage() {
   const { session, login } = useAuth();
@@ -13,8 +14,15 @@ export function LoginPage() {
   const [token, setToken] = React.useState('');
   const [show, setShow] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [params] = useSearchParams();
+  // magic-link login: /login?email=…&token=…&next=/path (admin invite links, demos)
+  React.useEffect(() => {
+    const e = params.get('email'); const t = params.get('token');
+    if (e && t) { const r = login(e, t); if (r.ok) navigate(params.get('next') ?? '/', { replace: true }); else setError(r.error); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [forgot, setForgot] = React.useState(false);
-  if (session) return <Navigate to="/" replace />;
+  if (session) return <Navigate to={params.get('next') ?? '/'} replace />;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +32,8 @@ export function LoginPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col bg-surface px-6 pb-10 pt-16 lg:my-6 lg:min-h-[calc(100dvh-3rem)] lg:rounded-[40px] lg:shadow-float lg:ring-8 lg:ring-ink">
+    <PhoneFrame>
+    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-1 flex-col bg-surface px-6 pb-10 pt-16 lg:min-h-0 lg:pt-20">
       <WitMark className="text-2xl" />
       <div className="mt-10">
         <h1 className="text-[34px] font-bold leading-tight tracking-tight">Welcome back<span className="text-brand-600">.</span></h1>
@@ -47,5 +56,6 @@ export function LoginPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </PhoneFrame>
   );
 }
