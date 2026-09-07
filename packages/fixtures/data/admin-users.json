@@ -1,0 +1,26 @@
+[
+  {
+    "id": "adm-001",
+    "distributorId": "dst-sby",
+    "name": "Dewi Anggraini",
+    "email": "admin@indomaret.co.id",
+    "role": "admin",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "adm-002",
+    "distributorId": "dst-jkt",
+    "name": "Hendra Wijaya",
+    "email": "admin.jkt@indomaret.co.id",
+    "role": "admin",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "adm-003",
+    "distributorId": "dst-dps",
+    "name": "Putu Mahendra",
+    "email": "admin.dps@indomaret.co.id",
+    "role": "admin",
+    "avatarColor": "#047857"
+  }
+]

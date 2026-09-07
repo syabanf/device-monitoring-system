@@ -1,0 +1,2570 @@
+[
+  {
+    "id": "emp-demo",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-001",
+      "out-002"
+    ],
+    "primaryOutletId": "out-001",
+    "name": "Rizky Pratama",
+    "phone": "081234567890",
+    "email": "user123@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "9634871231",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-24T13:30:00+07:00",
+    "approvedAt": "2026-07-25T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-001",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-001"
+    ],
+    "primaryOutletId": "out-001",
+    "name": "Teguh Anggraini",
+    "phone": "087735105799",
+    "email": "teguh.anggraini1@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "8708644600",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-06-18T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-002",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-001"
+    ],
+    "primaryOutletId": "out-001",
+    "name": "Rudi Gunawan",
+    "phone": "087676302647",
+    "email": "rudi.gunawan2@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "6644483813",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-15T13:30:00+07:00",
+    "approvedAt": "2026-07-15T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-003",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-001"
+    ],
+    "primaryOutletId": "out-001",
+    "name": "Sari Kusuma",
+    "phone": "087868202522",
+    "email": "sari.kusuma3@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "5097937656",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-22T13:30:00+07:00",
+    "approvedAt": "2026-07-18T13:30:00+07:00",
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-004",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-001"
+    ],
+    "primaryOutletId": "out-001",
+    "name": "Arif Sulistyo",
+    "phone": "086319732358",
+    "email": "arif.sulistyo4@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "5693927062",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-18T13:30:00+07:00",
+    "approvedAt": "2026-08-04T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-005",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-001"
+    ],
+    "primaryOutletId": "out-001",
+    "name": "Lestari Setiawan",
+    "phone": "088569662371",
+    "email": "lestari.setiawan5@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "8237738756",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-20T13:30:00+07:00",
+    "approvedAt": "2026-06-15T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-006",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-002"
+    ],
+    "primaryOutletId": "out-002",
+    "name": "Siti Permata",
+    "phone": "081375053047",
+    "email": "siti.permata6@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "2241246284",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-09-03T13:30:00+07:00",
+    "approvedAt": "2026-09-07T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-007",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-002"
+    ],
+    "primaryOutletId": "out-002",
+    "name": "Dewi Halim",
+    "phone": "081160570234",
+    "email": "dewi.halim7@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "7612550406",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-26T13:30:00+07:00",
+    "approvedAt": "2026-06-10T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-008",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-002"
+    ],
+    "primaryOutletId": "out-002",
+    "name": "Ratna Rahayu",
+    "phone": "085869053037",
+    "email": "ratna.rahayu8@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "2045015177",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-02T13:30:00+07:00",
+    "approvedAt": "2026-08-12T13:30:00+07:00",
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-009",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-002"
+    ],
+    "primaryOutletId": "out-002",
+    "name": "Fajar Anggraini",
+    "phone": "089671353693",
+    "email": "fajar.anggraini9@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "9507461595",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-15T13:30:00+07:00",
+    "approvedAt": "2026-07-28T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-010",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-002"
+    ],
+    "primaryOutletId": "out-002",
+    "name": "Wulan Pratama",
+    "phone": "086349195443",
+    "email": "wulan.pratama10@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "5897861727",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-11T13:30:00+07:00",
+    "approvedAt": "2026-07-09T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-011",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-003"
+    ],
+    "primaryOutletId": "out-003",
+    "name": "Eko Susanto",
+    "phone": "087298941426",
+    "email": "eko.susanto11@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "9954140482",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-10T13:30:00+07:00",
+    "approvedAt": "2026-07-17T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-012",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-003"
+    ],
+    "primaryOutletId": "out-003",
+    "name": "Fajar Susanto",
+    "phone": "083064256582",
+    "email": "fajar.susanto12@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "6474015780",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-09-04T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#047857"
+  },
+  {
+    "id": "emp-013",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-003"
+    ],
+    "primaryOutletId": "out-003",
+    "name": "Wulan Permata",
+    "phone": "089955297830",
+    "email": "wulan.permata13@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "4351450833",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-08-03T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-014",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-003"
+    ],
+    "primaryOutletId": "out-003",
+    "name": "Dewi Rahayu",
+    "phone": "083998671170",
+    "email": "dewi.rahayu14@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "1527912587",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-07-23T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-015",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-003"
+    ],
+    "primaryOutletId": "out-003",
+    "name": "Eko Mahendra",
+    "phone": "089221266854",
+    "email": "eko.mahendra15@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "5561866343",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-10T13:30:00+07:00",
+    "approvedAt": "2026-06-23T13:30:00+07:00",
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-016",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-004"
+    ],
+    "primaryOutletId": "out-004",
+    "name": "Bayu Susanto",
+    "phone": "089531779391",
+    "email": "bayu.susanto16@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "2514596510",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-13T13:30:00+07:00",
+    "approvedAt": "2026-07-03T13:30:00+07:00",
+    "avatarColor": "#047857"
+  },
+  {
+    "id": "emp-017",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-004"
+    ],
+    "primaryOutletId": "out-004",
+    "name": "Wulan Nugroho",
+    "phone": "084689485339",
+    "email": "wulan.nugroho17@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "7216978801",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-31T13:30:00+07:00",
+    "approvedAt": "2026-08-11T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-018",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-004"
+    ],
+    "primaryOutletId": "out-004",
+    "name": "Rina Setiawan",
+    "phone": "083781310665",
+    "email": "rina.setiawan18@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "6294691217",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-21T13:30:00+07:00",
+    "approvedAt": "2026-07-24T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-019",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-004"
+    ],
+    "primaryOutletId": "out-004",
+    "name": "Andi Utami",
+    "phone": "089742116579",
+    "email": "andi.utami19@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "6071886444",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-29T13:30:00+07:00",
+    "approvedAt": "2026-08-24T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-020",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-004"
+    ],
+    "primaryOutletId": "out-004",
+    "name": "Putri Permata",
+    "phone": "083635552394",
+    "email": "putri.permata20@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "4659081561",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-30T13:30:00+07:00",
+    "approvedAt": "2026-07-13T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-021",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-005"
+    ],
+    "primaryOutletId": "out-005",
+    "name": "Arif Hidayat",
+    "phone": "083547611629",
+    "email": "arif.hidayat21@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "8610273373",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-22T13:30:00+07:00",
+    "approvedAt": "2026-07-09T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-022",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-005"
+    ],
+    "primaryOutletId": "out-005",
+    "name": "Bayu Anggraini",
+    "phone": "082303217844",
+    "email": "bayu.anggraini22@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "6918437132",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-24T13:30:00+07:00",
+    "approvedAt": "2026-07-08T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-023",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-005"
+    ],
+    "primaryOutletId": "out-005",
+    "name": "Andi Gunawan",
+    "phone": "084585094812",
+    "email": "andi.gunawan23@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "4111039087",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-09-05T13:30:00+07:00",
+    "approvedAt": "2026-08-26T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-024",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-005"
+    ],
+    "primaryOutletId": "out-005",
+    "name": "Dian Halim",
+    "phone": "088182434651",
+    "email": "dian.halim24@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "6127466159",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-11T13:30:00+07:00",
+    "approvedAt": "2026-07-07T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-025",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-005"
+    ],
+    "primaryOutletId": "out-005",
+    "name": "Joko Permata",
+    "phone": "088490146569",
+    "email": "joko.permata25@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "4696392181",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-05-27T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-026",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-006"
+    ],
+    "primaryOutletId": "out-006",
+    "name": "Sari Ramadhan",
+    "phone": "086797424388",
+    "email": "sari.ramadhan26@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "1386646782",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-11T13:30:00+07:00",
+    "approvedAt": "2026-07-19T13:30:00+07:00",
+    "avatarColor": "#047857"
+  },
+  {
+    "id": "emp-027",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-006"
+    ],
+    "primaryOutletId": "out-006",
+    "name": "Rizky Setiawan",
+    "phone": "082387956370",
+    "email": "rizky.setiawan27@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "9772874243",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-10T13:30:00+07:00",
+    "approvedAt": "2026-07-26T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-028",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-006"
+    ],
+    "primaryOutletId": "out-006",
+    "name": "Maya Purnama",
+    "phone": "082840748515",
+    "email": "maya.purnama28@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "3282439729",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-16T13:30:00+07:00",
+    "approvedAt": "2026-08-11T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-029",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-006"
+    ],
+    "primaryOutletId": "out-006",
+    "name": "Rina Setiawan",
+    "phone": "082787141813",
+    "email": "rina.setiawan29@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "3828616962",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-09-01T13:30:00+07:00",
+    "approvedAt": "2026-08-02T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-030",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-006"
+    ],
+    "primaryOutletId": "out-006",
+    "name": "Joko Susanto",
+    "phone": "081448606647",
+    "email": "joko.susanto30@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "3897946059",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-13T13:30:00+07:00",
+    "approvedAt": "2026-07-07T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-031",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-007"
+    ],
+    "primaryOutletId": "out-007",
+    "name": "Lestari Pratama",
+    "phone": "082069430626",
+    "email": "lestari.pratama31@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "8966350777",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-09T13:30:00+07:00",
+    "approvedAt": "2026-06-04T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-032",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-007"
+    ],
+    "primaryOutletId": "out-007",
+    "name": "Sari Firmansyah",
+    "phone": "086401683857",
+    "email": "sari.firmansyah32@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "3199171938",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-02T13:30:00+07:00",
+    "approvedAt": "2026-06-16T13:30:00+07:00",
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-033",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-007"
+    ],
+    "primaryOutletId": "out-007",
+    "name": "Joko Susanto",
+    "phone": "087634854857",
+    "email": "joko.susanto33@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "9596839501",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-01T13:30:00+07:00",
+    "approvedAt": "2026-06-03T13:30:00+07:00",
+    "avatarColor": "#047857"
+  },
+  {
+    "id": "emp-034",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-007"
+    ],
+    "primaryOutletId": "out-007",
+    "name": "Intan Purnama",
+    "phone": "088635431059",
+    "email": "intan.purnama34@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "4674092976",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-07-13T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#047857"
+  },
+  {
+    "id": "emp-035",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-007"
+    ],
+    "primaryOutletId": "out-007",
+    "name": "Arif Utami",
+    "phone": "089705366074",
+    "email": "arif.utami35@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "6592561615",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-09-03T13:30:00+07:00",
+    "approvedAt": "2026-08-13T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-036",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-008"
+    ],
+    "primaryOutletId": "out-008",
+    "name": "Fajar Nugroho",
+    "phone": "088269617564",
+    "email": "fajar.nugroho36@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "5608154179",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-06T13:30:00+07:00",
+    "approvedAt": "2026-06-29T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-037",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-008"
+    ],
+    "primaryOutletId": "out-008",
+    "name": "Mega Kusuma",
+    "phone": "088232221686",
+    "email": "mega.kusuma37@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "2097098465",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-14T13:30:00+07:00",
+    "approvedAt": "2026-08-12T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-038",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-008"
+    ],
+    "primaryOutletId": "out-008",
+    "name": "Dian Halim",
+    "phone": "081375544873",
+    "email": "dian.halim38@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "7292482121",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-02T13:30:00+07:00",
+    "approvedAt": "2026-08-29T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-039",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-008"
+    ],
+    "primaryOutletId": "out-008",
+    "name": "Ratna Saputra",
+    "phone": "089738917106",
+    "email": "ratna.saputra39@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "7832764234",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-11T13:30:00+07:00",
+    "approvedAt": "2026-05-30T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-040",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-008"
+    ],
+    "primaryOutletId": "out-008",
+    "name": "Dimas Saputra",
+    "phone": "088154643474",
+    "email": "dimas.saputra40@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "2545073620",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-16T13:30:00+07:00",
+    "approvedAt": "2026-06-14T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-041",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-009"
+    ],
+    "primaryOutletId": "out-009",
+    "name": "Eko Anggraini",
+    "phone": "085390843778",
+    "email": "eko.anggraini41@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "9045444027",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-08-21T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-042",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-009"
+    ],
+    "primaryOutletId": "out-009",
+    "name": "Mega Setiawan",
+    "phone": "088708700344",
+    "email": "mega.setiawan42@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "6429833231",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-22T13:30:00+07:00",
+    "approvedAt": "2026-07-09T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-043",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-009"
+    ],
+    "primaryOutletId": "out-009",
+    "name": "Yusuf Hidayat",
+    "phone": "081606233055",
+    "email": "yusuf.hidayat43@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "7618702987",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-02T13:30:00+07:00",
+    "approvedAt": "2026-06-22T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-044",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-009"
+    ],
+    "primaryOutletId": "out-009",
+    "name": "Putri Wijaya",
+    "phone": "085703101262",
+    "email": "putri.wijaya44@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "5267424969",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-09-05T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-045",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-009"
+    ],
+    "primaryOutletId": "out-009",
+    "name": "Rizky Permata",
+    "phone": "087366194323",
+    "email": "rizky.permata45@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "9176222727",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-29T13:30:00+07:00",
+    "approvedAt": "2026-05-31T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-046",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-010"
+    ],
+    "primaryOutletId": "out-010",
+    "name": "Eko Anggraini",
+    "phone": "086853118878",
+    "email": "eko.anggraini46@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "3753431194",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-10T13:30:00+07:00",
+    "approvedAt": "2026-09-01T13:30:00+07:00",
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-047",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-010"
+    ],
+    "primaryOutletId": "out-010",
+    "name": "Mega Mahendra",
+    "phone": "086245058070",
+    "email": "mega.mahendra47@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "3230972229",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-24T13:30:00+07:00",
+    "approvedAt": "2026-07-20T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-048",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-010"
+    ],
+    "primaryOutletId": "out-010",
+    "name": "Rizky Setiawan",
+    "phone": "085612915840",
+    "email": "rizky.setiawan48@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "6714160403",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-31T13:30:00+07:00",
+    "approvedAt": "2026-08-11T13:30:00+07:00",
+    "avatarColor": "#047857"
+  },
+  {
+    "id": "emp-049",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-010"
+    ],
+    "primaryOutletId": "out-010",
+    "name": "Lestari Saputra",
+    "phone": "081305551684",
+    "email": "lestari.saputra49@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "4709435407",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-25T13:30:00+07:00",
+    "approvedAt": "2026-08-01T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-050",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-010"
+    ],
+    "primaryOutletId": "out-010",
+    "name": "Rizky Kusuma",
+    "phone": "085114433561",
+    "email": "rizky.kusuma50@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "6334079454",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-27T13:30:00+07:00",
+    "approvedAt": "2026-08-16T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-051",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-011"
+    ],
+    "primaryOutletId": "out-011",
+    "name": "Ayu Hidayat",
+    "phone": "082004963667",
+    "email": "ayu.hidayat51@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "4854308047",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-05-31T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-052",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-011"
+    ],
+    "primaryOutletId": "out-011",
+    "name": "Arif Permata",
+    "phone": "082288841595",
+    "email": "arif.permata52@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "7720157746",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-07-14T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-053",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-011"
+    ],
+    "primaryOutletId": "out-011",
+    "name": "Intan Susanto",
+    "phone": "084147882182",
+    "email": "intan.susanto53@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "6312211184",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-05T13:30:00+07:00",
+    "approvedAt": "2026-06-10T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-054",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-011"
+    ],
+    "primaryOutletId": "out-011",
+    "name": "Fitri Purnama",
+    "phone": "085490130773",
+    "email": "fitri.purnama54@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "7163631529",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-08T13:30:00+07:00",
+    "approvedAt": "2026-07-02T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-055",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-011"
+    ],
+    "primaryOutletId": "out-011",
+    "name": "Sari Susanto",
+    "phone": "089514319700",
+    "email": "sari.susanto55@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "3384874668",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-04T13:30:00+07:00",
+    "approvedAt": "2026-06-06T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-056",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-012"
+    ],
+    "primaryOutletId": "out-012",
+    "name": "Adi Purnama",
+    "phone": "081279593149",
+    "email": "adi.purnama56@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "4996606823",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-21T13:30:00+07:00",
+    "approvedAt": "2026-07-28T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-057",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-012"
+    ],
+    "primaryOutletId": "out-012",
+    "name": "Maya Hidayat",
+    "phone": "085385374530",
+    "email": "maya.hidayat57@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "7643130962",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-17T13:30:00+07:00",
+    "approvedAt": "2026-08-25T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-058",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-012"
+    ],
+    "primaryOutletId": "out-012",
+    "name": "Siti Gunawan",
+    "phone": "086707696728",
+    "email": "siti.gunawan58@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "5256617730",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-25T13:30:00+07:00",
+    "approvedAt": "2026-07-12T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-059",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-012"
+    ],
+    "primaryOutletId": "out-012",
+    "name": "Hendra Santoso",
+    "phone": "086356921089",
+    "email": "hendra.santoso59@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "5735124588",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-12T13:30:00+07:00",
+    "approvedAt": "2026-08-10T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-060",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-012"
+    ],
+    "primaryOutletId": "out-012",
+    "name": "Sari Permata",
+    "phone": "087430992363",
+    "email": "sari.permata60@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "1387580690",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-06-13T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-061",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-013"
+    ],
+    "primaryOutletId": "out-013",
+    "name": "Bayu Anggraini",
+    "phone": "083007915123",
+    "email": "bayu.anggraini61@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "3306532519",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-25T13:30:00+07:00",
+    "approvedAt": "2026-08-29T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-062",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-013"
+    ],
+    "primaryOutletId": "out-013",
+    "name": "Maya Wijaya",
+    "phone": "081674156362",
+    "email": "maya.wijaya62@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "9336478434",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-06T13:30:00+07:00",
+    "approvedAt": "2026-07-14T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-063",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-013"
+    ],
+    "primaryOutletId": "out-013",
+    "name": "Intan Halim",
+    "phone": "086003754269",
+    "email": "intan.halim63@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "6404458995",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-14T13:30:00+07:00",
+    "approvedAt": "2026-06-01T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-064",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-013"
+    ],
+    "primaryOutletId": "out-013",
+    "name": "Yusuf Gunawan",
+    "phone": "082550605991",
+    "email": "yusuf.gunawan64@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "4237213208",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-28T13:30:00+07:00",
+    "approvedAt": "2026-07-04T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-065",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-013"
+    ],
+    "primaryOutletId": "out-013",
+    "name": "Agus Wijaya",
+    "phone": "082276670291",
+    "email": "agus.wijaya65@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "4104457560",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-15T13:30:00+07:00",
+    "approvedAt": "2026-09-05T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-066",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-014"
+    ],
+    "primaryOutletId": "out-014",
+    "name": "Mega Utami",
+    "phone": "087426744278",
+    "email": "mega.utami66@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "7508145439",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-21T13:30:00+07:00",
+    "approvedAt": "2026-07-15T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-067",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-014"
+    ],
+    "primaryOutletId": "out-014",
+    "name": "Intan Gunawan",
+    "phone": "084035243198",
+    "email": "intan.gunawan67@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "3557075913",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-18T13:30:00+07:00",
+    "approvedAt": "2026-08-12T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-068",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-014"
+    ],
+    "primaryOutletId": "out-014",
+    "name": "Joko Hidayat",
+    "phone": "089528426631",
+    "email": "joko.hidayat68@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "8010533227",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-28T13:30:00+07:00",
+    "approvedAt": "2026-08-15T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-069",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-014"
+    ],
+    "primaryOutletId": "out-014",
+    "name": "Dewi Nugroho",
+    "phone": "088784598951",
+    "email": "dewi.nugroho69@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "3910080515",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-14T13:30:00+07:00",
+    "approvedAt": "2026-07-12T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-070",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-014"
+    ],
+    "primaryOutletId": "out-014",
+    "name": "Dewi Rahayu",
+    "phone": "087299091992",
+    "email": "dewi.rahayu70@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "2168094434",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-28T13:30:00+07:00",
+    "approvedAt": "2026-06-03T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-071",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-015"
+    ],
+    "primaryOutletId": "out-015",
+    "name": "Hendra Anggraini",
+    "phone": "086340020324",
+    "email": "hendra.anggraini71@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "8857962386",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-16T13:30:00+07:00",
+    "approvedAt": "2026-06-03T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-072",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-015"
+    ],
+    "primaryOutletId": "out-015",
+    "name": "Intan Saputra",
+    "phone": "082327895333",
+    "email": "intan.saputra72@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "7158260384",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-19T13:30:00+07:00",
+    "approvedAt": "2026-09-01T13:30:00+07:00",
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-073",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-015"
+    ],
+    "primaryOutletId": "out-015",
+    "name": "Putri Wijaya",
+    "phone": "087686617499",
+    "email": "putri.wijaya73@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "5963148840",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-09-03T13:30:00+07:00",
+    "approvedAt": "2026-09-04T13:30:00+07:00",
+    "avatarColor": "#047857"
+  },
+  {
+    "id": "emp-074",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-015"
+    ],
+    "primaryOutletId": "out-015",
+    "name": "Arif Santoso",
+    "phone": "082985180055",
+    "email": "arif.santoso74@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "4003841553",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-24T13:30:00+07:00",
+    "approvedAt": "2026-08-22T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-075",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-015"
+    ],
+    "primaryOutletId": "out-015",
+    "name": "Joko Firmansyah",
+    "phone": "089425337879",
+    "email": "joko.firmansyah75@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "8567272957",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-20T13:30:00+07:00",
+    "approvedAt": "2026-06-05T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-076",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-016"
+    ],
+    "primaryOutletId": "out-016",
+    "name": "Rizky Ramadhan",
+    "phone": "088901381225",
+    "email": "rizky.ramadhan76@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "7373905354",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-08T13:30:00+07:00",
+    "approvedAt": "2026-08-30T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-077",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-016"
+    ],
+    "primaryOutletId": "out-016",
+    "name": "Mega Firmansyah",
+    "phone": "083234835872",
+    "email": "mega.firmansyah77@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "7033390791",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-05T13:30:00+07:00",
+    "approvedAt": "2026-08-25T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-078",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-016"
+    ],
+    "primaryOutletId": "out-016",
+    "name": "Adi Permata",
+    "phone": "087065711551",
+    "email": "adi.permata78@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "6290688804",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-12T13:30:00+07:00",
+    "approvedAt": "2026-07-20T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-079",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-016"
+    ],
+    "primaryOutletId": "out-016",
+    "name": "Siti Permata",
+    "phone": "089179267030",
+    "email": "siti.permata79@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "1546986354",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-16T13:30:00+07:00",
+    "approvedAt": "2026-07-19T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-080",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-016"
+    ],
+    "primaryOutletId": "out-016",
+    "name": "Bayu Purnama",
+    "phone": "085864407129",
+    "email": "bayu.purnama80@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "9833927160",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-18T13:30:00+07:00",
+    "approvedAt": "2026-06-05T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-081",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-017"
+    ],
+    "primaryOutletId": "out-017",
+    "name": "Bayu Nugroho",
+    "phone": "089100955802",
+    "email": "bayu.nugroho81@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "4240655790",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-13T13:30:00+07:00",
+    "approvedAt": "2026-08-30T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-082",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-017"
+    ],
+    "primaryOutletId": "out-017",
+    "name": "Nur Permata",
+    "phone": "089642640425",
+    "email": "nur.permata82@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "5022967928",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-13T13:30:00+07:00",
+    "approvedAt": "2026-07-29T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-083",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-017"
+    ],
+    "primaryOutletId": "out-017",
+    "name": "Yusuf Saputra",
+    "phone": "087060665090",
+    "email": "yusuf.saputra83@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "6732357961",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-22T13:30:00+07:00",
+    "approvedAt": "2026-08-11T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-084",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-017"
+    ],
+    "primaryOutletId": "out-017",
+    "name": "Bayu Santoso",
+    "phone": "087918726735",
+    "email": "bayu.santoso84@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "5259044857",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-12T13:30:00+07:00",
+    "approvedAt": "2026-07-21T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-085",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-017"
+    ],
+    "primaryOutletId": "out-017",
+    "name": "Sari Gunawan",
+    "phone": "084819512502",
+    "email": "sari.gunawan85@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "7584312736",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-07-27T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-086",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-018"
+    ],
+    "primaryOutletId": "out-018",
+    "name": "Siti Permata",
+    "phone": "089021348970",
+    "email": "siti.permata86@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "1231557757",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-10T13:30:00+07:00",
+    "approvedAt": "2026-08-04T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-087",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-018"
+    ],
+    "primaryOutletId": "out-018",
+    "name": "Budi Saputra",
+    "phone": "089518834490",
+    "email": "budi.saputra87@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "8478850156",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-09-04T13:30:00+07:00",
+    "approvedAt": "2026-08-15T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-088",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-018"
+    ],
+    "primaryOutletId": "out-018",
+    "name": "Wulan Saputra",
+    "phone": "088986860419",
+    "email": "wulan.saputra88@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "9997297355",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-06-17T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-089",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-018"
+    ],
+    "primaryOutletId": "out-018",
+    "name": "Sari Sulistyo",
+    "phone": "082980446878",
+    "email": "sari.sulistyo89@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "9490398698",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-07-14T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-090",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-018"
+    ],
+    "primaryOutletId": "out-018",
+    "name": "Intan Mahendra",
+    "phone": "087696392946",
+    "email": "intan.mahendra90@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "9599737376",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-12T13:30:00+07:00",
+    "approvedAt": "2026-08-22T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-091",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-019"
+    ],
+    "primaryOutletId": "out-019",
+    "name": "Agus Rahayu",
+    "phone": "081179843566",
+    "email": "agus.rahayu91@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "8348306300",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-22T13:30:00+07:00",
+    "approvedAt": "2026-06-04T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-092",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-019"
+    ],
+    "primaryOutletId": "out-019",
+    "name": "Teguh Wijaya",
+    "phone": "081946099583",
+    "email": "teguh.wijaya92@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "1639392063",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-21T13:30:00+07:00",
+    "approvedAt": "2026-07-02T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-093",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-019"
+    ],
+    "primaryOutletId": "out-019",
+    "name": "Lestari Setiawan",
+    "phone": "088340468537",
+    "email": "lestari.setiawan93@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "2053618958",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-09T13:30:00+07:00",
+    "approvedAt": "2026-06-07T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-094",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-019"
+    ],
+    "primaryOutletId": "out-019",
+    "name": "Rina Susanto",
+    "phone": "086905030371",
+    "email": "rina.susanto94@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "2678696338",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-19T13:30:00+07:00",
+    "approvedAt": "2026-08-10T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-095",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-019"
+    ],
+    "primaryOutletId": "out-019",
+    "name": "Mega Gunawan",
+    "phone": "089344236851",
+    "email": "mega.gunawan95@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "8156909908",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-28T13:30:00+07:00",
+    "approvedAt": "2026-08-12T13:30:00+07:00",
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-096",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-020"
+    ],
+    "primaryOutletId": "out-020",
+    "name": "Wulan Mahendra",
+    "phone": "084740858056",
+    "email": "wulan.mahendra96@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "2827480002",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-08T13:30:00+07:00",
+    "approvedAt": "2026-07-18T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-097",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-020"
+    ],
+    "primaryOutletId": "out-020",
+    "name": "Hendra Rahayu",
+    "phone": "085587424103",
+    "email": "hendra.rahayu97@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "9228114147",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-24T13:30:00+07:00",
+    "approvedAt": "2026-07-30T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-098",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-020"
+    ],
+    "primaryOutletId": "out-020",
+    "name": "Dian Firmansyah",
+    "phone": "082098403215",
+    "email": "dian.firmansyah98@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "9406575249",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-18T13:30:00+07:00",
+    "approvedAt": "2026-06-30T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-099",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-020"
+    ],
+    "primaryOutletId": "out-020",
+    "name": "Agus Permata",
+    "phone": "082115964811",
+    "email": "agus.permata99@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "7226633356",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-14T13:30:00+07:00",
+    "approvedAt": "2026-05-31T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-100",
+    "distributorId": "dst-sby",
+    "outletIds": [
+      "out-020"
+    ],
+    "primaryOutletId": "out-020",
+    "name": "Bayu Halim",
+    "phone": "086414736154",
+    "email": "bayu.halim100@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "3044186579",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-15T13:30:00+07:00",
+    "approvedAt": "2026-06-09T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-101",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-021"
+    ],
+    "primaryOutletId": "out-021",
+    "name": "Dewi Kusuma",
+    "phone": "086063424748",
+    "email": "dewi.kusuma101@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "5519965858",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-28T13:30:00+07:00",
+    "approvedAt": "2026-08-31T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-102",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-021"
+    ],
+    "primaryOutletId": "out-021",
+    "name": "Fajar Nugroho",
+    "phone": "085763396844",
+    "email": "fajar.nugroho102@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "3379316896",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-21T13:30:00+07:00",
+    "approvedAt": "2026-08-12T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-103",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-021"
+    ],
+    "primaryOutletId": "out-021",
+    "name": "Arif Purnama",
+    "phone": "082590544093",
+    "email": "arif.purnama103@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "4688368346",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-21T13:30:00+07:00",
+    "approvedAt": "2026-07-25T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-104",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-021"
+    ],
+    "primaryOutletId": "out-021",
+    "name": "Nur Hidayat",
+    "phone": "088684529271",
+    "email": "nur.hidayat104@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "5246274202",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-14T13:30:00+07:00",
+    "approvedAt": "2026-06-07T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-105",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-021"
+    ],
+    "primaryOutletId": "out-021",
+    "name": "Budi Halim",
+    "phone": "082030884863",
+    "email": "budi.halim105@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "9293025516",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-26T13:30:00+07:00",
+    "approvedAt": "2026-06-11T13:30:00+07:00",
+    "avatarColor": "#047857"
+  },
+  {
+    "id": "emp-106",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-022"
+    ],
+    "primaryOutletId": "out-022",
+    "name": "Joko Hidayat",
+    "phone": "087419610871",
+    "email": "joko.hidayat106@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "1761819825",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-09-05T13:30:00+07:00",
+    "approvedAt": "2026-08-04T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-107",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-022"
+    ],
+    "primaryOutletId": "out-022",
+    "name": "Putri Firmansyah",
+    "phone": "086252811878",
+    "email": "putri.firmansyah107@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "6417108992",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-24T13:30:00+07:00",
+    "approvedAt": "2026-07-31T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-108",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-022"
+    ],
+    "primaryOutletId": "out-022",
+    "name": "Bayu Kusuma",
+    "phone": "089969853525",
+    "email": "bayu.kusuma108@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "4447071635",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-09-02T13:30:00+07:00",
+    "approvedAt": "2026-06-15T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-109",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-022"
+    ],
+    "primaryOutletId": "out-022",
+    "name": "Teguh Halim",
+    "phone": "082992393963",
+    "email": "teguh.halim109@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "6120945124",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-22T13:30:00+07:00",
+    "approvedAt": "2026-09-06T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-110",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-022"
+    ],
+    "primaryOutletId": "out-022",
+    "name": "Arif Saputra",
+    "phone": "082698069160",
+    "email": "arif.saputra110@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "2214622269",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-17T13:30:00+07:00",
+    "approvedAt": "2026-07-18T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-111",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-023"
+    ],
+    "primaryOutletId": "out-023",
+    "name": "Putri Santoso",
+    "phone": "088713426445",
+    "email": "putri.santoso111@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "4175708584",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-24T13:30:00+07:00",
+    "approvedAt": "2026-06-06T13:30:00+07:00",
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-112",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-023"
+    ],
+    "primaryOutletId": "out-023",
+    "name": "Wulan Hidayat",
+    "phone": "089745927648",
+    "email": "wulan.hidayat112@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "3185097674",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-14T13:30:00+07:00",
+    "approvedAt": "2026-09-04T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-113",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-023"
+    ],
+    "primaryOutletId": "out-023",
+    "name": "Adi Nugroho",
+    "phone": "087221144788",
+    "email": "adi.nugroho113@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "4044607025",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-26T13:30:00+07:00",
+    "approvedAt": "2026-07-17T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-114",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-023"
+    ],
+    "primaryOutletId": "out-023",
+    "name": "Dewi Anggraini",
+    "phone": "081975738281",
+    "email": "dewi.anggraini114@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "7445873020",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-19T13:30:00+07:00",
+    "approvedAt": "2026-08-04T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-115",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-023"
+    ],
+    "primaryOutletId": "out-023",
+    "name": "Yusuf Setiawan",
+    "phone": "086205675149",
+    "email": "yusuf.setiawan115@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "8596479451",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-17T13:30:00+07:00",
+    "approvedAt": "2026-07-07T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-116",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-024"
+    ],
+    "primaryOutletId": "out-024",
+    "name": "Budi Pratama",
+    "phone": "081585561651",
+    "email": "budi.pratama116@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "3579342873",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-09-05T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-117",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-024"
+    ],
+    "primaryOutletId": "out-024",
+    "name": "Arif Nugroho",
+    "phone": "083318586616",
+    "email": "arif.nugroho117@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "7512916942",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-19T13:30:00+07:00",
+    "approvedAt": "2026-06-28T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-118",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-024"
+    ],
+    "primaryOutletId": "out-024",
+    "name": "Ratna Pratama",
+    "phone": "085651225560",
+    "email": "ratna.pratama118@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "3574289090",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-05T13:30:00+07:00",
+    "approvedAt": "2026-06-15T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-119",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-024"
+    ],
+    "primaryOutletId": "out-024",
+    "name": "Fitri Setiawan",
+    "phone": "089504798919",
+    "email": "fitri.setiawan119@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "7644382871",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-05T13:30:00+07:00",
+    "approvedAt": "2026-06-01T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-120",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-024"
+    ],
+    "primaryOutletId": "out-024",
+    "name": "Putri Saputra",
+    "phone": "087341348259",
+    "email": "putri.saputra120@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "1018784565",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-23T13:30:00+07:00",
+    "approvedAt": "2026-06-16T13:30:00+07:00",
+    "avatarColor": "#047857"
+  },
+  {
+    "id": "emp-121",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-025"
+    ],
+    "primaryOutletId": "out-025",
+    "name": "Rudi Hidayat",
+    "phone": "081703974655",
+    "email": "rudi.hidayat121@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "2040516735",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-09-03T13:30:00+07:00",
+    "approvedAt": "2026-07-17T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-122",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-025"
+    ],
+    "primaryOutletId": "out-025",
+    "name": "Arif Utami",
+    "phone": "083149851040",
+    "email": "arif.utami122@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "6130185267",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-30T13:30:00+07:00",
+    "approvedAt": "2026-06-02T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-123",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-025"
+    ],
+    "primaryOutletId": "out-025",
+    "name": "Intan Santoso",
+    "phone": "087805909774",
+    "email": "intan.santoso123@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "5901666208",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-29T13:30:00+07:00",
+    "approvedAt": "2026-06-14T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-124",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-025"
+    ],
+    "primaryOutletId": "out-025",
+    "name": "Eko Setiawan",
+    "phone": "084210523577",
+    "email": "eko.setiawan124@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "6310182757",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-27T13:30:00+07:00",
+    "approvedAt": "2026-09-06T13:30:00+07:00",
+    "avatarColor": "#047857"
+  },
+  {
+    "id": "emp-125",
+    "distributorId": "dst-jkt",
+    "outletIds": [
+      "out-025"
+    ],
+    "primaryOutletId": "out-025",
+    "name": "Arif Rahayu",
+    "phone": "089057392649",
+    "email": "arif.rahayu125@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "8653141223",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-31T13:30:00+07:00",
+    "approvedAt": "2026-06-10T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-126",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-026"
+    ],
+    "primaryOutletId": "out-026",
+    "name": "Dewi Purnama",
+    "phone": "087714733196",
+    "email": "dewi.purnama126@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "3028604101",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-07-21T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-127",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-026"
+    ],
+    "primaryOutletId": "out-026",
+    "name": "Lestari Halim",
+    "phone": "081118678484",
+    "email": "lestari.halim127@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "2148199159",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-31T13:30:00+07:00",
+    "approvedAt": "2026-06-23T13:30:00+07:00",
+    "avatarColor": "#047857"
+  },
+  {
+    "id": "emp-128",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-026"
+    ],
+    "primaryOutletId": "out-026",
+    "name": "Andi Permata",
+    "phone": "088947350513",
+    "email": "andi.permata128@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "3144466242",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-15T13:30:00+07:00",
+    "approvedAt": "2026-07-09T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-129",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-026"
+    ],
+    "primaryOutletId": "out-026",
+    "name": "Hendra Halim",
+    "phone": "082092474274",
+    "email": "hendra.halim129@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "1829214162",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-09T13:30:00+07:00",
+    "approvedAt": "2026-08-28T13:30:00+07:00",
+    "avatarColor": "#047857"
+  },
+  {
+    "id": "emp-130",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-026"
+    ],
+    "primaryOutletId": "out-026",
+    "name": "Dimas Rahayu",
+    "phone": "082882621568",
+    "email": "dimas.rahayu130@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "2389637222",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-09-05T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-131",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-027"
+    ],
+    "primaryOutletId": "out-027",
+    "name": "Maya Hidayat",
+    "phone": "088783589762",
+    "email": "maya.hidayat131@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "3972364522",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-09-06T13:30:00+07:00",
+    "approvedAt": "2026-07-22T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-132",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-027"
+    ],
+    "primaryOutletId": "out-027",
+    "name": "Maya Utami",
+    "phone": "081464097343",
+    "email": "maya.utami132@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "5566166393",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-10T13:30:00+07:00",
+    "approvedAt": "2026-08-04T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-133",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-027"
+    ],
+    "primaryOutletId": "out-027",
+    "name": "Maya Saputra",
+    "phone": "089088036773",
+    "email": "maya.saputra133@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "3277094430",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-20T13:30:00+07:00",
+    "approvedAt": "2026-07-14T13:30:00+07:00",
+    "avatarColor": "#6d28d9"
+  },
+  {
+    "id": "emp-134",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-027"
+    ],
+    "primaryOutletId": "out-027",
+    "name": "Teguh Setiawan",
+    "phone": "086655247105",
+    "email": "teguh.setiawan134@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "8603363931",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-20T13:30:00+07:00",
+    "approvedAt": "2026-08-15T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-135",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-027"
+    ],
+    "primaryOutletId": "out-027",
+    "name": "Fajar Hidayat",
+    "phone": "089416003204",
+    "email": "fajar.hidayat135@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "5713226469",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-10T13:30:00+07:00",
+    "approvedAt": "2026-07-10T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-136",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-028"
+    ],
+    "primaryOutletId": "out-028",
+    "name": "Dian Gunawan",
+    "phone": "083212810675",
+    "email": "dian.gunawan136@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "3553120696",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-25T13:30:00+07:00",
+    "approvedAt": "2026-07-04T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-137",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-028"
+    ],
+    "primaryOutletId": "out-028",
+    "name": "Budi Halim",
+    "phone": "081781636120",
+    "email": "budi.halim137@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "2867845110",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-08T13:30:00+07:00",
+    "approvedAt": "2026-09-03T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-138",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-028"
+    ],
+    "primaryOutletId": "out-028",
+    "name": "Nur Wijaya",
+    "phone": "081295993157",
+    "email": "nur.wijaya138@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "9024710513",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-23T13:30:00+07:00",
+    "approvedAt": "2026-09-07T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-139",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-028"
+    ],
+    "primaryOutletId": "out-028",
+    "name": "Dian Halim",
+    "phone": "083709145160",
+    "email": "dian.halim139@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "3432504464",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-09-03T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-140",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-028"
+    ],
+    "primaryOutletId": "out-028",
+    "name": "Rizky Gunawan",
+    "phone": "082573394324",
+    "email": "rizky.gunawan140@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "6501227245",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-30T13:30:00+07:00",
+    "approvedAt": "2026-07-08T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-141",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-029"
+    ],
+    "primaryOutletId": "out-029",
+    "name": "Lestari Firmansyah",
+    "phone": "087058519391",
+    "email": "lestari.firmansyah141@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "2107464258",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-19T13:30:00+07:00",
+    "approvedAt": "2026-07-26T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-142",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-029"
+    ],
+    "primaryOutletId": "out-029",
+    "name": "Dian Anggraini",
+    "phone": "088158203258",
+    "email": "dian.anggraini142@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "5416066588",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-09-02T13:30:00+07:00",
+    "approvedAt": "2026-07-10T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-143",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-029"
+    ],
+    "primaryOutletId": "out-029",
+    "name": "Teguh Halim",
+    "phone": "081238971127",
+    "email": "teguh.halim143@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "1560697980",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-12T13:30:00+07:00",
+    "approvedAt": "2026-06-12T13:30:00+07:00",
+    "avatarColor": "#be185d"
+  },
+  {
+    "id": "emp-144",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-029"
+    ],
+    "primaryOutletId": "out-029",
+    "name": "Dian Gunawan",
+    "phone": "088544651008",
+    "email": "dian.gunawan144@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "3502061625",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-06-18T13:30:00+07:00",
+    "approvedAt": "2026-07-20T13:30:00+07:00",
+    "avatarColor": "#1d4ed8"
+  },
+  {
+    "id": "emp-145",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-029"
+    ],
+    "primaryOutletId": "out-029",
+    "name": "Fitri Setiawan",
+    "phone": "082499498484",
+    "email": "fitri.setiawan145@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "2503965397",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-26T13:30:00+07:00",
+    "approvedAt": "2026-09-06T13:30:00+07:00",
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-146",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-030"
+    ],
+    "primaryOutletId": "out-030",
+    "name": "Joko Kusuma",
+    "phone": "085453055394",
+    "email": "joko.kusuma146@indomaret.co.id",
+    "role": "store_manager",
+    "registrationToken": "7846643880",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-05-30T13:30:00+07:00",
+    "approvedAt": "2026-06-23T13:30:00+07:00",
+    "avatarColor": "#0e7490"
+  },
+  {
+    "id": "emp-147",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-030"
+    ],
+    "primaryOutletId": "out-030",
+    "name": "Mega Purnama",
+    "phone": "088015155811",
+    "email": "mega.purnama147@indomaret.co.id",
+    "role": "assistant_manager",
+    "registrationToken": "8100644866",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-07-19T13:30:00+07:00",
+    "approvedAt": "2026-07-19T13:30:00+07:00",
+    "avatarColor": "#9b1c1c"
+  },
+  {
+    "id": "emp-148",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-030"
+    ],
+    "primaryOutletId": "out-030",
+    "name": "Rizky Pratama",
+    "phone": "081200387193",
+    "email": "rizky.pratama148@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "7753478864",
+    "registrationStatus": "approved",
+    "registeredAt": "2026-08-19T13:30:00+07:00",
+    "approvedAt": "2026-06-28T13:30:00+07:00",
+    "avatarColor": "#4d7c0f"
+  },
+  {
+    "id": "emp-149",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-030"
+    ],
+    "primaryOutletId": "out-030",
+    "name": "Ratna Utami",
+    "phone": "089485553132",
+    "email": "ratna.utami149@indomaret.co.id",
+    "role": "cashier",
+    "registrationToken": "1917004837",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-05-17T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#b45309"
+  },
+  {
+    "id": "emp-150",
+    "distributorId": "dst-dps",
+    "outletIds": [
+      "out-030"
+    ],
+    "primaryOutletId": "out-030",
+    "name": "Maya Gunawan",
+    "phone": "085468320583",
+    "email": "maya.gunawan150@indomaret.co.id",
+    "role": "staff",
+    "registrationToken": "7486594351",
+    "registrationStatus": "pending",
+    "registeredAt": "2026-08-11T13:30:00+07:00",
+    "approvedAt": null,
+    "avatarColor": "#1d4ed8"
+  }
+]

@@ -1,0 +1,8 @@
+@import 'tailwindcss';
+@import '@monitoring/tailwind-config/theme.css';
+@source '../../../packages/ui/src';
+
+html, body, #root { min-height: 100dvh; }
+body { overscroll-behavior-y: none; }
+.safe-b { padding-bottom: env(safe-area-inset-bottom); }
+.safe-t { padding-top: env(safe-area-inset-top); }

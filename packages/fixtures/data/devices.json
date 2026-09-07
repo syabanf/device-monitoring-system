@@ -1,0 +1,2162 @@
+[
+  {
+    "id": "dev-001",
+    "outletId": "out-001",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F88156-RA3S",
+    "mac": "00:80:A3:36:D1:DB",
+    "ip": "192.168.28.184",
+    "firmware": "v2.9.1",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:26:00+07:00",
+    "installedAt": "2026-03-16T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-001"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-002"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-03-15T13:30:00+07:00",
+    "lastMaintenanceAt": null,
+    "nextMaintenanceAt": "2026-09-12T13:30:00+07:00",
+    "uptimePct": 98.37,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-002",
+    "outletId": "out-002",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F98909-RA3S",
+    "mac": "00:80:A3:FC:75:96",
+    "ip": "192.168.22.174",
+    "firmware": "v2.8.4",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:21:00+07:00",
+    "installedAt": "2025-10-04T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-003"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-004"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-10-03T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-02-01T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-07-31T13:30:00+07:00",
+    "uptimePct": 98.7,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-003",
+    "outletId": "out-003",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F80792-RA12S",
+    "mac": "00:80:A3:50:DC:D6",
+    "ip": "192.168.39.53",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:27:00+07:00",
+    "installedAt": "2025-08-28T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-005"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-006"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-007"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": null
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-08-27T13:30:00+07:00",
+    "lastMaintenanceAt": "2025-12-26T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-06-24T13:30:00+07:00",
+    "uptimePct": 99.95,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-004",
+    "outletId": "out-003",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F62052-RA3S",
+    "mac": "00:80:A3:6C:41:DB",
+    "ip": "192.168.47.180",
+    "firmware": "v2.8.4",
+    "status": "offline",
+    "lastPushAt": "2026-09-06T21:30:00+07:00",
+    "installedAt": "2025-12-18T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-008"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-009"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-12-17T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-01-17T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-07-16T13:30:00+07:00",
+    "uptimePct": 86.31,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 24
+    }
+  },
+  {
+    "id": "dev-005",
+    "outletId": "out-004",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F67097-RA12S",
+    "mac": "00:80:A3:3E:91:6F",
+    "ip": "192.168.35.46",
+    "firmware": "v3.2.1",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:26:00+07:00",
+    "installedAt": "2026-04-27T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-010"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-011"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-012"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": null
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": "sen-013"
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-04-26T13:30:00+07:00",
+    "lastMaintenanceAt": null,
+    "nextMaintenanceAt": "2026-10-24T13:30:00+07:00",
+    "uptimePct": 98.35,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-006",
+    "outletId": "out-005",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F72451-RA12S",
+    "mac": "00:80:A3:62:31:E1",
+    "ip": "192.168.41.28",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:21:00+07:00",
+    "installedAt": "2026-06-30T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-014"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-015"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-016"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": null
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-06-29T13:30:00+07:00",
+    "lastMaintenanceAt": null,
+    "nextMaintenanceAt": "2026-12-27T13:30:00+07:00",
+    "uptimePct": 97.33,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-007",
+    "outletId": "out-006",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F64445-RA3S",
+    "mac": "00:80:A3:40:91:0D",
+    "ip": "192.168.41.193",
+    "firmware": "v2.9.1",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:30:00+07:00",
+    "installedAt": "2025-10-25T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-017"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-018"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-10-24T13:30:00+07:00",
+    "lastMaintenanceAt": "2025-12-24T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-06-22T13:30:00+07:00",
+    "uptimePct": 97.43,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-008",
+    "outletId": "out-007",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F70307-RA12S",
+    "mac": "00:80:A3:13:A6:6A",
+    "ip": "192.168.59.106",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:26:00+07:00",
+    "installedAt": "2025-08-17T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-019"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": "sen-020"
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-021"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-022"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": "sen-023"
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-08-16T13:30:00+07:00",
+    "lastMaintenanceAt": "2025-10-16T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-04-14T13:30:00+07:00",
+    "uptimePct": 98.5,
+    "sensorFaults": 1,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-009",
+    "outletId": "out-008",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F80488-RA12S",
+    "mac": "00:80:A3:74:BA:87",
+    "ip": "192.168.34.223",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:21:00+07:00",
+    "installedAt": "2025-12-03T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-024"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-025"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-026"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": "sen-027"
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": "sen-028"
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-12-02T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-04-02T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-09-29T13:30:00+07:00",
+    "uptimePct": 97.7,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-010",
+    "outletId": "out-008",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F81760-RA3S",
+    "mac": "00:80:A3:77:1E:6E",
+    "ip": "192.168.47.234",
+    "firmware": "v2.9.1",
+    "status": "offline",
+    "lastPushAt": "2026-09-07T00:30:00+07:00",
+    "installedAt": "2026-01-05T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-029"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-030"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-01-04T13:30:00+07:00",
+    "lastMaintenanceAt": null,
+    "nextMaintenanceAt": "2026-07-04T13:30:00+07:00",
+    "uptimePct": 86.09,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 24
+    }
+  },
+  {
+    "id": "dev-011",
+    "outletId": "out-009",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F77189-RA12S",
+    "mac": "00:80:A3:29:58:21",
+    "ip": "192.168.30.241",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:29:00+07:00",
+    "installedAt": "2025-10-24T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-031"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": "sen-032"
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-033"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-034"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": null
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": "sen-035"
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-10-23T13:30:00+07:00",
+    "lastMaintenanceAt": "2025-11-23T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-05-22T13:30:00+07:00",
+    "uptimePct": 99.31,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-012",
+    "outletId": "out-010",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F80478-RA3S",
+    "mac": "00:80:A3:D2:0B:C0",
+    "ip": "192.168.31.154",
+    "firmware": "v2.9.1",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:21:00+07:00",
+    "installedAt": "2025-11-02T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-036"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-037"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-11-01T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-05-01T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-10-28T13:30:00+07:00",
+    "uptimePct": 98.29,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-013",
+    "outletId": "out-011",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F63090-RA3S",
+    "mac": "00:80:A3:85:C7:10",
+    "ip": "192.168.18.230",
+    "firmware": "v2.9.1",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:21:00+07:00",
+    "installedAt": "2025-08-29T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-038"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-039"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-08-28T13:30:00+07:00",
+    "lastMaintenanceAt": "2025-11-27T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-05-26T13:30:00+07:00",
+    "uptimePct": 99.47,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-014",
+    "outletId": "out-012",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F83361-RA12S",
+    "mac": "00:80:A3:23:4D:03",
+    "ip": "192.168.29.208",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:23:00+07:00",
+    "installedAt": "2025-08-07T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-040"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-041"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-042"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": "sen-043"
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": "sen-044"
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-08-06T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-01-04T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-07-03T13:30:00+07:00",
+    "uptimePct": 97.49,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-015",
+    "outletId": "out-013",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F75872-RA12S",
+    "mac": "00:80:A3:25:2D:E6",
+    "ip": "192.168.30.148",
+    "firmware": "v3.2.1",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:25:00+07:00",
+    "installedAt": "2026-01-06T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-045"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-046"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-047"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": "sen-048"
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-01-05T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-02-05T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-08-04T13:30:00+07:00",
+    "uptimePct": 98.15,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-016",
+    "outletId": "out-013",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F74356-RA3S",
+    "mac": "00:80:A3:C7:72:77",
+    "ip": "192.168.47.229",
+    "firmware": "v2.9.1",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:22:00+07:00",
+    "installedAt": "2025-10-13T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-049"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-050"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-10-12T13:30:00+07:00",
+    "lastMaintenanceAt": null,
+    "nextMaintenanceAt": "2026-04-11T13:30:00+07:00",
+    "uptimePct": 97.16,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 24
+    }
+  },
+  {
+    "id": "dev-017",
+    "outletId": "out-014",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F93887-RA3S",
+    "mac": "00:80:A3:5B:12:D4",
+    "ip": "192.168.49.142",
+    "firmware": "v2.9.1",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:27:00+07:00",
+    "installedAt": "2026-05-21T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-051"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-052"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-05-20T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-08-19T13:30:00+07:00",
+    "nextMaintenanceAt": "2027-02-15T13:30:00+07:00",
+    "uptimePct": 98.12,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-018",
+    "outletId": "out-015",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F69213-RA3S",
+    "mac": "00:80:A3:E5:7C:D6",
+    "ip": "192.168.27.149",
+    "firmware": "v2.8.4",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:25:00+07:00",
+    "installedAt": "2026-02-22T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-053"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-054"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-02-21T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-07-22T13:30:00+07:00",
+    "nextMaintenanceAt": "2027-01-18T13:30:00+07:00",
+    "uptimePct": 99.55,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-019",
+    "outletId": "out-016",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F83648-RA12S",
+    "mac": "00:80:A3:84:6B:63",
+    "ip": "192.168.49.76",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:29:00+07:00",
+    "installedAt": "2026-01-26T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-055"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": "sen-056"
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-057"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-058"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": null
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": "sen-059"
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-01-25T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-03-27T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-09-23T13:30:00+07:00",
+    "uptimePct": 97.35,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-020",
+    "outletId": "out-017",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F64206-RA12S",
+    "mac": "00:80:A3:3A:7D:18",
+    "ip": "192.168.21.49",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:30:00+07:00",
+    "installedAt": "2025-12-04T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-060"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-061"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-062"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": "sen-063"
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-12-03T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-05-03T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-10-30T13:30:00+07:00",
+    "uptimePct": 97.21,
+    "sensorFaults": 1,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-021",
+    "outletId": "out-018",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F90875-RA12S",
+    "mac": "00:80:A3:AB:4E:22",
+    "ip": "192.168.46.109",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:28:00+07:00",
+    "installedAt": "2025-09-01T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-064"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-065"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-066"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": null
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": "sen-067"
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-08-31T13:30:00+07:00",
+    "lastMaintenanceAt": "2025-10-31T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-04-29T13:30:00+07:00",
+    "uptimePct": 99,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-022",
+    "outletId": "out-018",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F98984-RA3S",
+    "mac": "00:80:A3:8E:E8:A1",
+    "ip": "192.168.29.203",
+    "firmware": "v2.9.1",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:26:00+07:00",
+    "installedAt": "2025-08-05T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-068"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-069"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-08-04T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-01-02T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-07-01T13:30:00+07:00",
+    "uptimePct": 98.94,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 24
+    }
+  },
+  {
+    "id": "dev-023",
+    "outletId": "out-019",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F90088-RA3S",
+    "mac": "00:80:A3:97:64:F5",
+    "ip": "192.168.30.110",
+    "firmware": "v2.8.4",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:22:00+07:00",
+    "installedAt": "2026-07-06T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-070"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-071"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-07-05T13:30:00+07:00",
+    "lastMaintenanceAt": null,
+    "nextMaintenanceAt": "2027-01-02T13:30:00+07:00",
+    "uptimePct": 97.63,
+    "sensorFaults": 1,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-024",
+    "outletId": "out-020",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F66736-RA12S",
+    "mac": "00:80:A3:B5:CF:BB",
+    "ip": "192.168.54.212",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:24:00+07:00",
+    "installedAt": "2025-09-27T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-072"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": "sen-073"
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-074"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-075"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": "sen-076"
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": "sen-077"
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-09-26T13:30:00+07:00",
+    "lastMaintenanceAt": "2025-11-26T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-05-25T13:30:00+07:00",
+    "uptimePct": 98.19,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-025",
+    "outletId": "out-021",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F78033-RA3S",
+    "mac": "00:80:A3:6C:EE:3B",
+    "ip": "192.168.24.244",
+    "firmware": "v2.9.1",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:25:00+07:00",
+    "installedAt": "2026-04-03T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-078"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-079"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-04-02T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-08-31T13:30:00+07:00",
+    "nextMaintenanceAt": "2027-02-27T13:30:00+07:00",
+    "uptimePct": 99.4,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-026",
+    "outletId": "out-022",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F74482-RA12S",
+    "mac": "00:80:A3:1C:99:48",
+    "ip": "192.168.43.148",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:29:00+07:00",
+    "installedAt": "2025-11-18T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-080"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-081"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-082"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": null
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-11-17T13:30:00+07:00",
+    "lastMaintenanceAt": null,
+    "nextMaintenanceAt": "2026-05-17T13:30:00+07:00",
+    "uptimePct": 99.86,
+    "sensorFaults": 1,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-027",
+    "outletId": "out-023",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F64842-RA12S",
+    "mac": "00:80:A3:76:4D:9D",
+    "ip": "192.168.48.39",
+    "firmware": "v3.3.0",
+    "status": "offline",
+    "lastPushAt": "2026-09-07T02:30:00+07:00",
+    "installedAt": "2025-09-22T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-083"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-084"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-085"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": "sen-086"
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-09-21T13:30:00+07:00",
+    "lastMaintenanceAt": "2025-12-21T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-06-19T13:30:00+07:00",
+    "uptimePct": 80.07,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-028",
+    "outletId": "out-023",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F86140-RA3S",
+    "mac": "00:80:A3:3D:99:4F",
+    "ip": "192.168.28.31",
+    "firmware": "v2.9.1",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:25:00+07:00",
+    "installedAt": "2025-09-26T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-087"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-088"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-09-25T13:30:00+07:00",
+    "lastMaintenanceAt": "2025-11-25T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-05-24T13:30:00+07:00",
+    "uptimePct": 97.08,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 24
+    }
+  },
+  {
+    "id": "dev-029",
+    "outletId": "out-024",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F64282-RA12S",
+    "mac": "00:80:A3:C0:4F:E4",
+    "ip": "192.168.16.56",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:30:00+07:00",
+    "installedAt": "2025-10-31T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-089"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-090"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-091"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": null
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-10-30T13:30:00+07:00",
+    "lastMaintenanceAt": null,
+    "nextMaintenanceAt": "2026-04-29T13:30:00+07:00",
+    "uptimePct": 98.47,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-030",
+    "outletId": "out-025",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F86801-RA12S",
+    "mac": "00:80:A3:ED:F1:03",
+    "ip": "192.168.57.192",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:24:00+07:00",
+    "installedAt": "2026-01-04T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-092"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-093"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-094"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": "sen-095"
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-01-03T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-03-05T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-09-01T13:30:00+07:00",
+    "uptimePct": 99.57,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-031",
+    "outletId": "out-026",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F92833-RA12S",
+    "mac": "00:80:A3:13:9A:31",
+    "ip": "192.168.32.241",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:26:00+07:00",
+    "installedAt": "2026-01-25T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-096"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-097"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-098"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": null
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-01-24T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-07-24T13:30:00+07:00",
+    "nextMaintenanceAt": "2027-01-20T13:30:00+07:00",
+    "uptimePct": 98.13,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-032",
+    "outletId": "out-027",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F68817-RA12S",
+    "mac": "00:80:A3:CA:E8:9D",
+    "ip": "192.168.20.242",
+    "firmware": "v3.3.0",
+    "status": "offline",
+    "lastPushAt": "2026-09-07T01:30:00+07:00",
+    "installedAt": "2026-06-06T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-099"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": "sen-100"
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-101"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-102"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": null
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-06-05T13:30:00+07:00",
+    "lastMaintenanceAt": null,
+    "nextMaintenanceAt": "2026-12-03T13:30:00+07:00",
+    "uptimePct": 84.19,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-033",
+    "outletId": "out-028",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F68945-RA12S",
+    "mac": "00:80:A3:66:6C:29",
+    "ip": "192.168.50.249",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:30:00+07:00",
+    "installedAt": "2025-11-18T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-103"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": "sen-104"
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-105"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-106"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": null
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-11-17T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-03-18T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-09-14T13:30:00+07:00",
+    "uptimePct": 99.07,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-034",
+    "outletId": "out-028",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F87144-RA3S",
+    "mac": "00:80:A3:7D:86:EE",
+    "ip": "192.168.31.32",
+    "firmware": "v2.9.1",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:24:00+07:00",
+    "installedAt": "2026-01-13T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-107"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-108"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-01-12T13:30:00+07:00",
+    "lastMaintenanceAt": null,
+    "nextMaintenanceAt": "2026-07-12T13:30:00+07:00",
+    "uptimePct": 97.17,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 24
+    }
+  },
+  {
+    "id": "dev-035",
+    "outletId": "out-029",
+    "deviceTypeId": "dt-ra3s",
+    "model": "RA3S",
+    "serial": "RA3-F71584-RA3S",
+    "mac": "00:80:A3:7E:F1:A1",
+    "ip": "192.168.56.22",
+    "firmware": "v2.9.1",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:22:00+07:00",
+    "installedAt": "2025-11-16T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-109"
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-110"
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2028-11-15T13:30:00+07:00",
+    "lastMaintenanceAt": "2025-12-16T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-06-14T13:30:00+07:00",
+    "uptimePct": 97.66,
+    "sensorFaults": 1,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  },
+  {
+    "id": "dev-036",
+    "outletId": "out-030",
+    "deviceTypeId": "dt-ra12s",
+    "model": "RA12S",
+    "serial": "RA12-F87273-RA12S",
+    "mac": "00:80:A3:CD:B5:1D",
+    "ip": "192.168.25.195",
+    "firmware": "v3.3.0",
+    "status": "online",
+    "lastPushAt": "2026-09-07T13:23:00+07:00",
+    "installedAt": "2026-02-12T13:30:00+07:00",
+    "pushIntervalSec": 300,
+    "ports": [
+      {
+        "index": 1,
+        "kind": "digital",
+        "label": "Digital 1",
+        "sensorId": "sen-111"
+      },
+      {
+        "index": 2,
+        "kind": "digital",
+        "label": "Digital 2",
+        "sensorId": null
+      },
+      {
+        "index": 3,
+        "kind": "digital",
+        "label": "Digital 3",
+        "sensorId": null
+      },
+      {
+        "index": 1,
+        "kind": "switch",
+        "label": "Switch 1",
+        "sensorId": "sen-112"
+      },
+      {
+        "index": 2,
+        "kind": "switch",
+        "label": "Switch 2",
+        "sensorId": "sen-113"
+      },
+      {
+        "index": 3,
+        "kind": "switch",
+        "label": "Switch 3",
+        "sensorId": null
+      },
+      {
+        "index": 4,
+        "kind": "switch",
+        "label": "Switch 4",
+        "sensorId": "sen-114"
+      },
+      {
+        "index": 1,
+        "kind": "analog",
+        "label": "Analog 1",
+        "sensorId": null
+      }
+    ],
+    "channels": [
+      "app"
+    ],
+    "warrantyUntil": "2029-02-11T13:30:00+07:00",
+    "lastMaintenanceAt": "2026-04-13T13:30:00+07:00",
+    "nextMaintenanceAt": "2026-10-10T13:30:00+07:00",
+    "uptimePct": 99.61,
+    "sensorFaults": 0,
+    "floor": {
+      "x": 91,
+      "y": 60
+    }
+  }
+]

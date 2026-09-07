@@ -1,0 +1,29 @@
+[
+  {
+    "id": "dst-sby",
+    "code": "DC-SBY",
+    "name": "Distribution Center Surabaya",
+    "region": "Jawa Timur",
+    "city": "Surabaya",
+    "address": "Jl. Raya Industri No. 39, Surabaya",
+    "adminUserId": "adm-001"
+  },
+  {
+    "id": "dst-jkt",
+    "code": "DC-JKT",
+    "name": "Distribution Center Jakarta Utara",
+    "region": "DKI Jakarta",
+    "city": "Jakarta Utara",
+    "address": "Jl. Raya Industri No. 76, Jakarta Utara",
+    "adminUserId": "adm-002"
+  },
+  {
+    "id": "dst-dps",
+    "code": "DC-DPS",
+    "name": "Distribution Center Denpasar",
+    "region": "Bali",
+    "city": "Denpasar",
+    "address": "Jl. Raya Industri No. 63, Denpasar",
+    "adminUserId": "adm-003"
+  }
+]

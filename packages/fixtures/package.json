@@ -1,0 +1,10 @@
+{
+  "name": "@monitoring/fixtures",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": { "typecheck": "tsc --noEmit" },
+  "dependencies": { "@monitoring/types": "workspace:*", "date-fns": "^4.1.0" },
+  "devDependencies": { "@monitoring/tsconfig": "workspace:*", "typescript": "^5.6.3" }
+}
