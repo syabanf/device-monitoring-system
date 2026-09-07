@@ -15,9 +15,9 @@ export function AlertsPage() {
   const open = list.filter((a) => a.status === 'TRIGGERED');
   const responded = list.filter((a) => a.status === 'RESPONDED');
   const clearedAll = list.filter((a) => a.status === 'CLEARED');
-  const openList = useInfiniteList(open, 8);
-  const respondedList = useInfiniteList(responded, 8);
-  const clearedList = useInfiniteList(clearedAll, 10);
+  const [tab, setTab] = React.useState<'open' | 'responded' | 'cleared'>('open');
+  const current = tab === 'open' ? open : tab === 'responded' ? responded : clearedAll;
+  const paged = useInfiniteList(current, 6, `${tab}:${outletId}`);
   const firstName = employee?.name.split(' ')[0] ?? 'there';
 
   return (
@@ -36,28 +36,21 @@ export function AlertsPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-[24px] bg-brand-600 px-4 py-5 text-white shadow-card"><p className="text-[32px] font-bold leading-none">{open.length}</p><p className="mt-2 text-xs font-medium text-white/80">Open</p></div>
-        <div className="rounded-[24px] bg-sky-300 px-4 py-5 text-ink shadow-card"><p className="text-[32px] font-bold leading-none">{responded.length}</p><p className="mt-2 text-xs font-medium text-ink/70">Responded</p></div>
-        <div className="rounded-[24px] bg-white px-4 py-5 shadow-card"><p className="text-[32px] font-bold leading-none">{clearedAll.length}</p><p className="mt-2 text-xs font-medium text-muted">Cleared</p></div>
-      </div>
 
-      {list.length === 0 ? <EmptyState icon={<BellOff />} title="No alerts" description="Everything is normal at your outlets." /> : null}
-      {open.length ? <Section title="Needs response" count={open.length}>{openList.visible.map((a) => <AlertCard key={a.id} alert={a} unread={!read.has(a.id)} />)}<LoadMore hasMore={openList.hasMore} onLoad={openList.loadMore} remaining={openList.remaining} /></Section> : null}
-      {responded.length ? <Section title="Responded" count={responded.length}>{respondedList.visible.map((a) => <AlertCard key={a.id} alert={a} />)}<LoadMore hasMore={respondedList.hasMore} onLoad={respondedList.loadMore} remaining={respondedList.remaining} /></Section> : null}
-      {clearedAll.length ? <Section title="Cleared" count={clearedAll.length}>{clearedList.visible.map((a) => <AlertCard key={a.id} alert={a} />)}<LoadMore hasMore={clearedList.hasMore} onLoad={clearedList.loadMore} remaining={clearedList.remaining} /></Section> : null}
+      <section>
+        <div className="mb-3 flex gap-1 rounded-full bg-white p-1 shadow-card">
+          {([['open', 'Open', open.length], ['responded', 'Responded', responded.length], ['cleared', 'Cleared', clearedAll.length]] as const).map(([k, label, n]) => (
+            <button key={k} type="button" onClick={() => setTab(k)} className={cn('flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full text-xs font-semibold transition-colors', tab === k ? (k === 'open' ? 'bg-brand-600 text-white' : 'bg-ink text-white') : 'text-muted')}>{label}<span className={cn('rounded-full px-1.5 text-[10px]', tab === k ? 'bg-white/20' : 'bg-surface')}>{n}</span></button>
+          ))}
+        </div>
+        {current.length === 0 ? <EmptyState icon={<BellOff />} title="Nothing here" description={tab === 'open' ? 'Everything is normal at your outlets.' : 'No alerts in this list.'} /> : (
+          <div className="space-y-3">
+            {paged.visible.map((a) => <AlertCard key={a.id} alert={a} unread={tab === 'open' && !read.has(a.id)} />)}
+            <LoadMore hasMore={paged.hasMore} onLoad={paged.loadMore} remaining={paged.remaining} />
+          </div>
+        )}
+      </section>
     </div>
   );
 }
 
-function Section({ title, count, children }: { title: string; count: number; children: React.ReactNode }) {
-  return (
-    <section>
-      <div className="mb-3 flex items-center justify-between px-1">
-        <h2 className="text-base font-bold">{title}</h2>
-        <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-muted shadow-card">{count}</span>
-      </div>
-      <div className="space-y-3">{children}</div>
-    </section>
-  );
-}

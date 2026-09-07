@@ -22,7 +22,7 @@ export function MaintenancePage() {
   const overdue = mine.filter(isTicketOverdue);
   const list = filter === 'done' ? tickets.filter((t) => t.status === 'DONE') : filter === 'mine' ? mine : open;
   const critical = health.filter((h) => h.status === 'critical').length;
-  const paged = useInfiniteList(list, 8);
+  const paged = useInfiniteList(list, 6, filter);
 
   return (
     <div className="space-y-6">

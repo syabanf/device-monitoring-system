@@ -33,7 +33,7 @@ export function LoginPage() {
 
   return (
     <PhoneFrame>
-    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-1 flex-col bg-surface px-6 pb-10 pt-16 lg:min-h-0 lg:pt-20">
+    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-1 flex-col bg-surface px-6 pb-10 pt-16">
       <WitMark className="text-2xl" />
       <div className="mt-10">
         <h1 className="text-[34px] font-bold leading-tight tracking-tight">Welcome back<span className="text-brand-600">.</span></h1>

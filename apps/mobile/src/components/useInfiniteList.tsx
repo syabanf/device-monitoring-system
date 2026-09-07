@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Loader2 } from 'lucide-react';
 
 /** Reveals `pageSize` more items each time the sentinel scrolls into view. */
-export function useInfiniteList<T>(items: T[], pageSize = 10) {
+export function useInfiniteList<T>(items: T[], pageSize = 10, resetKey: string = '') {
   const [count, setCount] = React.useState(pageSize);
-  React.useEffect(() => setCount(pageSize), [items, pageSize]);
+  React.useEffect(() => setCount(pageSize), [resetKey, pageSize]);
   const visible = items.slice(0, count);
   const hasMore = count < items.length;
   const loadMore = React.useCallback(() => setCount((c) => Math.min(items.length, c + pageSize)), [items.length, pageSize]);
