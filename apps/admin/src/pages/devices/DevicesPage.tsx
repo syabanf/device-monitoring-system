@@ -15,18 +15,18 @@ import { ConfirmDelete } from '../../components/master/ConfirmDelete';
 
 export function DevicesPage() {
   const { devices: all, sensorsByDevice, outlets, dispatch } = useScoped();
-  const [params] = useSearchParams();
-  const [mode, setMode] = React.useState<'table' | 'floor'>((params.get('view') as 'floor' | null) ?? 'table');
-  const [floorOutlet, setFloorOutlet] = React.useState(params.get('outlet') ?? outlets[0]?.id ?? '');
+  const [params, setParams] = useSearchParams();
+  const mode: 'table' | 'floor' = params.get('view') === 'floor' ? 'floor' : 'table';
+  const floorOutlet = outlets.some((o) => o.id === params.get('outlet')) ? params.get('outlet')! : outlets[0]?.id ?? '';
+  const update = (patch: Record<string, string | null>) => { const next = new URLSearchParams(params); for (const [key, value] of Object.entries(patch)) value == null ? next.delete(key) : next.set(key, value); setParams(next, { replace: true }); };
   const [markerId, setMarkerId] = React.useState<string | null>(null);
   const floorMarkers = useFloorMarkers(floorOutlet);
   const [editing, setEditing] = React.useState<Device | null>(null);
   const [adding, setAdding] = React.useState(false);
   const [removing, setRemoving] = React.useState<Device | null>(null);
   const navigate = useNavigate();
-  const [q, setQ] = React.useState(params.get('q') ?? '');
-  React.useEffect(() => { const v = params.get('q'); if (v != null) setQ(v); }, [params]);
-  const [status, setStatus] = React.useState<'all' | 'online' | 'offline'>('all');
+  const q = params.get('q') ?? '';
+  const status = (params.get('status') === 'online' || params.get('status') === 'offline' ? params.get('status') : 'all') as 'all' | 'online' | 'offline';
   const rows = React.useMemo(() => {
     const s = q.trim().toLowerCase();
     return all.filter((d) => (status === 'all' || d.status === status) && (!s || d.serial.toLowerCase().includes(s) || d.mac.toLowerCase().includes(s) || (outletById.get(d.outletId)?.name.toLowerCase().includes(s) ?? false)));
@@ -58,18 +58,18 @@ export function DevicesPage() {
         description={`${all.length} Room Alert units · ${all.filter((d) => d.status === 'offline').length} offline`}
         actions={
           <>
-            <Select value={status} onValueChange={(v) => setStatus(v as typeof status)}>
+            <Select value={status} onValueChange={(v) => update({ status: v === 'all' ? null : v })}>
               <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value="all">All status</SelectItem><SelectItem value="online">Online</SelectItem><SelectItem value="offline">Offline</SelectItem></SelectContent>
             </Select>
-            <Input placeholder="Search serial, MAC, outlet" leftIcon={<Search />} value={q} onChange={(e) => setQ(e.target.value)} className="w-72" />
+            <Input placeholder="Search serial, MAC, outlet" leftIcon={<Search />} value={q} onChange={(e) => update({ q: e.target.value || null })} className="w-72" />
             <Button onClick={() => setAdding(true)}><Plus />Add device</Button>
           </>
         }
       />
       <div className="mb-4 inline-flex rounded-full bg-white p-1 shadow-card">
         {([['table', 'Table', LayoutList], ['floor', 'Shopfloor', MapIcon]] as const).map(([m, label, Icon]) => (
-          <button key={m} type="button" onClick={() => setMode(m)} className={cn('inline-flex h-9 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors', mode === m ? 'bg-ink text-white' : 'text-muted hover:text-foreground')}><Icon className="size-4" />{label}</button>
+          <button key={m} type="button" onClick={() => update({ view: m === 'table' ? null : m })} className={cn('inline-flex h-9 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors', mode === m ? 'bg-ink text-white' : 'text-muted hover:text-foreground')}><Icon className="size-4" />{label}</button>
         ))}
       </div>
       {mode === 'table' ? (
@@ -81,7 +81,7 @@ export function DevicesPage() {
           <Card>
             <CardHeader className="flex-row items-center justify-between space-y-0">
               <div><CardTitle>Installation points</CardTitle><p className="text-sm text-muted">Where each unit and sensor sits inside the outlet</p></div>
-              <Select value={floorOutlet} onValueChange={(v) => { setFloorOutlet(v); setMarkerId(null); }}><SelectTrigger className="w-64"><SelectValue /></SelectTrigger><SelectContent>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent></Select>
+              <Select value={floorOutlet} onValueChange={(v) => { update({ outlet: v }); setMarkerId(null); }}><SelectTrigger className="w-64"><SelectValue /></SelectTrigger><SelectContent>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent></Select>
             </CardHeader>
             <CardContent><FloorPlan markers={floorMarkers} selectedId={markerId} onSelect={setMarkerId} title="Denah outlet" /><FloorLegend className="mt-3" /></CardContent>
           </Card>

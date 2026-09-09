@@ -31,7 +31,7 @@ export function DevicesPage() {
   const [showPlan, setShowPlan] = React.useState(true);
   const [markerId, setMarkerId] = React.useState<string | null>(null);
   const markers = useFloorMarkers(outletIds, tab);
-  const openBySensor = React.useMemo(() => { const m = new Map<string, number>(); for (const a of alerts) if (a.status !== 'CLEARED') m.set(a.sensorId, (m.get(a.sensorId) ?? 0) + 1); return m; }, [alerts]);
+  const openBySensor = React.useMemo(() => { const m = new Map<string, number>(); for (const a of alerts) if (a.status !== 'RESOLVED' && a.status !== 'VERIFIED') m.set(a.sensorId, (m.get(a.sensorId) ?? 0) + 1); return m; }, [alerts]);
   if (!outlets.length) return null;
   return (
     <div className="space-y-5">

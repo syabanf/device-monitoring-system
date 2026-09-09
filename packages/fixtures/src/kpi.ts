@@ -3,8 +3,9 @@ import { format } from 'date-fns';
 import { FIXTURE_NOW_MS } from './constants';
 import { toWallClockDate } from './format';
 
-export const isOpen = (a: Alert) => a.status === 'TRIGGERED' || a.status === 'RESPONDED';
-export const isSolved = (a: Alert) => a.status === 'CLEARED';
+export const isOpen = (a: Alert) => a.status === 'UNACKNOWLEDGED' || a.status === 'ACKNOWLEDGED' || a.status === 'RESPONDING';
+export const isSolved = (a: Alert) => a.status === 'RESOLVED' || a.status === 'VERIFIED';
+export const alertTab = (a: Alert) => a.status.toLowerCase();
 
 export type Period = 'today' | '7d' | '30d' | 'all';
 export function periodStartMs(p: Period): number {

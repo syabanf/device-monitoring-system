@@ -49,7 +49,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     const message = e.event === 'CLEARED' ? `Cleared: ${sensor.name}` : sensor.type === 'TEMPERATURE_HUMIDITY' || sensor.type === 'TEMPERATURE' ? (e.value.includes('%') ? 'Humidity above 60.0 %RH' : 'Temperature above 28.00 °C') : sensor.type === 'DOOR' ? 'Door opened outside operational hours' : sensor.type === 'MOTION' ? 'Motion detected outside operational hours' : sensor.type === 'POWER' ? 'Main power lost' : 'Panic button pressed';
     const alert: Alert = {
       id, distributorId: outlet.distributorId, outletId: outlet.id, deviceId: device.id, sensorId: sensor.id, sensorName: sensor.name, sensorType: sensor.type, category: categoryFor(sensor.type, e.at),
-      status: e.event === 'CLEARED' ? 'CLEARED' : 'TRIGGERED', triggerValue: e.value || '—', triggerTime: e.at || FIXTURE_NOW, clearValue: null, clearTime: null, message, response: null, channels: config.telegram.enabled ? ['app', 'telegram'] : ['app'],
+      status: e.event === 'CLEARED' ? 'RESOLVED' : 'UNACKNOWLEDGED', triggerValue: e.value || '—', triggerTime: e.at || FIXTURE_NOW, clearValue: e.event === 'CLEARED' ? e.value : null, clearTime: e.event === 'CLEARED' ? e.at : null, message, response: null, channels: config.telegram.enabled ? ['app', 'telegram'] : ['app'],
     };
     dispatch({ type: 'alerts/ingest', alert });
     return { ok: true, alert };

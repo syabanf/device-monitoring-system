@@ -23,15 +23,16 @@ function FitBounds({ bounds }: { bounds: LatLngBoundsExpression | null }) {
 }
 function FlyTo({ outlet }: { outlet: Outlet | null }) {
   const map = useMap();
-  React.useEffect(() => { if (outlet) map.flyTo([outlet.lat, outlet.lng], Math.max(map.getZoom(), 14), { duration: 0.6 }); }, [map, outlet]);
+  React.useEffect(() => { if (outlet) map.flyTo([outlet.lat, outlet.lng], Math.max(map.getZoom(), 14), { duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 0.6 }); }, [map, outlet]);
   return null;
 }
 
 export function ShopfloorPage() {
   const { outlets, devicesByOutlet, sensorsByDevice, alerts, deviceById, sensorById } = useScoped();
   const [params, setParams] = useSearchParams();
-  const [q, setQ] = React.useState('');
-  const [filter, setFilter] = React.useState<Filter>('all');
+  const q = params.get('q') ?? '';
+  const filter = (params.get('filter') === 'alerts' || params.get('filter') === 'offline' ? params.get('filter') : 'all') as Filter;
+  const update = (patch: Record<string, string | null>) => { const next = new URLSearchParams(params); for (const [key, value] of Object.entries(patch)) value == null ? next.delete(key) : next.set(key, value); setParams(next, { replace: true }); };
   const [markerId, setMarkerId] = React.useState<string | null>(null);
   const [ticketFor, setTicketFor] = React.useState<string | null>(null);
   const [adding, setAdding] = React.useState(false);
@@ -58,7 +59,7 @@ export function ShopfloorPage() {
 
   const selectedId = params.get('outlet') ?? filtered[0]?.id ?? null;
   const selected = outlets.find((o) => o.id === selectedId) ?? null;
-  const select = (id: string) => { setParams({ outlet: id }, { replace: true }); setMarkerId(null); };
+  const select = (id: string) => { update({ outlet: id }); setMarkerId(null); };
   const markers = useFloorMarkers(selected?.id);
   const bounds = React.useMemo<LatLngBoundsExpression | null>(() => (outlets.length ? outlets.map((o) => [o.lat, o.lng] as [number, number]) : null), [outlets]);
   const center: [number, number] = outlets.length ? [outlets[0]!.lat, outlets[0]!.lng] : [-7.2756, 112.7422];
@@ -74,7 +75,7 @@ export function ShopfloorPage() {
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
         <div className="space-y-4">
           <Card className="overflow-hidden">
-            <div className="h-[420px] [&_.leaflet-container]:h-full [&_.leaflet-container]:w-full [&_.leaflet-container]:font-sans">
+            <div className="h-[420px] [&_.leaflet-container]:h-full [&_.leaflet-container]:w-full [&_.leaflet-container]:font-sans" role="region" aria-label="Outlet installation map. Use the keyboard-accessible outlet list below to select a location.">
               <MapContainer center={center} zoom={12} scrollWheelZoom className="z-0">
                 <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <FitBounds bounds={bounds} />
@@ -105,15 +106,15 @@ export function ShopfloorPage() {
             <CardHeader className="gap-3 pb-3">
               <div className="flex items-center justify-between"><CardTitle>Outlets</CardTitle><Badge variant="default">{filtered.length}</Badge></div>
               <div className="flex flex-wrap gap-2">
-                <Input placeholder="Search outlet" leftIcon={<Search />} value={q} onChange={(e) => setQ(e.target.value)} className="min-w-52 flex-1 [&_input]:h-10" />
+                <Input placeholder="Search outlet" leftIcon={<Search />} value={q} onChange={(e) => update({ q: e.target.value || null })} className="min-w-52 flex-1 [&_input]:h-10" />
                 {([['all', 'All'], ['alerts', 'With alerts'], ['offline', 'Offline']] as [Filter, string][]).map(([f, l]) => (
-                  <button key={f} type="button" onClick={() => setFilter(f)} className={cn('h-10 rounded-full px-4 text-xs font-semibold transition-colors', filter === f ? 'bg-ink text-white' : 'bg-surface text-body hover:bg-surface-2')}>{l}</button>
+                  <button key={f} type="button" aria-pressed={filter === f} onClick={() => update({ filter: f === 'all' ? null : f })} className={cn('h-10 rounded-full px-4 text-xs font-semibold transition-colors', filter === f ? 'bg-ink text-white' : 'bg-surface text-body hover:bg-surface-2')}>{l}</button>
                 ))}
               </div>
             </CardHeader>
             <CardContent className="max-h-72 space-y-1.5 overflow-y-auto">
               {filtered.length === 0 ? <EmptyState title="No outlets match" className="py-6" /> : filtered.map((o) => { const st = stats.get(o.id)!; return (
-                <button key={o.id} type="button" onClick={() => select(o.id)} className={cn('flex w-full items-center gap-3 rounded-2xl p-3 text-left transition-colors', o.id === selectedId ? 'bg-ink text-white' : 'bg-surface-2 hover:bg-white hover:shadow-card')}>
+                <button key={o.id} type="button" aria-pressed={o.id === selectedId} onClick={() => select(o.id)} className={cn('flex w-full items-center gap-3 rounded-2xl p-3 text-left transition-colors', o.id === selectedId ? 'bg-ink text-white' : 'bg-surface-2 hover:bg-white hover:shadow-card')}>
                   <span className={cn('flex size-9 shrink-0 items-center justify-center rounded-full', st.open ? 'bg-brand-600 text-white' : st.offline ? 'bg-silver text-white' : o.id === selectedId ? 'bg-white/15 text-white' : 'bg-white text-ink')}><MapPin className="size-4" /></span>
                   <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">{o.name}</span><span className={cn('block truncate text-xs', o.id === selectedId ? 'text-white/70' : 'text-muted')}>{o.code} · {st.devices} device{st.devices > 1 ? 's' : ''}</span></span>
                   {st.open ? <Badge variant={o.id === selectedId ? 'outline' : 'brand'} className={o.id === selectedId ? 'border-white/30 text-white' : ''}>{st.open} open</Badge> : null}
@@ -171,7 +172,7 @@ export function ShopfloorPage() {
                         {markerSensor.thresholds ? <KeyValue label="Thresholds">{markerSensor.thresholds.min}–{markerSensor.thresholds.max} °C · {markerSensor.thresholds.humidityMin}–{markerSensor.thresholds.humidityMax} %RH</KeyValue> : null}
                         <KeyValue label="Position">x {markerSensor.floor.x}% · y {markerSensor.floor.y}% of floor plan</KeyValue>
                       </dl>
-                      {sensorAlerts.length ? <div className="mt-3 space-y-1.5">{sensorAlerts.map((a) => <Link key={a.id} to={`/alerts?tab=${a.status === 'CLEARED' ? 'cleared' : a.status === 'RESPONDED' ? 'responded' : 'open'}&id=${a.id}`} className="flex items-center justify-between rounded-xl bg-surface-2 px-3 py-2 text-xs hover:bg-white hover:shadow-card"><span className="truncate">{a.message} · {fmtAgo(a.triggerTime)}</span><AlertStatusBadge status={a.status} /></Link>)}</div> : <p className="mt-3 text-xs text-muted">No alerts recorded on this sensor.</p>}
+                      {sensorAlerts.length ? <div className="mt-3 space-y-1.5">{sensorAlerts.map((a) => <Link key={a.id} to={`/alerts?tab=${a.status.toLowerCase()}&id=${a.id}`} className="flex items-center justify-between rounded-xl bg-surface-2 px-3 py-2 text-xs hover:bg-white hover:shadow-card"><span className="truncate">{a.message} · {fmtAgo(a.triggerTime)}</span><AlertStatusBadge status={a.status} /></Link>)}</div> : <p className="mt-3 text-xs text-muted">No alerts recorded on this sensor.</p>}
                       <div className="mt-3 flex flex-wrap gap-2">
                         <Button asChild size="sm" variant="outline"><Link to={`/devices/${markerSensor.deviceId}`}><Router />Parent device</Link></Button>
                         <Button size="sm" variant="outline" onClick={() => setTicketFor(markerSensor.deviceId)}><Wrench />Report sensor issue</Button>

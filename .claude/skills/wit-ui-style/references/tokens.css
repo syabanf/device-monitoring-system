@@ -1,0 +1,55 @@
+/* Semantic tokens for the WIT UI style (Tailwind v4 @theme). Colour-agnostic:
+   fill in the three "project supplies" values; everything else is a neutral ladder.
+   Usage in classes: bg-accent, text-ink, bg-surface, bg-card, border-border, text-muted, bg-info-soft … */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&display=swap');
+@import 'tw-animate-css';
+
+@theme {
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  /* --- project supplies --- */
+  --color-accent: #000000;        /* the ONE highlight colour (CTA, active nav, urgent) */
+  --color-accent-strong: #000000; /* hover/pressed of accent (≈10% darker) */
+  --color-accent-soft: #f1f0f1;   /* tint for accent surfaces (≈8% accent on white) */
+  --color-info: #6b7280;          /* calm second hue for informational states */
+  --color-info-soft: #f3f4f6;     /* tint of info */
+
+  /* --- neutral ladder (keep) --- */
+  --color-ink: #101112;
+  --color-ink-2: #1b1c1e;
+  --color-ink-3: #26282b;
+  --color-on-ink: #ffffff;
+  --color-on-ink-muted: #8b8b8b;
+
+  --color-surface: #f1f0f1;
+  --color-surface-2: #f5f4f6;
+  --color-card: #ffffff;
+  --color-border: #e6e5e7;
+  --color-silver: #c0c0c0;
+  --color-muted: #8b8b8b;
+  --color-body: #333333;
+  --color-foreground: #101112;
+
+  /* status tints (soft on cards, solid only on dots / the single most urgent card) */
+  --color-success: #059669;  --color-success-soft: #d1fae5;
+  --color-warning: #d97706;  --color-warning-soft: #fef3c7;
+  --color-danger: var(--color-accent); --color-danger-soft: var(--color-accent-soft);
+
+  --radius-card: 1.5rem;                 /* 24px cards */
+  --radius-hero: 1.75rem;                /* 28px hero / dialog / rail */
+  --radius-pill: 9999px;
+  --shadow-card: 0 1px 2px rgb(16 17 18 / 0.03), 0 8px 24px -12px rgb(16 17 18 / 0.12);
+  --shadow-float: 0 12px 40px -12px rgb(16 17 18 / 0.25);
+  --shadow-glow: 0 8px 20px -8px color-mix(in srgb, var(--color-accent) 60%, transparent);
+}
+
+@layer base {
+  html { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-feature-settings: 'ss01', 'cv11'; }
+  body { background-color: var(--color-surface); color: var(--color-foreground); }
+  * { border-color: var(--color-border); }
+  ::selection { background: var(--color-accent); color: #fff; }
+}
+
+/* mobile PWA helpers */
+.safe-b { padding-bottom: env(safe-area-inset-bottom); }
+.safe-t { padding-top: env(safe-area-inset-top); }

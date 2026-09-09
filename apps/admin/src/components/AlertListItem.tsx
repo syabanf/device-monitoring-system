@@ -7,7 +7,7 @@ import { cn } from '@monitoring/ui';
 import { AlertStatusBadge, SensorIcon } from './badges';
 
 export function alertHref(alert: Alert) {
-  const tab = alert.status === 'CLEARED' ? 'cleared' : alert.status === 'RESPONDED' ? 'responded' : 'open';
+  const tab = alert.status.toLowerCase();
   return `/alerts?tab=${tab}&id=${alert.id}`;
 }
 
@@ -15,7 +15,7 @@ export function AlertListItem({ alert, className, compact }: { alert: Alert; cla
   const outlet = outletById.get(alert.outletId);
   return (
     <Link to={alertHref(alert)} className={cn('group flex items-center gap-3 rounded-2xl bg-surface-2 p-3 transition-colors hover:bg-white hover:shadow-card', className)}>
-      <span className={cn('flex size-10 shrink-0 items-center justify-center rounded-full', alert.status === 'TRIGGERED' ? 'bg-brand-600 text-white' : alert.category === 'COMFORT' ? 'bg-sky-100 text-sky-500' : 'bg-ink text-white')}>
+      <span className={cn('flex size-10 shrink-0 items-center justify-center rounded-full', alert.status === 'UNACKNOWLEDGED' ? 'bg-brand-600 text-white' : alert.category === 'COMFORT' ? 'bg-sky-100 text-sky-700' : 'bg-ink text-white')}>
         <SensorIcon type={alert.sensorType} />
       </span>
       <span className="min-w-0 flex-1">

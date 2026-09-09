@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { Area, AreaChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip as ChartTooltip } from 'recharts';
-import { ArrowUpRight, Clock, Droplets, ExternalLink, MapPin, Radio, Router, Thermometer, UserPlus, Wrench, LayoutDashboard } from 'lucide-react';
+import { ArrowUpRight, BellRing, CheckCircle2, Clock, Droplets, ExternalLink, MapPin, Radio, Router, Thermometer, UserPlus, WifiOff, Wrench, LayoutDashboard } from 'lucide-react';
 import type { Alert, Outlet } from '@monitoring/types';
 import {
   Badge, Button, Card, CardContent, CardHeader, CardTitle, Chip, EmptyState, Readout, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, StatCard, cn,
 } from '@monitoring/ui';
 import {
-  FIXTURE_NOW_MS, avgResponseSec, fmtAgo, humanizeShort, inPeriod, isSolved, latestReadingBySensor, openVsSolved, readingsBySensor, type Period,
+  FIXTURE_NOW_MS, avgResponseSec, fmtAgo, humanizeShort, inPeriod, isSolved, isTicketOverdue, latestReadingBySensor, openVsSolved, readingsBySensor, type Period,
 } from '@monitoring/fixtures';
 import { useScoped } from '../../state/app-state';
 import { AlertListItem, alertHref } from '../../components/AlertListItem';
@@ -20,7 +20,10 @@ import { Wand2 as WandIcon, X } from 'lucide-react';
 type Filter = 'all' | 'COMFORT' | 'SECURITY';
 
 function AlertColumn({ title, alerts, tab }: { title: string; alerts: Alert[]; tab: string }) {
-  const [filter, setFilter] = React.useState<Filter>('all');
+  const [params, setParams] = useSearchParams();
+  const key = `${tab}Category`;
+  const filter = (params.get(key) === 'COMFORT' || params.get(key) === 'SECURITY' ? params.get(key) : 'all') as Filter;
+  const setFilter = (value: Filter) => { const next = new URLSearchParams(params); value === 'all' ? next.delete(key) : next.set(key, value); setParams(next, { replace: true }); };
   const list = filter === 'all' ? alerts : alerts.filter((a) => a.category === filter);
   return (
     <Card className="flex min-h-0 flex-col">
@@ -120,10 +123,35 @@ const PERIODS: { value: Period; label: string }[] = [
   { value: 'today', label: 'Today' }, { value: '7d', label: 'Last 7 days' }, { value: '30d', label: 'Last 30 days' }, { value: 'all', label: 'All time' },
 ];
 
+function AttentionRequired() {
+  const { alerts, devices, tickets, employees, outletById } = useScoped();
+  const awaiting = alerts.filter((a) => a.status === 'UNACKNOWLEDGED').sort((a, b) => (a.category === b.category ? b.triggerTime.localeCompare(a.triggerTime) : a.category === 'SECURITY' ? -1 : 1));
+  const offline = devices.filter((d) => d.status === 'offline');
+  const overdue = tickets.filter(isTicketOverdue);
+  const pending = employees.filter((e) => e.registrationStatus === 'pending');
+  const total = awaiting.length + offline.length + overdue.length + pending.length;
+  return (
+    <section aria-labelledby="attention-title">
+      <div className="mb-3 flex items-end justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Operations queue</p><h2 id="attention-title" className="mt-1 text-xl font-bold">Attention required</h2></div><Badge variant={total ? 'brand' : 'success'}>{total ? `${total} items` : 'All clear'}</Badge></div>
+      {total ? <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(24rem,1fr)]">
+        <Card className="overflow-hidden border-brand-100"><CardHeader className="flex-row items-center justify-between space-y-0 bg-brand-50 pb-3"><div><CardTitle className="flex items-center gap-2"><BellRing className="size-5 text-brand-600" />Alerts awaiting response</CardTitle><p className="mt-1 text-xs text-muted">Security alerts appear first</p></div><Button asChild size="sm"><Link to="/alerts?tab=unacknowledged">Review all<ArrowUpRight /></Link></Button></CardHeader><CardContent className="space-y-2 pt-4">
+          {awaiting.slice(0, 4).map((alert) => <Link key={alert.id} to={`/alerts?tab=unacknowledged&id=${alert.id}`} className="flex items-center gap-3 rounded-2xl bg-surface-2 p-3 hover:bg-white hover:shadow-card"><span className={cn('flex size-9 shrink-0 items-center justify-center rounded-full', alert.category === 'SECURITY' ? 'bg-brand-600 text-white' : 'bg-sky-100 text-sky-700')}><SensorIcon type={alert.sensorType} /></span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">{alert.message}</span><span className="block truncate text-xs text-muted">{outletById.get(alert.outletId)?.name} · {fmtAgo(alert.triggerTime)}</span></span><Badge variant={alert.category === 'SECURITY' ? 'brand' : 'info'}>{alert.category === 'SECURITY' ? 'High' : 'Comfort'}</Badge></Link>)}
+          {!awaiting.length ? <p className="py-6 text-center text-sm text-muted">No alerts are waiting for a response.</p> : null}
+        </CardContent></Card>
+        <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+          <Link to="/devices?status=offline" className="flex items-center gap-4 rounded-card bg-white p-4 shadow-card transition-transform hover:-translate-y-0.5"><span className="flex size-11 items-center justify-center rounded-full bg-ink text-white"><WifiOff className="size-5" /></span><span className="min-w-0 flex-1"><span className="block text-2xl font-bold">{offline.length}</span><span className="block text-xs text-muted">offline devices</span></span><ArrowUpRight className="size-4 text-muted" /></Link>
+          <Link to="/devices/maintenance?view=tickets" className="flex items-center gap-4 rounded-card bg-white p-4 shadow-card transition-transform hover:-translate-y-0.5"><span className="flex size-11 items-center justify-center rounded-full bg-amber-100 text-amber-700"><Wrench className="size-5" /></span><span className="min-w-0 flex-1"><span className="block text-2xl font-bold">{overdue.length}</span><span className="block text-xs text-muted">overdue tickets</span></span><ArrowUpRight className="size-4 text-muted" /></Link>
+          <Link to="/users?status=pending" className="flex items-center gap-4 rounded-card bg-white p-4 shadow-card transition-transform hover:-translate-y-0.5"><span className="flex size-11 items-center justify-center rounded-full bg-sky-100 text-sky-500"><UserPlus className="size-5" /></span><span className="min-w-0 flex-1"><span className="block text-2xl font-bold">{pending.length}</span><span className="block text-xs text-muted">pending registrations</span></span><ArrowUpRight className="size-4 text-muted" /></Link>
+        </div>
+      </div> : <Card><CardContent className="flex items-center gap-4 p-5"><span className="flex size-11 items-center justify-center rounded-full bg-emerald-100 text-emerald-600"><CheckCircle2 className="size-5" /></span><div><p className="font-semibold">Everything is under control</p><p className="text-sm text-muted">No unacknowledged alerts, offline devices, overdue tickets, or pending registrations.</p></div></CardContent></Card>}
+    </section>
+  );
+}
+
 export function DashboardPage() {
   const [params, setParams] = useSearchParams();
   const view = params.get('view') === 'maintenance' ? 'maintenance' : 'operations';
-  const setView = (v: 'operations' | 'maintenance') => setParams(v === 'maintenance' ? { view: v } : {}, { replace: true });
+  const setView = (v: 'operations' | 'maintenance') => { const next = new URLSearchParams(params); v === 'maintenance' ? next.set('view', v) : next.delete('view'); setParams(next, { replace: true }); };
   const [showSetup, setShowSetup] = React.useState(() => !isSetupDone());
   return (
     <div className="space-y-4">
@@ -138,7 +166,7 @@ export function DashboardPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="inline-flex rounded-full bg-white p-1 shadow-card">
           {([['operations', 'Operations', LayoutDashboard], ['maintenance', 'Maintenance', Wrench]] as const).map(([v, label, Icon]) => (
-            <button key={v} type="button" onClick={() => setView(v)} className={cn('inline-flex h-9 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors', view === v ? 'bg-ink text-white' : 'text-muted hover:text-foreground')}><Icon className="size-4" />{label}</button>
+            <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)} className={cn('inline-flex h-9 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors', view === v ? 'bg-ink text-white' : 'text-muted hover:text-foreground')}><Icon className="size-4" />{label}</button>
           ))}
         </div>
         <p className="text-xs text-muted">{view === 'maintenance' ? 'Point of view: hardware maintenance team' : 'Point of view: outlet operations'}</p>
@@ -150,7 +178,9 @@ export function DashboardPage() {
 
 function OperationsDashboard() {
   const { alerts, outlets, employees, devices, sensorsByOutlet } = useScoped();
-  const [period, setPeriod] = React.useState<Period>('7d');
+  const [params, setParams] = useSearchParams();
+  const period = (PERIODS.some((p) => p.value === params.get('period')) ? params.get('period') : '7d') as Period;
+  const setPeriod = (value: Period) => { const next = new URLSearchParams(params); value === '7d' ? next.delete('period') : next.set('period', value); setParams(next, { replace: true }); };
 
   const open = React.useMemo(() => alerts.filter((a) => !isSolved(a)), [alerts]);
   const solved = React.useMemo(() => alerts.filter(isSolved), [alerts]);
@@ -159,7 +189,7 @@ function OperationsDashboard() {
   const avg = avgResponseSec(inRange);
   const onlineDevices = devices.filter((d) => d.status === 'online').length;
   const pending = employees.filter((e) => e.registrationStatus === 'pending').length;
-  const awaiting = open.filter((a) => a.status === 'TRIGGERED').length;
+  const awaiting = open.filter((a) => a.status === 'UNACKNOWLEDGED').length;
   const responded = open.length - awaiting;
 
   const featured = React.useMemo(() => {
@@ -191,6 +221,7 @@ function OperationsDashboard() {
 
   return (
     <div className="space-y-4">
+      <AttentionRequired />
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <HeroOutlet outlet={featured} alerts={alerts} />
         <div className="grid gap-4 sm:grid-cols-2">
@@ -201,7 +232,7 @@ function OperationsDashboard() {
                   <p className="text-sm font-medium text-white/80">Awaiting response</p>
                   <p className="mt-1 text-5xl font-bold leading-none tracking-tight">{awaiting}</p>
                 </div>
-                <Button asChild variant="outline" size="sm" className="border-white/30 bg-white/10 text-white hover:bg-white/20"><Link to="/alerts?tab=open">Open list<ArrowUpRight /></Link></Button>
+                <Button asChild variant="outline" size="sm" className="border-white/30 bg-white/10 text-white hover:bg-white/20"><Link to="/alerts?tab=unacknowledged">Open list<ArrowUpRight /></Link></Button>
               </div>
               <div>
                 <div className="flex justify-between text-xs text-white/80"><span>{responded} responded, waiting to clear</span><span>{open.length} open total</span></div>
@@ -219,7 +250,7 @@ function OperationsDashboard() {
               </div>
               <Readout value={avgTemp == null ? '—' : avgTemp.toFixed(1)} unit="°C" className="mt-3" />
               <p className="mt-1 text-xs text-muted">avg across outlets · {avgHum?.toFixed(0)} %RH</p>
-              <div className="mt-3 h-12">
+              <div className="mt-3 h-12" role="img" aria-label={`Average temperature trend across outlets. Current average ${avgTemp == null ? 'unavailable' : `${avgTemp.toFixed(1)} degrees Celsius`}.`}>
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={spark} margin={{ top: 2, right: 0, bottom: 0, left: 0 }}>
                     <defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#83B3EE" stopOpacity={0.6} /><stop offset="100%" stopColor="#83B3EE" stopOpacity={0} /></linearGradient></defs>
@@ -254,12 +285,12 @@ function OperationsDashboard() {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_20rem]">
-        <AlertColumn title="Open Alert" alerts={open} tab="open" />
-        <AlertColumn title="Solved Alert" alerts={solved} tab="cleared" />
+        <AlertColumn title="Active alerts" alerts={open} tab="unacknowledged" />
+        <AlertColumn title="Resolved alerts" alerts={solved} tab="resolved" />
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-lg">Analysis</CardTitle></CardHeader>
           <CardContent>
-            <div className="relative h-52">
+            <div className="relative h-52" role="img" aria-label={`${stats.open} open alerts and ${stats.solved} solved alerts in the selected period.`}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie data={donut} dataKey="value" nameKey="name" innerRadius={64} outerRadius={88} paddingAngle={3} cornerRadius={6} startAngle={90} endAngle={-270} stroke="none" isAnimationActive={false}>

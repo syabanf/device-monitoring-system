@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { Pencil, Plus, Search, Trash2 } from 'lucide-react';
 import type { Outlet } from '@monitoring/types';
 import { Badge, Button, Card, DataTable, Input, PageHeader, type Column } from '@monitoring/ui';
@@ -12,7 +12,9 @@ import { ConfirmDelete } from '../../components/master/ConfirmDelete';
 export function OutletsPage() {
   const { outlets, alerts, employees, devicesByOutlet, distributorId, dispatch } = useScoped();
   const navigate = useNavigate();
-  const [q, setQ] = React.useState('');
+  const [params, setParams] = useSearchParams();
+  const q = params.get('q') ?? '';
+  const setQ = (value: string) => { const next = new URLSearchParams(params); value ? next.set('q', value) : next.delete('q'); setParams(next, { replace: true }); };
   const [editing, setEditing] = React.useState<Outlet | null>(null);
   const [removing, setRemoving] = React.useState<Outlet | null>(null);
 

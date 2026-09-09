@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useSearchParams } from 'react-router';
 import { Check, Copy, KeyRound, MoreHorizontal, Pencil, Plus, Search, ShieldOff, Trash2 } from 'lucide-react';
 import type { Employee } from '@monitoring/types';
 import { EMPLOYEE_ROLE_LABEL } from '@monitoring/types';
@@ -16,9 +17,11 @@ export function UserManagementPage() {
   const { employees, outlets, distributorId, dispatch } = useScoped();
   const [editing, setEditing] = React.useState<Employee | null>(null);
   const [removing, setRemoving] = React.useState<Employee | null>(null);
-  const [tab, setTab] = React.useState<'all' | 'pending' | 'approved'>('all');
-  const [outletFilter, setOutletFilter] = React.useState('all');
-  const [q, setQ] = React.useState('');
+  const [params, setParams] = useSearchParams();
+  const tab = (params.get('status') === 'pending' || params.get('status') === 'approved' ? params.get('status') : 'all') as 'all' | 'pending' | 'approved';
+  const outletFilter = outlets.some((o) => o.id === params.get('outlet')) ? params.get('outlet')! : 'all';
+  const q = params.get('q') ?? '';
+  const update = (patch: Record<string, string | null>) => { const next = new URLSearchParams(params); for (const [key, value] of Object.entries(patch)) value == null ? next.delete(key) : next.set(key, value); setParams(next, { replace: true }); };
   const [tokenFor, setTokenFor] = React.useState<Employee | null>(null);
 
   const rows = React.useMemo(() => {
@@ -62,16 +65,16 @@ export function UserManagementPage() {
         description="Outlet employees registered to receive and respond to alerts on the mobile app"
         actions={
           <>
-            <Select value={outletFilter} onValueChange={setOutletFilter}>
+            <Select value={outletFilter} onValueChange={(v) => update({ outlet: v === 'all' ? null : v })}>
               <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value="all">All outlets</SelectItem>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent>
             </Select>
-            <Input placeholder="Search name, phone, email" leftIcon={<Search />} value={q} onChange={(e) => setQ(e.target.value)} className="w-64" />
+            <Input placeholder="Search name, phone, email" leftIcon={<Search />} value={q} onChange={(e) => update({ q: e.target.value || null })} className="w-64" />
             <Button onClick={() => setEditing(emptyEmployee(distributorId, outletFilter === 'all' ? (outlets[0]?.id ?? '') : outletFilter))}><Plus />Add employee</Button>
           </>
         }
       />
-      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="mb-4">
+      <Tabs value={tab} onValueChange={(v) => update({ status: v === 'all' ? null : v })} className="mb-4">
         <TabsList variant="pill">
           <TabsTrigger value="all">All ({employees.length})</TabsTrigger>
           <TabsTrigger value="pending">Pending ({pendingCount})</TabsTrigger>

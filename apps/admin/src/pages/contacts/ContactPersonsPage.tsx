@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useSearchParams } from 'react-router';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import type { ContactPerson } from '@monitoring/types';
 import {
@@ -11,7 +12,8 @@ const EMPTY = (outletId: string): ContactPerson => ({ id: '', outletId, name: ''
 
 export function ContactPersonsPage() {
   const { contacts, outlets, dispatch } = useScoped();
-  const [outletFilter, setOutletFilter] = React.useState('all');
+  const [params, setParams] = useSearchParams();
+  const outletFilter = outlets.some((o) => o.id === params.get('outlet')) ? params.get('outlet')! : 'all';
   const [editing, setEditing] = React.useState<ContactPerson | null>(null);
   const [removing, setRemoving] = React.useState<ContactPerson | null>(null);
 
@@ -42,7 +44,7 @@ export function ContactPersonsPage() {
         description="Field coordinators and supervisors who receive alert broadcasts for each outlet"
         actions={
           <>
-            <Select value={outletFilter} onValueChange={setOutletFilter}>
+            <Select value={outletFilter} onValueChange={(v) => { const next = new URLSearchParams(params); v === 'all' ? next.delete('outlet') : next.set('outlet', v); setParams(next, { replace: true }); }}>
               <SelectTrigger className="w-60"><SelectValue placeholder="All outlets" /></SelectTrigger>
               <SelectContent><SelectItem value="all">All outlets</SelectItem>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent>
             </Select>

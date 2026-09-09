@@ -186,6 +186,11 @@ export interface Alert {
   message: string;
   response: AlertResponse | null;
   channels: Channel[];
+  assigneeEmployeeId?: string | null;
+  acknowledgedAt?: string | null;
+  respondingAt?: string | null;
+  resolvedAt?: string | null;
+  verifiedAt?: string | null;
 }
 
 export interface Session {

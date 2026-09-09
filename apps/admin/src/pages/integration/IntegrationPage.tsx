@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import { Activity, ArrowDownLeft, ArrowUpRight, Boxes, Check, Copy, Eye, EyeOff, Mail, Play, Plug, RefreshCw, Send, Smartphone, Trash2, Wand2, Zap } from 'lucide-react';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, EmptyState, FormField, Input, PageHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Tabs, TabsList, TabsTrigger, Textarea, Toggle, cn } from '@monitoring/ui';
 import { API_REFERENCE, SAMPLE_EMAIL, SAMPLE_WEBHOOK, detectAndParse, maskSecret, randomSecret, type AlertEvent, type IntegrationConfig, type RequestLogEntry } from '@monitoring/integration';
@@ -17,7 +17,9 @@ const CHANNELS: { key: RequestLogEntry['channel']; title: string; icon: React.Re
 
 export function IntegrationPage() {
   const { api, config, setConfig, log, addLog, clearLog, ingestEvent } = useApi();
-  const [view, setView] = React.useState<View>('channels');
+  const [params, setParams] = useSearchParams();
+  const view = (['channels', 'blackbox', 'log', 'reference'].includes(params.get('view') ?? '') ? params.get('view') : 'channels') as View;
+  const setView = (value: View) => { const next = new URLSearchParams(params); value === 'channels' ? next.delete('view') : next.set('view', value); setParams(next, { replace: true }); };
   const [draft, setDraft] = React.useState<IntegrationConfig>(config);
   const [showKey, setShowKey] = React.useState(false);
   const [testing, setTesting] = React.useState<string | null>(null);
@@ -56,7 +58,7 @@ export function IntegrationPage() {
     if (r.ok) {
       addLog({ direction: 'outbound', channel: 'push', method: 'POST', path: '/integrations/push/send', status: 200, ms: 90 + Math.round(Math.random() * 80), summary: `Employees at outlet notified · alert #${r.alert.id}` });
       if (config.telegram.enabled) addLog({ direction: 'outbound', channel: 'telegram', method: 'POST', path: '/integrations/telegram/broadcast', status: 200, ms: 180 + Math.round(Math.random() * 120), summary: `ANBot broadcast · alert #${r.alert.id}` });
-      setIngested({ ok: true, text: `Alert #${r.alert.id} ${r.alert.status === 'CLEARED' ? 'cleared' : 'created'} for ${r.alert.sensorName}.`, alertId: r.alert.id, tab: r.alert.status === 'CLEARED' ? 'cleared' : 'open' });
+      setIngested({ ok: true, text: `Alert #${r.alert.id} ${r.alert.status === 'RESOLVED' ? 'resolved' : 'created'} for ${r.alert.sensorName}.`, alertId: r.alert.id, tab: r.alert.status.toLowerCase() });
     } else setIngested({ ok: false, text: r.error });
   };
   const copy = (t: string) => { try { void navigator.clipboard.writeText(t); } catch { /* ignore */ } };
@@ -161,7 +163,7 @@ export function IntegrationPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <Textarea value={payload} onChange={(e) => setPayload(e.target.value)} className="min-h-72 font-mono text-xs" />
-              {parseError ? <p className="text-xs text-brand-600">{parseError}</p> : null}
+              {parseError ? <p className="text-xs text-brand-700" role="alert">{parseError}</p> : null}
               <div className="flex gap-2"><Button variant="secondary" onClick={parse}><ArrowDownLeft />Parse</Button><Button onClick={ingest} disabled={!parsed}><Zap />Ingest into dashboard</Button></div>
             </CardContent>
           </Card>
@@ -170,9 +172,9 @@ export function IntegrationPage() {
             <CardContent>
               {parsed ? (
                 <>
-                  <div className="mb-3 flex flex-wrap gap-2"><Badge variant="outline">{parsed.source}</Badge><AlertStatusBadge status={parsed.event === 'CLEARED' ? 'CLEARED' : 'TRIGGERED'} /><Badge variant="info">{parsed.sensorType}</Badge></div>
+                  <div className="mb-3 flex flex-wrap gap-2"><Badge variant="outline">{parsed.source}</Badge><AlertStatusBadge status={parsed.event === 'CLEARED' ? 'RESOLVED' : 'UNACKNOWLEDGED'} /><Badge variant="info">{parsed.sensorType}</Badge></div>
                   <pre className="overflow-x-auto rounded-2xl bg-ink p-4 text-xs leading-relaxed text-white">{JSON.stringify({ ...parsed, raw: undefined }, null, 2)}</pre>
-                  {ingested ? <div className={cn('mt-3 flex items-center justify-between gap-3 rounded-2xl p-3 text-sm', ingested.ok ? 'bg-emerald-50 text-emerald-800' : 'bg-brand-50 text-brand-700')}><span>{ingested.text}</span>{ingested.ok && ingested.alertId ? <Button asChild size="sm"><Link to={`/alerts?tab=${ingested.tab}&id=${ingested.alertId}`}>Open alert<ArrowUpRight /></Link></Button> : null}</div> : null}
+                  {ingested ? <div role={ingested.ok ? 'status' : 'alert'} aria-live={ingested.ok ? 'polite' : 'assertive'} className={cn('mt-3 flex items-center justify-between gap-3 rounded-2xl p-3 text-sm', ingested.ok ? 'bg-emerald-50 text-emerald-800' : 'bg-brand-50 text-brand-700')}><span>{ingested.text}</span>{ingested.ok && ingested.alertId ? <Button asChild size="sm"><Link to={`/alerts?tab=${ingested.tab}&id=${ingested.alertId}`}>Open alert<ArrowUpRight /></Link></Button> : null}</div> : null}
                 </>
               ) : <EmptyState icon={<Boxes />} title="Nothing parsed yet" description="Parse a payload on the left to see the normalised event." className="py-12" />}
             </CardContent>

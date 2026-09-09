@@ -17,8 +17,11 @@ export interface AppState {
 }
 
 export type AppAction =
+  | { type: 'alerts/acknowledge'; alertId: number; employeeId: string }
+  | { type: 'alerts/startResponse'; alertId: number; employeeId: string }
   | { type: 'alerts/respond'; alertId: number; employeeId: string; notes: string; photoUrls: string[] }
   | { type: 'alerts/clear'; alertId: number }
+  | { type: 'alerts/verify'; alertId: number }
   | { type: 'employees/approve'; employeeId: string }
   | { type: 'employees/generateToken'; employeeId: string; token: string }
   | { type: 'employees/revoke'; employeeId: string }
@@ -44,16 +47,29 @@ export type AppAction =
   | { type: 'alerts/ingest'; alert: Alert };
 
 export function buildInitialState(): AppState {
-  return { alerts: fixtureAlerts, employees: fixtureEmployees, contacts: fixtureContacts, tickets: fixtureTickets, devices: fixtureDevices, sensors: fixtureSensors, outlets: fixtureOutlets, deviceTypes: fixtureDeviceTypes, technicians: fixtureTechnicians, distributors: fixtureDistributors };
+  const alerts = fixtureAlerts.map((alert) => ({
+    ...alert,
+    status: (alert.status as unknown as string) === 'TRIGGERED' ? 'UNACKNOWLEDGED' : (alert.status as unknown as string) === 'RESPONDED' ? 'RESOLVED' : (alert.status as unknown as string) === 'CLEARED' ? 'VERIFIED' : alert.status,
+    assigneeEmployeeId: alert.response?.employeeId ?? null,
+    acknowledgedAt: alert.response?.respondedAt ?? null,
+    respondingAt: alert.response?.respondedAt ?? null,
+    resolvedAt: alert.response?.respondedAt ?? alert.clearTime,
+    verifiedAt: (alert.status as unknown as string) === 'CLEARED' ? alert.clearTime : null,
+  })) as Alert[];
+  return { alerts, employees: fixtureEmployees, contacts: fixtureContacts, tickets: fixtureTickets, devices: fixtureDevices, sensors: fixtureSensors, outlets: fixtureOutlets, deviceTypes: fixtureDeviceTypes, technicians: fixtureTechnicians, distributors: fixtureDistributors };
 }
 
 export function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
+    case 'alerts/acknowledge':
+      return { ...state, alerts: state.alerts.map((a) => a.id === action.alertId && a.status === 'UNACKNOWLEDGED' ? { ...a, status: 'ACKNOWLEDGED', assigneeEmployeeId: action.employeeId, acknowledgedAt: FIXTURE_NOW } : a) };
+    case 'alerts/startResponse':
+      return { ...state, alerts: state.alerts.map((a) => a.id === action.alertId && (a.status === 'UNACKNOWLEDGED' || a.status === 'ACKNOWLEDGED') ? { ...a, status: 'RESPONDING', assigneeEmployeeId: action.employeeId, acknowledgedAt: a.acknowledgedAt ?? FIXTURE_NOW, respondingAt: FIXTURE_NOW } : a) };
     case 'alerts/respond': {
       return {
         ...state,
         alerts: state.alerts.map((a) => {
-          if (a.id !== action.alertId || a.response) return a; // no double response
+          if (a.id !== action.alertId || a.response || a.status !== 'RESPONDING' || a.assigneeEmployeeId !== action.employeeId) return a; // no stale or duplicate response
           const response: AlertResponse = {
             employeeId: action.employeeId,
             notes: action.notes,
@@ -61,7 +77,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
             respondedAt: FIXTURE_NOW,
             responseDurationSec: Math.max(0, Math.round((FIXTURE_NOW_MS - Date.parse(a.triggerTime)) / 1000)),
           };
-          return { ...a, response, status: a.status === 'CLEARED' ? 'CLEARED' : 'RESPONDED' };
+          return { ...a, response, status: 'RESOLVED', assigneeEmployeeId: action.employeeId, acknowledgedAt: a.acknowledgedAt ?? FIXTURE_NOW, respondingAt: a.respondingAt ?? FIXTURE_NOW, resolvedAt: FIXTURE_NOW };
         }),
       };
     }
@@ -69,11 +85,13 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         alerts: state.alerts.map((a) =>
-          a.id === action.alertId && a.status !== 'CLEARED'
-            ? { ...a, status: 'CLEARED', clearTime: FIXTURE_NOW, clearValue: a.clearValue ?? 'Cleared by admin' }
+          a.id === action.alertId && a.status !== 'VERIFIED'
+            ? { ...a, status: 'RESOLVED', resolvedAt: FIXTURE_NOW, clearTime: FIXTURE_NOW, clearValue: a.clearValue ?? 'Condition cleared by admin' }
             : a,
         ),
       };
+    case 'alerts/verify':
+      return { ...state, alerts: state.alerts.map((a) => a.id === action.alertId && a.status === 'RESOLVED' ? { ...a, status: 'VERIFIED', verifiedAt: FIXTURE_NOW } : a) };
     case 'employees/approve':
       return {
         ...state,
@@ -164,10 +182,10 @@ export function appReducer(state: AppState, action: AppAction): AppState {
     case 'distributors/upsert':
       return { ...state, distributors: upsert(state.distributors, action.distributor) };
     case 'alerts/ingest': {
-      // A CLEARED event for a known alert closes it; otherwise a new alert is prepended.
-      if (action.alert.status === 'CLEARED') {
-        const open = state.alerts.find((a) => a.sensorId === action.alert.sensorId && a.status !== 'CLEARED');
-        if (open) return { ...state, alerts: state.alerts.map((a) => (a.id === open.id ? { ...a, status: 'CLEARED', clearTime: action.alert.triggerTime, clearValue: action.alert.triggerValue } : a)) };
+      // A resolved sensor event closes the condition; an administrator can verify it separately.
+      if (action.alert.status === 'RESOLVED') {
+        const open = state.alerts.find((a) => a.sensorId === action.alert.sensorId && a.status !== 'VERIFIED');
+        if (open) return { ...state, alerts: state.alerts.map((a) => (a.id === open.id ? { ...a, status: 'RESOLVED', resolvedAt: action.alert.triggerTime, clearTime: action.alert.triggerTime, clearValue: action.alert.triggerValue } : a)) };
       }
       return { ...state, alerts: [action.alert, ...state.alerts] };
     }

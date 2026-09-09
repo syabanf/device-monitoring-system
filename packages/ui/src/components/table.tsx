@@ -16,7 +16,7 @@ export const TBody = ({ className, ...props }: React.HTMLAttributes<HTMLTableSec
   <tbody className={cn('[&_tr:last-child]:border-0', className)} {...props} />
 );
 export const TR = ({ className, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
-  <tr className={cn('border-b border-border transition-colors data-[clickable=true]:cursor-pointer data-[clickable=true]:hover:bg-surface-2', className)} {...props} />
+  <tr className={cn('border-b border-border transition-colors data-[clickable=true]:cursor-pointer data-[clickable=true]:hover:bg-surface-2 data-[clickable=true]:focus-visible:bg-brand-50', className)} {...props} />
 );
 export const TH = ({ className, ...props }: React.ThHTMLAttributes<HTMLTableCellElement>) => (
   <th className={cn('h-10 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-muted', className)} {...props} />
@@ -96,7 +96,19 @@ export function DataTable<T>({ columns, rows, rowKey, onRowClick, pageSize = 10,
             </tr>
           ) : (
             slice.map((row) => (
-              <TR key={rowKey(row)} data-clickable={!!onRowClick} onClick={onRowClick ? () => onRowClick(row) : undefined}>
+              <TR
+                key={rowKey(row)}
+                data-clickable={!!onRowClick}
+                tabIndex={onRowClick ? 0 : undefined}
+                aria-label={onRowClick ? `Open row ${rowKey(row)}` : undefined}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                onKeyDown={onRowClick ? (event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    onRowClick(row);
+                  }
+                } : undefined}
+              >
                 {columns.map((c) => (
                   <TD key={c.key} className={c.className}>{c.cell(row)}</TD>
                 ))}

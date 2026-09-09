@@ -1,20 +1,23 @@
 import { Link } from 'react-router';
-import { Check, ExternalLink, ImageOff } from 'lucide-react';
+import { Check, ExternalLink, ImageOff, ShieldCheck } from 'lucide-react';
 import type { Alert } from '@monitoring/types';
 import { SENSOR_TYPE_LABEL } from '@monitoring/types';
 import { Avatar, Badge, Button, KeyValue, Sheet, SheetBody, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@monitoring/ui';
-import { deviceById, employeeById, fmtDateTimeLong, fmtTempCF, humanizeDuration, latestReadingBySensor, ongoingSeconds, sensorById } from '@monitoring/fixtures';
+import { deviceById, fmtDateTimeLong, fmtTempCF, humanizeDuration, latestReadingBySensor, ongoingSeconds, sensorById } from '@monitoring/fixtures';
 import { outletById } from '../../state/lookups';
 import { useScoped } from '../../state/app-state';
 import { AlertStatusBadge, CategoryBadge, SensorIcon } from '../../components/badges';
 
 export function AlertDetailDrawer({ alert, onClose }: { alert: Alert | null; onClose: () => void }) {
-  const { dispatch } = useScoped();
+  const { dispatch, employees } = useScoped();
   const outlet = alert ? outletById.get(alert.outletId) : undefined;
   const device = alert ? deviceById.get(alert.deviceId) : undefined;
   const sensor = alert ? sensorById.get(alert.sensorId) : undefined;
   const reading = sensor && (sensor.type === 'TEMPERATURE_HUMIDITY' || sensor.type === 'TEMPERATURE') ? latestReadingBySensor.get(sensor.id) : undefined;
-  const responder = alert?.response ? employeeById.get(alert.response.employeeId) : undefined;
+  const responder = alert?.response ? employees.find((employee) => employee.id === alert.response!.employeeId) : undefined;
+  const responsible = alert ? employees.find((employee) => employee.id === alert.assigneeEmployeeId) ?? employees.find((employee) => employee.primaryOutletId === alert.outletId) : undefined;
+  const severity = alert?.category === 'SECURITY' ? 'High' : 'Medium';
+  const nextAction = !alert ? '' : alert.status === 'UNACKNOWLEDGED' ? 'An outlet employee must acknowledge and inspect the sensor.' : alert.status === 'ACKNOWLEDGED' ? 'The responsible employee should begin the site inspection.' : alert.status === 'RESPONDING' ? 'Wait for the field report and photo evidence.' : alert.status === 'RESOLVED' ? 'Review the response and verify the resolution.' : 'No further action is required.';
 
   return (
     <Sheet open={!!alert} onOpenChange={(o) => !o && onClose()}>
@@ -29,7 +32,7 @@ export function AlertDetailDrawer({ alert, onClose }: { alert: Alert | null; onC
                   <p className="text-xs text-muted">Alert #{alert.id} · {fmtDateTimeLong(alert.triggerTime)}</p>
                 </div>
               </div>
-              <div className="mt-3 flex flex-wrap gap-2"><AlertStatusBadge status={alert.status} /><CategoryBadge category={alert.category} />{alert.channels.includes('telegram') ? <Badge variant="info">Telegram broadcast</Badge> : null}</div>
+              <div className="mt-3 flex flex-wrap gap-2" aria-live="polite"><AlertStatusBadge status={alert.status} /><CategoryBadge category={alert.category} /><Badge variant={severity === 'High' ? 'brand' : 'warning'}>{severity} severity</Badge>{alert.channels.includes('telegram') ? <Badge variant="info">Telegram broadcast</Badge> : null}</div>
             </SheetHeader>
             <SheetBody>
               <dl className="divide-y divide-border">
@@ -40,10 +43,16 @@ export function AlertDetailDrawer({ alert, onClose }: { alert: Alert | null; onC
                 </KeyValue>
                 <KeyValue label="Device"><Link to={`/devices/${alert.deviceId}`} className="font-mono text-xs hover:underline">{device?.serial} · {device?.mac}</Link></KeyValue>
                 <KeyValue label="Sensor">{alert.sensorName} · {SENSOR_TYPE_LABEL[alert.sensorType]}{sensor ? ` · ${sensor.portKind} port ${sensor.portIndex}` : ''}</KeyValue>
+                <KeyValue label="Responsible">{responsible ? <span className="font-medium">{responsible.name}<span className="block text-xs text-muted">{responsible.phone}</span></span> : <span className="font-medium text-brand-600">Awaiting assignment</span>}</KeyValue>
+                <KeyValue label="Next action"><span className="font-medium">{nextAction}</span></KeyValue>
                 <KeyValue label="Trigger value"><span className="font-semibold text-brand-600">{alert.triggerValue}</span></KeyValue>
                 {reading ? <KeyValue label="Latest reading">{fmtTempCF(reading.temperatureC)} · {reading.humidityPct.toFixed(0)} %RH<br /><span className="text-xs text-muted">on {fmtDateTimeLong(reading.at)}</span></KeyValue> : null}
                 <KeyValue label="Triggered at">{fmtDateTimeLong(alert.triggerTime)}</KeyValue>
-                {alert.status === 'CLEARED' && alert.clearTime ? (
+                <KeyValue label="Acknowledgement">{alert.acknowledgedAt ? `${responsible?.name ?? 'Outlet employee'} · ${fmtDateTimeLong(alert.acknowledgedAt)}` : <span className="font-medium text-brand-700">Not acknowledged</span>}</KeyValue>
+                {alert.respondingAt ? <KeyValue label="Response started">{fmtDateTimeLong(alert.respondingAt)}</KeyValue> : null}
+                {alert.resolvedAt ? <KeyValue label="Resolved at">{fmtDateTimeLong(alert.resolvedAt)}</KeyValue> : null}
+                {alert.verifiedAt ? <KeyValue label="Verified at">{fmtDateTimeLong(alert.verifiedAt)}</KeyValue> : null}
+                {(alert.status === 'RESOLVED' || alert.status === 'VERIFIED') && alert.clearTime ? (
                   <>
                     <KeyValue label="Cleared at">{fmtDateTimeLong(alert.clearTime)}</KeyValue>
                     <KeyValue label="Clear value">{alert.clearValue}</KeyValue>
@@ -69,7 +78,7 @@ export function AlertDetailDrawer({ alert, onClose }: { alert: Alert | null; onC
                     <p className="mt-3 text-sm">{alert.response.notes}</p>
                     {alert.response.photoUrls.length ? (
                       <div className="mt-3 grid grid-cols-2 gap-2">
-                        {alert.response.photoUrls.map((u) => <img key={u} src={u.startsWith('blob:') ? u : `/${u}`} alt="Proof" className="aspect-[4/3] w-full rounded-xl object-cover" />)}
+                        {alert.response.photoUrls.map((u) => <img key={u} src={u.startsWith('blob:') || u.startsWith('data:') ? u : `/${u}`} alt="Proof" className="aspect-[4/3] w-full rounded-xl object-cover" />)}
                       </div>
                     ) : (
                       <p className="mt-3 flex items-center gap-1.5 text-xs text-muted"><ImageOff className="size-3.5" />No photo proof attached</p>
@@ -82,7 +91,8 @@ export function AlertDetailDrawer({ alert, onClose }: { alert: Alert | null; onC
             </SheetBody>
             <SheetFooter>
               <Button variant="outline" onClick={onClose}>Close</Button>
-              {alert.status !== 'CLEARED' ? <Button onClick={() => dispatch({ type: 'alerts/clear', alertId: alert.id })}><Check />Mark cleared</Button> : null}
+              {alert.status !== 'RESOLVED' && alert.status !== 'VERIFIED' ? <Button onClick={() => dispatch({ type: 'alerts/clear', alertId: alert.id })}><Check />Mark resolved</Button> : null}
+              {alert.status === 'RESOLVED' ? <Button onClick={() => dispatch({ type: 'alerts/verify', alertId: alert.id })}><ShieldCheck />Verify resolution</Button> : null}
             </SheetFooter>
           </>
         ) : null}

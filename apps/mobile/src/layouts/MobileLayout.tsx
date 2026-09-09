@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Link, Outlet, matchPath, useLocation } from 'react-router';
 import { Bell, ShieldCheck, User, Wrench } from 'lucide-react';
 import { cn } from '@monitoring/ui';
@@ -17,11 +18,18 @@ export function MobileLayout() {
   const { alerts, tickets } = useMobileScope(user?.outletIds ?? []);
   const myOpenTickets = user?.kind === 'technician' ? tickets.filter((t) => t.status !== 'DONE' && t.technicianId === user.id).length : 0;
   const { read } = useReadAlerts();
-  const unread = alerts.filter((a) => a.status === 'TRIGGERED' && !read.has(a.id)).length;
+  const unread = alerts.filter((a) => a.status === 'UNACKNOWLEDGED' && !read.has(a.id)).length;
+  const previousUnread = React.useRef(unread);
+  const [announcement, setAnnouncement] = React.useState('');
+  React.useEffect(() => {
+    if (unread > previousUnread.current) setAnnouncement(`${unread - previousUnread.current} new alert${unread - previousUnread.current > 1 ? 's' : ''} received.`);
+    previousUnread.current = unread;
+  }, [unread]);
   const hideNav = !!matchPath('/alerts/:id', pathname) || !!matchPath('/maintenance/:id', pathname);
 
   return (
     <PhoneFrame>
+      <p className="sr-only" role="alert" aria-live="assertive" aria-atomic="true">{announcement}</p>
       <main className={cn('flex-1 px-5 pt-[max(env(safe-area-inset-top),0.75rem)]', hideNav ? 'pb-8' : 'pb-32')}>
         <Outlet />
       </main>

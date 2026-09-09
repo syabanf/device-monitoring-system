@@ -1,11 +1,12 @@
 import type { AlertCategory, AlertStatus, DeviceStatus, HealthStatus, RegistrationStatus, SensorType, TicketPriority, TicketStatus } from '@monitoring/types';
 import { ALERT_CATEGORY_LABEL, ALERT_STATUS_LABEL, HEALTH_LABEL, TICKET_STATUS_LABEL } from '@monitoring/types';
 import { Badge } from '@monitoring/ui';
-import { Activity, DoorOpen, Flame, Siren, Thermometer, Zap } from 'lucide-react';
+import { Activity, CircleAlert, CircleCheck, DoorOpen, Eye, Flame, LoaderCircle, ShieldCheck, Siren, Thermometer, Zap } from 'lucide-react';
 
 export function AlertStatusBadge({ status }: { status: AlertStatus }) {
-  const variant = status === 'TRIGGERED' ? 'brand' : status === 'RESPONDED' ? 'info' : 'default';
-  return <Badge variant={variant} dot>{ALERT_STATUS_LABEL[status]}</Badge>;
+  const variant = status === 'UNACKNOWLEDGED' ? 'brand' : status === 'ACKNOWLEDGED' ? 'warning' : status === 'RESPONDING' ? 'info' : status === 'RESOLVED' ? 'success' : 'default';
+  const Icon = status === 'UNACKNOWLEDGED' ? CircleAlert : status === 'ACKNOWLEDGED' ? Eye : status === 'RESPONDING' ? LoaderCircle : status === 'RESOLVED' ? CircleCheck : ShieldCheck;
+  return <Badge variant={variant}><Icon aria-hidden="true" className={status === 'RESPONDING' ? 'size-3 animate-spin motion-reduce:animate-none' : 'size-3'} />{ALERT_STATUS_LABEL[status]}</Badge>;
 }
 export function CategoryBadge({ category }: { category: AlertCategory }) {
   return <Badge variant={category === 'COMFORT' ? 'info' : 'outline'}>{ALERT_CATEGORY_LABEL[category]}</Badge>;

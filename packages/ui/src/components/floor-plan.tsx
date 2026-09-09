@@ -27,7 +27,7 @@ const RACKS = [30, 38, 46, 54, 62];
 
 const statusCls: Record<FloorMarkerStatus, string> = {
   normal: 'bg-ink text-white ring-white',
-  alarm: 'bg-brand-600 text-white ring-white animate-pulse',
+  alarm: 'bg-brand-600 text-white ring-white animate-pulse motion-reduce:animate-none',
   offline: 'bg-silver text-white ring-white',
   fault: 'bg-amber-400 text-ink ring-white',
   muted: 'bg-white text-muted ring-border',
@@ -35,7 +35,7 @@ const statusCls: Record<FloorMarkerStatus, string> = {
 
 export function FloorPlan({ markers, selectedId, onSelect, className, compact, title }: { markers: FloorMarker[]; selectedId?: string | null; onSelect?: (id: string) => void; className?: string; compact?: boolean; title?: string }) {
   return (
-    <div className={cn('relative w-full overflow-hidden rounded-[22px] bg-surface-2', className)} style={{ aspectRatio: '100 / 118' }}>
+    <div className={cn('relative w-full overflow-hidden rounded-[22px] bg-surface-2', className)} style={{ aspectRatio: '100 / 118' }} role="group" aria-label={`${title ?? 'Floor plan'}. Use Tab to move between installed devices and sensors.`}>
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full" aria-hidden>
         <defs>
           <pattern id="fp-grid" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M5 0H0V5" fill="none" stroke="#e6e5e7" strokeWidth="0.25" /></pattern>
@@ -73,9 +73,9 @@ export function FloorPlan({ markers, selectedId, onSelect, className, compact, t
           <button
             type="button"
             onClick={onSelect ? () => onSelect(m.id) : undefined}
-            aria-label={m.label}
+            aria-label={`${m.label}${m.sublabel ? `, ${m.sublabel}` : ''}, status ${m.status}`}
             className={cn(
-              'absolute flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ring-2 shadow-float transition-transform hover:scale-110 focus:outline-none [&_svg]:size-[45%]',
+              'absolute flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ring-2 shadow-float transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-600 focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none [&_svg]:size-[45%]',
               m.kind === 'device' && 'rounded-2xl',
               size,
               statusCls[m.status],

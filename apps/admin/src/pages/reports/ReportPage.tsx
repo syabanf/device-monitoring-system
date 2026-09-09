@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useSearchParams } from 'react-router';
 import { Download } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Alert } from '@monitoring/types';
@@ -13,12 +14,15 @@ const dayStr = (ms: number) => format(toWallClockDate(ms), 'yyyy-MM-dd');
 
 export function ReportPage() {
   const { alerts, outlets } = useScoped();
-  const [tab, setTab] = React.useState<'alerts' | 'readings'>('alerts');
-  const [from, setFrom] = React.useState(dayStr(FIXTURE_NOW_MS - 29 * 86_400_000));
-  const [to, setTo] = React.useState(dayStr(FIXTURE_NOW_MS));
-  const [outletFilter, setOutletFilter] = React.useState('all');
-  const [status, setStatus] = React.useState('all');
-  const [category, setCategory] = React.useState('all');
+  const [params, setParams] = useSearchParams();
+  const tab: 'alerts' | 'readings' = params.get('tab') === 'readings' ? 'readings' : 'alerts';
+  const from = params.get('from') ?? dayStr(FIXTURE_NOW_MS - 29 * 86_400_000);
+  const to = params.get('to') ?? dayStr(FIXTURE_NOW_MS);
+  const outletFilter = outlets.some((o) => o.id === params.get('outlet')) ? params.get('outlet')! : 'all';
+  const status = ['UNACKNOWLEDGED', 'ACKNOWLEDGED', 'RESPONDING', 'RESOLVED', 'VERIFIED'].includes(params.get('status') ?? '') ? params.get('status')! : 'all';
+  const category = params.get('category') === 'COMFORT' || params.get('category') === 'SECURITY' ? params.get('category')! : 'all';
+  const defaults = { from: dayStr(FIXTURE_NOW_MS - 29 * 86_400_000), to: dayStr(FIXTURE_NOW_MS) };
+  const update = (patch: Record<string, string | null>) => { const next = new URLSearchParams(params); for (const [key, value] of Object.entries(patch)) value == null ? next.delete(key) : next.set(key, value); setParams(next, { replace: true }); };
 
   const inRange = (iso: string) => { const d = format(toWallClockDate(iso), 'yyyy-MM-dd'); return d >= from && d <= to; };
   const rows = React.useMemo(() => alerts.filter((a) => inRange(a.triggerTime) && (outletFilter === 'all' || a.outletId === outletFilter) && (status === 'all' || a.status === status) && (category === 'all' || a.category === category)), [alerts, from, to, outletFilter, status, category]);
@@ -60,14 +64,14 @@ export function ReportPage() {
       } />
       <Card>
         <div className="grid gap-4 p-5 md:grid-cols-5">
-          <FormField label="From" htmlFor="from"><Input id="from" type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)} /></FormField>
-          <FormField label="To" htmlFor="to"><Input id="to" type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)} /></FormField>
-          <FormField label="Outlet"><Select value={outletFilter} onValueChange={setOutletFilter}><SelectTrigger className="h-11"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All outlets</SelectItem>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent></Select></FormField>
-          <FormField label="Status"><Select value={status} onValueChange={setStatus} disabled={tab !== 'alerts'}><SelectTrigger className="h-11"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All</SelectItem><SelectItem value="TRIGGERED">Open</SelectItem><SelectItem value="RESPONDED">Responded</SelectItem><SelectItem value="CLEARED">Cleared</SelectItem></SelectContent></Select></FormField>
-          <FormField label="Category"><Select value={category} onValueChange={setCategory} disabled={tab !== 'alerts'}><SelectTrigger className="h-11"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All</SelectItem><SelectItem value="COMFORT">Shopping Comfort</SelectItem><SelectItem value="SECURITY">Outlet Security</SelectItem></SelectContent></Select></FormField>
+          <FormField label="From" htmlFor="from"><Input id="from" type="date" value={from} max={to} onChange={(e) => update({ from: e.target.value === defaults.from ? null : e.target.value })} /></FormField>
+          <FormField label="To" htmlFor="to"><Input id="to" type="date" value={to} min={from} onChange={(e) => update({ to: e.target.value === defaults.to ? null : e.target.value })} /></FormField>
+          <FormField label="Outlet"><Select value={outletFilter} onValueChange={(v) => update({ outlet: v === 'all' ? null : v })}><SelectTrigger className="h-11"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All outlets</SelectItem>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent></Select></FormField>
+          <FormField label="Status"><Select value={status} onValueChange={(v) => update({ status: v === 'all' ? null : v })} disabled={tab !== 'alerts'}><SelectTrigger className="h-11"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All</SelectItem><SelectItem value="UNACKNOWLEDGED">Unacknowledged</SelectItem><SelectItem value="ACKNOWLEDGED">Acknowledged</SelectItem><SelectItem value="RESPONDING">Responding</SelectItem><SelectItem value="RESOLVED">Resolved</SelectItem><SelectItem value="VERIFIED">Verified</SelectItem></SelectContent></Select></FormField>
+          <FormField label="Category"><Select value={category} onValueChange={(v) => update({ category: v === 'all' ? null : v })} disabled={tab !== 'alerts'}><SelectTrigger className="h-11"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All</SelectItem><SelectItem value="COMFORT">Shopping Comfort</SelectItem><SelectItem value="SECURITY">Outlet Security</SelectItem></SelectContent></Select></FormField>
         </div>
       </Card>
-      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
+      <Tabs value={tab} onValueChange={(v) => update({ tab: v === 'alerts' ? null : v })}>
         <TabsList variant="pill"><TabsTrigger value="alerts">Alert history</TabsTrigger><TabsTrigger value="readings">Temperature log</TabsTrigger></TabsList>
       </Tabs>
       <Card>

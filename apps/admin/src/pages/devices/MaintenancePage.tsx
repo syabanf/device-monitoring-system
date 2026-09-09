@@ -23,7 +23,7 @@ export function MaintenancePage() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const view = (['health', 'tickets', 'schedule', 'technicians'].includes(params.get('view') ?? '') ? params.get('view') : 'health') as View;
-  const [status, setStatus] = React.useState<'all' | TicketStatus>('all');
+  const status = (['OPEN', 'SCHEDULED', 'IN_PROGRESS', 'DONE'].includes(params.get('status') ?? '') ? params.get('status') : 'all') as 'all' | TicketStatus;
   const [creating, setCreating] = React.useState(false);
   const selected = tickets.find((t) => t.id === params.get('ticket')) ?? null;
   const update = (patch: Record<string, string | null>) => { const n = new URLSearchParams(params); for (const [k, v] of Object.entries(patch)) (v == null ? n.delete(k) : n.set(k, v)); setParams(n, { replace: true }); };
@@ -81,7 +81,7 @@ export function MaintenancePage() {
         </Tabs>
         {view === 'technicians' ? <Button variant="outline" onClick={() => setTechEdit(emptyTechnician(distributorId))}><UserPlus />Add technician</Button> : null}
         {view === 'tickets' ? (
-          <Select value={status} onValueChange={(v) => setStatus(v as typeof status)}>
+          <Select value={status} onValueChange={(v) => update({ status: v === 'all' ? null : v })}>
             <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
             <SelectContent><SelectItem value="all">All statuses</SelectItem><SelectItem value="OPEN">Open</SelectItem><SelectItem value="SCHEDULED">Scheduled</SelectItem><SelectItem value="IN_PROGRESS">In progress</SelectItem><SelectItem value="DONE">Done</SelectItem></SelectContent>
           </Select>

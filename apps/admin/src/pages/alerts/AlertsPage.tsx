@@ -9,24 +9,25 @@ import { AlertStatusBadge, CategoryBadge, SensorIcon } from '../../components/ba
 import { AlertDetailDrawer } from './AlertDetailDrawer';
 
 const TABS = [
-  { value: 'open', label: 'Open', status: 'TRIGGERED' },
-  { value: 'responded', label: 'Responded', status: 'RESPONDED' },
-  { value: 'cleared', label: 'Cleared', status: 'CLEARED' },
+  { value: 'unacknowledged', label: 'Unacknowledged', status: 'UNACKNOWLEDGED' },
+  { value: 'acknowledged', label: 'Acknowledged', status: 'ACKNOWLEDGED' },
+  { value: 'responding', label: 'Responding', status: 'RESPONDING' },
+  { value: 'resolved', label: 'Resolved', status: 'RESOLVED' },
+  { value: 'verified', label: 'Verified', status: 'VERIFIED' },
 ] as const;
 
 export function AlertsPage() {
   const { alerts, outlets } = useScoped();
   const [params, setParams] = useSearchParams();
-  const tab = TABS.find((t) => t.value === params.get('tab'))?.value ?? 'open';
+  const tab = TABS.find((t) => t.value === params.get('tab'))?.value ?? 'unacknowledged';
   const selectedId = Number(params.get('id'));
-  const [outletFilter, setOutletFilter] = React.useState('all');
-  const [category, setCategory] = React.useState<'all' | 'COMFORT' | 'SECURITY'>('all');
+  const outletFilter = outlets.some((o) => o.id === params.get('outlet')) ? params.get('outlet')! : 'all';
+  const category = (params.get('category') === 'COMFORT' || params.get('category') === 'SECURITY' ? params.get('category') : 'all') as 'all' | 'COMFORT' | 'SECURITY';
 
   const status = TABS.find((t) => t.value === tab)!.status;
   const rows = React.useMemo(() => alerts.filter((a) => a.status === status && (outletFilter === 'all' || a.outletId === outletFilter) && (category === 'all' || a.category === category)), [alerts, status, outletFilter, category]);
   const selected = alerts.find((a) => a.id === selectedId) ?? null;
-  const counts = { open: 0, responded: 0, cleared: 0 };
-  for (const a of alerts) counts[a.status === 'TRIGGERED' ? 'open' : a.status === 'RESPONDED' ? 'responded' : 'cleared']++;
+  const counts = Object.fromEntries(TABS.map((item) => [item.value, alerts.filter((alert) => alert.status === item.status).length])) as Record<(typeof TABS)[number]['value'], number>;
 
   const update = (patch: Record<string, string | null>) => {
     const next = new URLSearchParams(params);
@@ -41,7 +42,7 @@ export function AlertsPage() {
     { key: 'outlet', header: 'Outlet', cell: (a) => outletById.get(a.outletId)?.name ?? '—', sortValue: (a) => outletById.get(a.outletId)?.name ?? '' },
     { key: 'category', header: 'Category', cell: (a) => <CategoryBadge category={a.category} /> },
     { key: 'value', header: 'Value', cell: (a) => <span className="font-semibold">{a.triggerValue}</span> },
-    { key: 'duration', header: status === 'CLEARED' ? 'Duration' : 'Ongoing', cell: (a) => <Badge variant={status === 'CLEARED' ? 'default' : 'warning'}>{humanizeShort(ongoingSeconds(a.triggerTime, a.clearTime))}</Badge>, sortValue: (a) => ongoingSeconds(a.triggerTime, a.clearTime) },
+    { key: 'duration', header: status === 'RESOLVED' || status === 'VERIFIED' ? 'Duration' : 'Ongoing', cell: (a) => <Badge variant={status === 'RESOLVED' || status === 'VERIFIED' ? 'default' : 'warning'}>{humanizeShort(ongoingSeconds(a.triggerTime, a.clearTime))}</Badge>, sortValue: (a) => ongoingSeconds(a.triggerTime, a.clearTime) },
     { key: 'status', header: 'Status', cell: (a) => <AlertStatusBadge status={a.status} /> },
   ];
 
@@ -52,11 +53,11 @@ export function AlertsPage() {
         description="Notification list, respond list and history from every Room Alert in this distribution center"
         actions={
           <>
-            <Select value={category} onValueChange={(v) => setCategory(v as typeof category)}>
+            <Select value={category} onValueChange={(v) => update({ category: v === 'all' ? null : v })}>
               <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value="all">All categories</SelectItem><SelectItem value="COMFORT">Shopping Comfort</SelectItem><SelectItem value="SECURITY">Outlet Security</SelectItem></SelectContent>
             </Select>
-            <Select value={outletFilter} onValueChange={setOutletFilter}>
+            <Select value={outletFilter} onValueChange={(v) => update({ outlet: v === 'all' ? null : v })}>
               <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value="all">All outlets</SelectItem>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent>
             </Select>

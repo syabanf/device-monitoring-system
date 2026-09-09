@@ -9,7 +9,7 @@ export type SensorType =
 export type PortKind = 'digital' | 'switch' | 'analog';
 export type DeviceModel = 'RA3S' | 'RA12S';
 export type DeviceStatus = 'online' | 'offline';
-export type AlertStatus = 'TRIGGERED' | 'RESPONDED' | 'CLEARED';
+export type AlertStatus = 'UNACKNOWLEDGED' | 'ACKNOWLEDGED' | 'RESPONDING' | 'RESOLVED' | 'VERIFIED';
 export type AlertCategory = 'COMFORT' | 'SECURITY';
 export type RegistrationStatus = 'pending' | 'approved';
 export type EmployeeRole = 'store_manager' | 'assistant_manager' | 'cashier' | 'staff';
@@ -32,9 +32,11 @@ export const EMPLOYEE_ROLE_LABEL: Record<EmployeeRole, string> = {
 };
 
 export const ALERT_STATUS_LABEL: Record<AlertStatus, string> = {
-  TRIGGERED: 'Open',
-  RESPONDED: 'Responded',
-  CLEARED: 'Cleared',
+  UNACKNOWLEDGED: 'Unacknowledged',
+  ACKNOWLEDGED: 'Acknowledged',
+  RESPONDING: 'Responding',
+  RESOLVED: 'Resolved',
+  VERIFIED: 'Verified',
 };
 
 export const ALERT_CATEGORY_LABEL: Record<AlertCategory, string> = {

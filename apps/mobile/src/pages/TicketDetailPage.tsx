@@ -63,7 +63,7 @@ export function TicketDetailPage() {
         <section className="rounded-[24px] bg-sky-100 p-5">
           <p className="text-sm font-semibold">Work notes</p>
           {ticket.notes ? <p className="mt-2 text-sm text-body">{ticket.notes}</p> : null}
-          {ticket.photoUrls.length ? <div className="mt-3 grid grid-cols-3 gap-2">{ticket.photoUrls.map((u) => <img key={u} src={u.startsWith('blob:') ? u : `/${u}`} alt="Work proof" className="aspect-square w-full rounded-2xl object-cover" />)}</div> : null}
+          {ticket.photoUrls.length ? <div className="mt-3 grid grid-cols-3 gap-2">{ticket.photoUrls.map((u) => <img key={u} src={u.startsWith('blob:') || u.startsWith('data:') ? u : `/${u}`} alt="Work proof" className="aspect-square w-full rounded-2xl object-cover" />)}</div> : null}
         </section>
       ) : null}
 

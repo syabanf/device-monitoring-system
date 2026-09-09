@@ -22,14 +22,14 @@
   --color-sidebar: #101112;
   --color-sidebar-hover: #26282b;
   --color-sidebar-foreground: #ffffff;
-  --color-sidebar-muted: #8b8b8b;
+  --color-sidebar-muted: #a3a3a3;
 
   --color-surface: #f1f0f1;
   --color-surface-2: #f5f4f6;
   --color-card: #ffffff;
   --color-border: #e6e5e7;
   --color-silver: #c0c0c0;
-  --color-muted: #8b8b8b;
+  --color-muted: #66676a;
   --color-body: #333333;
   --color-foreground: #101112;
 
@@ -39,6 +39,8 @@
   --color-sky-300: #83b3ee;
   --color-sky-400: #5f9de6;
   --color-sky-500: #3f86dc;
+  --color-sky-600: #256caf;
+  --color-sky-700: #1d568f;
 
   --radius-card: 1.5rem;
   --radius-pill: 9999px;
@@ -63,5 +65,18 @@
   ::selection {
     background: var(--color-brand-600);
     color: #fff;
+  }
+  :where(a, button, input, textarea, select, [role='button'], [tabindex]):focus-visible {
+    outline: 3px solid #fff !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 5px var(--color-ink) !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

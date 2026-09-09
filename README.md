@@ -39,3 +39,11 @@ pnpm gen:fixtures     # regenerate packages/fixtures/data (seeded, deterministic
 ```
 
 All relative times ("Today, 13:24", "Ongoing for 6 minutes") are computed against the fixed fixture clock `2026-09-07 13:30 WIB`, so the demo never drifts.
+
+## House style skill (`wit-ui-style`)
+
+The UI style, clean code structure and backend design of this project are packaged as a Claude Code skill in `.claude/skills/wit-ui-style` (auto-loaded when working inside this repo). To install it globally on another machine:
+
+```bash
+git clone --depth 1 https://github.com/syabanf/device-monitoring-system.git /tmp/dms && mkdir -p ~/.claude/skills && cp -R /tmp/dms/.claude/skills/wit-ui-style ~/.claude/skills/ && rm -rf /tmp/dms
+```
