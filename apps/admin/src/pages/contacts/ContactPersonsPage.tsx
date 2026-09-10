@@ -86,11 +86,11 @@ function ContactDialog({ contact, outlets, onClose, onSave }: { contact: Contact
         <DialogHeader><DialogTitle>{draft.id ? 'Edit contact' : 'Add contact'}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <FormField label="Full name" htmlFor="cp-name"><Input id="cp-name" value={draft.name} onChange={(e) => set({ name: e.target.value })} required /></FormField>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="Phone" htmlFor="cp-phone"><Input id="cp-phone" value={draft.phone} onChange={(e) => set({ phone: e.target.value })} required /></FormField>
             <FormField label="Email" htmlFor="cp-email"><Input id="cp-email" type="email" value={draft.email ?? ''} onChange={(e) => set({ email: e.target.value })} /></FormField>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="Outlet">
               <Select value={draft.outletId} onValueChange={(v) => set({ outletId: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>

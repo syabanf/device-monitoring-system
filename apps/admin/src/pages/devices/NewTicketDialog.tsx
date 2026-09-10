@@ -39,13 +39,13 @@ export function NewTicketDialog({ open, onClose, deviceId }: { open: boolean; on
           <FormField label="Device">
             <Select value={dev} onValueChange={setDev}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{devices.map((d) => <SelectItem key={d.id} value={d.id}>{d.serial} · {outletById.get(d.outletId)?.name}</SelectItem>)}</SelectContent></Select>
           </FormField>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="Type"><Select value={type} onValueChange={(v) => setType(v as MaintenanceType)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{(Object.keys(MAINTENANCE_TYPE_LABEL) as MaintenanceType[]).map((k) => <SelectItem key={k} value={k}>{MAINTENANCE_TYPE_LABEL[k]}</SelectItem>)}</SelectContent></Select></FormField>
             <FormField label="Priority"><Select value={priority} onValueChange={(v) => setPriority(v as TicketPriority)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as TicketPriority[]).map((p) => <SelectItem key={p} value={p} className="capitalize">{p.toLowerCase()}</SelectItem>)}</SelectContent></Select></FormField>
           </div>
           <FormField label="Title" htmlFor="t-title"><Input id="t-title" value={title} onChange={(e) => setTitle(e.target.value)} required placeholder="e.g. Replace front door switch" /></FormField>
           <FormField label="Description" htmlFor="t-desc"><Textarea id="t-desc" value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="What needs to be done on site?" /></FormField>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="Technician"><Select value={tech} onValueChange={setTech}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="none">Unassigned</SelectItem>{technicians.map((t) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}</SelectContent></Select></FormField>
             <FormField label="Schedule date" htmlFor="t-date" hint="Leave empty to keep it open"><Input id="t-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} /></FormField>
           </div>

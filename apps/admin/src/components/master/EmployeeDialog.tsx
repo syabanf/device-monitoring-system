@@ -23,7 +23,7 @@ export function EmployeeDialog({ employee, onClose }: { employee: Employee | nul
       <DialogContent size="lg">
         <DialogHeader><DialogTitle>{d.id ? 'Edit employee' : 'Add employee'}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="Full name" htmlFor="e-name"><Input id="e-name" value={d.name} onChange={(e) => set({ name: e.target.value })} required /></FormField>
             <FormField label="Role"><Select value={d.role} onValueChange={(v) => set({ role: v as EmployeeRole })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{(Object.keys(EMPLOYEE_ROLE_LABEL) as EmployeeRole[]).map((r) => <SelectItem key={r} value={r}>{EMPLOYEE_ROLE_LABEL[r]}</SelectItem>)}</SelectContent></Select></FormField>
             <FormField label="Email" htmlFor="e-email"><Input id="e-email" type="email" value={d.email} onChange={(e) => set({ email: e.target.value })} required /></FormField>
@@ -31,11 +31,11 @@ export function EmployeeDialog({ employee, onClose }: { employee: Employee | nul
           </div>
           <div>
             <p className="mb-2 text-sm font-medium">Outlets <span className="text-xs font-normal text-muted">(at least one)</span></p>
-            <div className="grid max-h-56 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
+            <div className="grid grid-cols-1 max-h-56 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
               {outlets.map((o) => <label key={o.id} className="flex items-center justify-between rounded-2xl bg-surface px-3 py-2"><span className="text-sm">{o.name}</span><Toggle checked={d.outletIds.includes(o.id)} onCheckedChange={(v) => toggleOutlet(o.id, v)} label={o.name} /></label>)}
             </div>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="Primary outlet"><Select value={d.primaryOutletId} onValueChange={(v) => set({ primaryOutletId: v })} disabled={!d.outletIds.length}><SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger><SelectContent>{d.outletIds.map((id) => <SelectItem key={id} value={id}>{outlets.find((o) => o.id === id)?.name}</SelectItem>)}</SelectContent></Select></FormField>
             <FormField label="Registration"><Select value={d.registrationStatus} onValueChange={(v) => set({ registrationStatus: v as Employee['registrationStatus'], approvedAt: v === 'approved' ? (d.approvedAt ?? FIXTURE_NOW) : null })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="pending">Pending</SelectItem><SelectItem value="approved">Approved</SelectItem></SelectContent></Select></FormField>
           </div>

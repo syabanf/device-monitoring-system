@@ -18,7 +18,7 @@ export function DeviceDialog({ device, onClose }: { device: Device | null; onClo
       <DialogContent size="lg">
         <DialogHeader><DialogTitle>Edit device {d.serial}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="Outlet"><Select value={d.outletId} onValueChange={(v) => set({ outletId: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent></Select></FormField>
             <FormField label="Status"><Select value={d.status} onValueChange={(v) => set({ status: v as Device['status'] })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="online">Online</SelectItem><SelectItem value="offline">Offline</SelectItem></SelectContent></Select></FormField>
             <FormField label="Serial" htmlFor="d-serial"><Input id="d-serial" value={d.serial} onChange={(e) => set({ serial: e.target.value })} required className="[&_input]:font-mono [&_input]:text-xs" /></FormField>
@@ -32,7 +32,7 @@ export function DeviceDialog({ device, onClose }: { device: Device | null; onClo
           </div>
           <div>
             <p className="mb-2 text-sm font-medium">Position on floor plan <span className="text-xs font-normal text-muted">(percent of width / height)</span></p>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <label className="text-xs text-muted">X · {d.floor.x}%<input type="range" min={3} max={97} value={d.floor.x} onChange={(e) => set({ floor: { ...d.floor, x: Number(e.target.value) } })} className="mt-1 w-full accent-brand-600" /></label>
               <label className="text-xs text-muted">Y · {d.floor.y}%<input type="range" min={3} max={97} value={d.floor.y} onChange={(e) => set({ floor: { ...d.floor, y: Number(e.target.value) } })} className="mt-1 w-full accent-brand-600" /></label>
             </div>

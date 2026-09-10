@@ -36,7 +36,7 @@ export function MaintenanceDashboard() {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <Card className="relative flex flex-col overflow-hidden bg-ink text-white">
           <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-brand-600/30 blur-3xl" />
           <CardHeader className="relative flex-row items-start justify-between space-y-0">
@@ -44,7 +44,7 @@ export function MaintenanceDashboard() {
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold"><Activity className="size-3.5" />{avgUptime.toFixed(1)}% uptime</span>
           </CardHeader>
           <CardContent className="relative flex flex-1 flex-col gap-5">
-            <div className="grid gap-4 sm:grid-cols-[auto_1fr] sm:items-end">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-[auto_1fr] sm:items-end">
               <div>
                 <p className="text-xs text-sidebar-muted">Healthy units</p>
                 <div className="flex items-start gap-1 leading-none"><span className="text-6xl font-bold tracking-tight">{healthy}</span><span className="pt-2 text-lg font-semibold text-sidebar-muted">/ {devices.length}</span></div>
@@ -80,8 +80,8 @@ export function MaintenanceDashboard() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Card className="bg-brand-600 text-white sm:col-span-2">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          <Card className="col-span-2 bg-brand-600 text-white">
             <CardContent className="flex flex-col gap-5 p-5">
               <div className="flex items-start justify-between">
                 <div><p className="text-sm font-medium text-white/80">Overdue tickets</p><p className="mt-1 text-5xl font-bold leading-none tracking-tight">{overdue.length}</p></div>
@@ -116,14 +116,14 @@ export function MaintenanceDashboard() {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <StatCard label="Critical hardware" value={critical} hint="offline or sensor fault" icon={<ShieldAlert />} tone="danger" />
         <StatCard label="Sensor faults" value={faults} hint="replacement tickets raised" icon={<AlertTriangle />} tone="warning" />
         <StatCard label="Firmware outdated" value={fwOutdated} hint={`of ${devices.length} units`} icon={<Cpu />} />
         <StatCard label="Warranty ending" value={warrantySoon} hint="within 90 days" icon={<CalendarClock />} tone="success" />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_20rem]">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_20rem]">
         <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0 pb-3"><CardTitle className="text-lg">Priority tickets</CardTitle><Button asChild variant="outline" size="sm"><Link to="/devices/maintenance?view=tickets">View all<ArrowUpRight /></Link></Button></CardHeader>
           <CardContent className="space-y-2">
@@ -148,7 +148,7 @@ export function MaintenanceDashboard() {
             ); })}
           </CardContent>
         </Card>
-        <Card>
+        <Card className="md:col-span-2 xl:col-span-1">
           <CardHeader className="pb-3"><CardTitle className="text-lg">Technician workload</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             {workload.map((w) => (

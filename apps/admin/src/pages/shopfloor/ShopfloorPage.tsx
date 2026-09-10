@@ -72,7 +72,7 @@ export function ShopfloorPage() {
   return (
     <div className="space-y-4">
       <PageHeader title="Shopfloor" description="Where every Room Alert unit and sensor is installed: outlet map and in-store floor plan" actions={<Button onClick={() => setAdding(true)}><Plus />Add device</Button>} />
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
         <div className="space-y-4">
           <Card className="overflow-hidden">
             <div className="h-[420px] [&_.leaflet-container]:h-full [&_.leaflet-container]:w-full [&_.leaflet-container]:font-sans" role="region" aria-label="Outlet installation map. Use the keyboard-accessible outlet list below to select a location.">

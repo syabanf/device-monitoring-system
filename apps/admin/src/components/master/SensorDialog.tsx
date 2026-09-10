@@ -29,7 +29,7 @@ export function SensorDialog({ sensor, device, onClose }: { sensor: Sensor | nul
         <DialogHeader><DialogTitle>{s.id ? 'Edit sensor' : 'Add sensor'} · {device.serial}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <FormField label="Sensor name" htmlFor="s-name"><Input id="s-name" value={s.name} onChange={(e) => set({ name: e.target.value })} required placeholder="e.g. Cooler Area Temp & RH" /></FormField>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="Type"><Select value={s.type} onValueChange={(v) => set({ type: v as SensorType })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{(Object.keys(SENSOR_TYPE_LABEL) as SensorType[]).map((t) => <SelectItem key={t} value={t}>{SENSOR_TYPE_LABEL[t]}</SelectItem>)}</SelectContent></Select></FormField>
             <FormField label="Port" hint={ports.length ? undefined : 'No free port on this device'}>
               <Select value={`${s.portKind}:${s.portIndex}`} onValueChange={(v) => { const [k, i] = v.split(':'); set({ portKind: k as PortKind, portIndex: Number(i) }); }}>
@@ -39,7 +39,7 @@ export function SensorDialog({ sensor, device, onClose }: { sensor: Sensor | nul
             </FormField>
           </div>
           {isTemp ? (
-            <div className="grid gap-4 sm:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
               <FormField label="Min °C" htmlFor="s-min"><Input id="s-min" type="number" value={s.thresholds?.min ?? 18} onChange={(e) => set({ thresholds: { ...s.thresholds, min: Number(e.target.value) } })} /></FormField>
               <FormField label="Max °C" htmlFor="s-max"><Input id="s-max" type="number" value={s.thresholds?.max ?? 28} onChange={(e) => set({ thresholds: { ...s.thresholds, max: Number(e.target.value) } })} /></FormField>
               <FormField label="Min %RH" htmlFor="s-hmin"><Input id="s-hmin" type="number" value={s.thresholds?.humidityMin ?? 30} onChange={(e) => set({ thresholds: { ...s.thresholds, humidityMin: Number(e.target.value) } })} /></FormField>
@@ -48,7 +48,7 @@ export function SensorDialog({ sensor, device, onClose }: { sensor: Sensor | nul
           ) : null}
           <div>
             <p className="mb-2 text-sm font-medium">Position on floor plan</p>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <label className="text-xs text-muted">X · {s.floor.x}%<input type="range" min={3} max={97} value={s.floor.x} onChange={(e) => set({ floor: { ...s.floor, x: Number(e.target.value) } })} className="mt-1 w-full accent-brand-600" /></label>
               <label className="text-xs text-muted">Y · {s.floor.y}%<input type="range" min={3} max={97} value={s.floor.y} onChange={(e) => set({ floor: { ...s.floor, y: Number(e.target.value) } })} className="mt-1 w-full accent-brand-600" /></label>
             </div>

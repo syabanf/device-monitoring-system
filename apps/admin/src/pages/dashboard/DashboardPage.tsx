@@ -76,7 +76,7 @@ function HeroOutlet({ outlet, alerts }: { outlet: Outlet; alerts: Alert[] }) {
         </span>
       </CardHeader>
       <CardContent className="relative flex flex-1 flex-col gap-6">
-        <div className="grid gap-4 sm:grid-cols-[auto_1fr] sm:items-end">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[auto_1fr] sm:items-end">
           <div>
             <p className="text-xs text-sidebar-muted">{temp?.name ?? 'Temperature'}</p>
             <div className="flex items-start gap-1 leading-none">
@@ -132,16 +132,16 @@ function AttentionRequired() {
   const total = awaiting.length + offline.length + overdue.length + pending.length;
   return (
     <section aria-labelledby="attention-title">
-      <div className="mb-3 flex items-end justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Operations queue</p><h2 id="attention-title" className="mt-1 text-xl font-bold">Attention required</h2></div><Badge variant={total ? 'brand' : 'success'}>{total ? `${total} items` : 'All clear'}</Badge></div>
-      {total ? <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(24rem,1fr)]">
-        <Card className="overflow-hidden border-brand-100"><CardHeader className="flex-row items-center justify-between space-y-0 bg-brand-50 pb-3"><div><CardTitle className="flex items-center gap-2"><BellRing className="size-5 text-brand-600" />Alerts awaiting response</CardTitle><p className="mt-1 text-xs text-muted">Security alerts appear first</p></div><Button asChild size="sm"><Link to="/alerts?tab=unacknowledged">Review all<ArrowUpRight /></Link></Button></CardHeader><CardContent className="space-y-2 pt-4">
+      <div className="mb-3 flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Operations queue</p><h2 id="attention-title" className="mt-1 text-xl font-bold">Attention required</h2></div><Badge variant={total ? 'brand' : 'success'}>{total ? `${total} items` : 'All clear'}</Badge></div>
+      {total ? <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(24rem,1fr)]">
+        <Card className="overflow-hidden border-brand-100"><CardHeader className="flex-row flex-wrap items-center justify-between gap-2 space-y-0 bg-brand-50 pb-3"><div><CardTitle className="flex items-center gap-2"><BellRing className="size-5 text-brand-600" />Alerts awaiting response</CardTitle><p className="mt-1 text-xs text-muted">Security alerts appear first</p></div><Button asChild size="sm"><Link to="/alerts?tab=unacknowledged">Review all<ArrowUpRight /></Link></Button></CardHeader><CardContent className="space-y-2 pt-4">
           {awaiting.slice(0, 4).map((alert) => <Link key={alert.id} to={`/alerts?tab=unacknowledged&id=${alert.id}`} className="flex items-center gap-3 rounded-2xl bg-surface-2 p-3 hover:bg-white hover:shadow-card"><span className={cn('flex size-9 shrink-0 items-center justify-center rounded-full', alert.category === 'SECURITY' ? 'bg-brand-600 text-white' : 'bg-sky-100 text-sky-700')}><SensorIcon type={alert.sensorType} /></span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">{alert.message}</span><span className="block truncate text-xs text-muted">{outletById.get(alert.outletId)?.name} · {fmtAgo(alert.triggerTime)}</span></span><Badge variant={alert.category === 'SECURITY' ? 'brand' : 'info'}>{alert.category === 'SECURITY' ? 'High' : 'Comfort'}</Badge></Link>)}
           {!awaiting.length ? <p className="py-6 text-center text-sm text-muted">No alerts are waiting for a response.</p> : null}
         </CardContent></Card>
-        <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-          <Link to="/devices?status=offline" className="flex items-center gap-4 rounded-card bg-white p-4 shadow-card transition-transform hover:-translate-y-0.5"><span className="flex size-11 items-center justify-center rounded-full bg-ink text-white"><WifiOff className="size-5" /></span><span className="min-w-0 flex-1"><span className="block text-2xl font-bold">{offline.length}</span><span className="block text-xs text-muted">offline devices</span></span><ArrowUpRight className="size-4 text-muted" /></Link>
-          <Link to="/devices/maintenance?view=tickets" className="flex items-center gap-4 rounded-card bg-white p-4 shadow-card transition-transform hover:-translate-y-0.5"><span className="flex size-11 items-center justify-center rounded-full bg-amber-100 text-amber-700"><Wrench className="size-5" /></span><span className="min-w-0 flex-1"><span className="block text-2xl font-bold">{overdue.length}</span><span className="block text-xs text-muted">overdue tickets</span></span><ArrowUpRight className="size-4 text-muted" /></Link>
-          <Link to="/users?status=pending" className="flex items-center gap-4 rounded-card bg-white p-4 shadow-card transition-transform hover:-translate-y-0.5"><span className="flex size-11 items-center justify-center rounded-full bg-sky-100 text-sky-500"><UserPlus className="size-5" /></span><span className="min-w-0 flex-1"><span className="block text-2xl font-bold">{pending.length}</span><span className="block text-xs text-muted">pending registrations</span></span><ArrowUpRight className="size-4 text-muted" /></Link>
+        <div className="grid grid-cols-3 gap-3 xl:grid-cols-1">
+          <Link to="/devices?status=offline" className="flex flex-col items-start gap-3 rounded-card bg-white p-4 shadow-card transition-transform hover:-translate-y-0.5 sm:flex-row sm:items-center sm:gap-4"><span className="flex size-11 items-center justify-center rounded-full bg-ink text-white"><WifiOff className="size-5" /></span><span className="min-w-0 flex-1"><span className="block text-2xl font-bold">{offline.length}</span><span className="block text-xs text-muted">offline devices</span></span><ArrowUpRight className="hidden size-4 text-muted sm:block" /></Link>
+          <Link to="/devices/maintenance?view=tickets" className="flex flex-col items-start gap-3 rounded-card bg-white p-4 shadow-card transition-transform hover:-translate-y-0.5 sm:flex-row sm:items-center sm:gap-4"><span className="flex size-11 items-center justify-center rounded-full bg-amber-100 text-amber-700"><Wrench className="size-5" /></span><span className="min-w-0 flex-1"><span className="block text-2xl font-bold">{overdue.length}</span><span className="block text-xs text-muted">overdue tickets</span></span><ArrowUpRight className="hidden size-4 text-muted sm:block" /></Link>
+          <Link to="/users?status=pending" className="flex flex-col items-start gap-3 rounded-card bg-white p-4 shadow-card transition-transform hover:-translate-y-0.5 sm:flex-row sm:items-center sm:gap-4"><span className="flex size-11 items-center justify-center rounded-full bg-sky-100 text-sky-500"><UserPlus className="size-5" /></span><span className="min-w-0 flex-1"><span className="block text-2xl font-bold">{pending.length}</span><span className="block text-xs text-muted">pending registrations</span></span><ArrowUpRight className="hidden size-4 text-muted sm:block" /></Link>
         </div>
       </div> : <Card><CardContent className="flex items-center gap-4 p-5"><span className="flex size-11 items-center justify-center rounded-full bg-emerald-100 text-emerald-600"><CheckCircle2 className="size-5" /></span><div><p className="font-semibold">Everything is under control</p><p className="text-sm text-muted">No unacknowledged alerts, offline devices, overdue tickets, or pending registrations.</p></div></CardContent></Card>}
     </section>
@@ -156,9 +156,9 @@ export function DashboardPage() {
   return (
     <div className="space-y-4">
       {showSetup ? (
-        <div className="flex items-center gap-3 rounded-card bg-sky-100 px-4 py-3">
+        <div className="flex flex-wrap items-center gap-3 rounded-card bg-sky-100 px-4 py-3">
           <span className="flex size-9 items-center justify-center rounded-full bg-white text-sky-500"><WandIcon className="size-4" /></span>
-          <p className="min-w-0 flex-1 text-sm"><span className="font-semibold">New distribution center?</span> <span className="text-body/70">Run the setup wizard to add outlets, Room Alert units, employees and the API integration in one go.</span></p>
+          <p className="min-w-[12rem] flex-1 text-sm"><span className="font-semibold">New distribution center?</span> <span className="text-body/70">Run the setup wizard to add outlets, Room Alert units, employees and the API integration in one go.</span></p>
           <Button asChild size="sm"><Link to="/setup">Start setup</Link></Button>
           <Button variant="ghost" size="icon" className="size-8" aria-label="Dismiss" onClick={() => setShowSetup(false)}><X /></Button>
         </div>
@@ -169,7 +169,7 @@ export function DashboardPage() {
             <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)} className={cn('inline-flex h-9 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors', view === v ? 'bg-ink text-white' : 'text-muted hover:text-foreground')}><Icon className="size-4" />{label}</button>
           ))}
         </div>
-        <p className="text-xs text-muted">{view === 'maintenance' ? 'Point of view: hardware maintenance team' : 'Point of view: outlet operations'}</p>
+        <p className="hidden text-xs text-muted md:block">{view === 'maintenance' ? 'Point of view: hardware maintenance team' : 'Point of view: outlet operations'}</p>
       </div>
       {view === 'maintenance' ? <MaintenanceDashboard /> : <OperationsDashboard />}
     </div>
@@ -222,10 +222,10 @@ function OperationsDashboard() {
   return (
     <div className="space-y-4">
       <AttentionRequired />
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <HeroOutlet outlet={featured} alerts={alerts} />
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Card className="bg-brand-600 text-white sm:col-span-2">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          <Card className="col-span-2 bg-brand-600 text-white">
             <CardContent className="flex flex-col gap-5 p-5">
               <div className="flex items-start justify-between">
                 <div>
@@ -278,16 +278,16 @@ function OperationsDashboard() {
 
       <MaintenanceSummary />
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 [&>*]:min-w-[72%] [&>*]:snap-start sm:[&>*]:min-w-0">
         <StatCard label="Avg response time" value={avg == null ? '—' : humanizeShort(avg)} hint={PERIODS.find((p) => p.value === period)?.label} icon={<Clock />} tone="success" />
         <StatCard label="Alerts in period" value={stats.total} hint={`${stats.open} open · ${stats.solved} solved`} icon={<Radio />} tone="default" />
         <StatCard label="Pending registrations" value={pending} hint="employee phones awaiting approval" icon={<UserPlus />} tone={pending ? 'warning' : 'default'} />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_20rem]">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_20rem]">
         <AlertColumn title="Active alerts" alerts={open} tab="unacknowledged" />
         <AlertColumn title="Resolved alerts" alerts={solved} tab="resolved" />
-        <Card>
+        <Card className="md:col-span-2 xl:col-span-1">
           <CardHeader className="pb-2"><CardTitle className="text-lg">Analysis</CardTitle></CardHeader>
           <CardContent>
             <div className="relative h-52" role="img" aria-label={`${stats.open} open alerts and ${stats.solved} solved alerts in the selected period.`}>

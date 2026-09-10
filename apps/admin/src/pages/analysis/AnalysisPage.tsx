@@ -34,14 +34,14 @@ export function AnalysisPage() {
       <PageHeader title="Analysis" description="Alert volume, employee response performance and environment trends" actions={
         <Select value={period} onValueChange={(v) => update({ period: v === '30d' ? null : v })}><SelectTrigger className="w-44"><SelectValue /></SelectTrigger><SelectContent>{PERIODS.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}</SelectContent></Select>
       } />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Alerts" value={stats.total} hint={`${stats.open} open · ${stats.solved} solved`} icon={<Radio />} />
         <StatCard label="Avg response time" value={avg == null ? '—' : humanizeShort(avg)} hint="employee KPI" icon={<Clock />} tone="success" />
         <StatCard label="Response rate" value={rate == null ? '—' : `${Math.round(rate * 100)}%`} hint="alerts with a field response" icon={<Percent />} tone="warning" />
         <StatCard label="Busiest day" value={perDay.reduce((m, d) => (d.total > m.total ? d : m), perDay[0]!).label} hint={`${Math.max(...perDay.map((d) => d.total))} alerts`} icon={<TrendingUp />} tone="danger" />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <Card>
           <CardHeader><CardTitle>Alerts per day</CardTitle><p className="text-sm text-muted">Last 14 days by category</p></CardHeader>
           <CardContent className="h-72" role="img" aria-label={`Alerts per day for the last 14 days. ${stats.total} alerts in the selected period.`}>
@@ -73,7 +73,7 @@ export function AnalysisPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <Card>
           <CardHeader><CardTitle>Fastest responding outlets</CardTitle><p className="text-sm text-muted">Average minutes from trigger to field response</p></CardHeader>
           <CardContent className="h-80" role="img" aria-label={`Average response time by outlet. ${byOutlet.length} outlets shown.`}>

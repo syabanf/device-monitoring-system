@@ -69,7 +69,7 @@ export function OutletDetailPage() {
 
         <TabsContent value="floor">
           <Card>
-            <CardContent className="grid gap-5 p-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+            <CardContent className="grid grid-cols-1 gap-5 p-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
               <div><FloorPlan markers={markers} selectedId={markerId} onSelect={setMarkerId} title="Denah outlet" /><FloorLegend className="mt-3" /></div>
               <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted">Installation points</p>
@@ -85,7 +85,7 @@ export function OutletDetailPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="devices" className="grid gap-4 lg:grid-cols-2">
+        <TabsContent value="devices" className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {devices.map((d) => (
             <Card key={d.id}>
               <CardHeader className="flex-row items-start justify-between space-y-0">

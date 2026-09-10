@@ -87,7 +87,7 @@ export function SetupWizardPage() {
           {step === 0 ? (
             <div className="space-y-4">
               <h2 className="text-lg font-bold">Which distribution center is this dashboard for?</h2>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField label="Name" htmlFor="w-name"><Input id="w-name" value={org.name} onChange={(e) => setOrg({ ...org, name: e.target.value })} required /></FormField>
                 <FormField label="Code" htmlFor="w-code"><Input id="w-code" value={org.code} onChange={(e) => setOrg({ ...org, code: e.target.value.toUpperCase() })} className="[&_input]:font-mono" /></FormField>
                 <FormField label="City" htmlFor="w-city"><Input id="w-city" value={org.city} onChange={(e) => setOrg({ ...org, city: e.target.value })} /></FormField>
@@ -103,7 +103,7 @@ export function SetupWizardPage() {
               <div className="flex items-center justify-between"><h2 className="text-lg font-bold">Add the outlets to monitor</h2><Button size="sm" variant="outline" onClick={() => setOutlets([...outlets, { key: newId('o'), code: `IDM-SBY-${String(21 + outlets.length).padStart(4, '0')}`, name: 'Indomaret ', address: '', city: 'Surabaya', model: deviceTypes[0]?.model ?? 'RA3S', sensors: ['TEMPERATURE_HUMIDITY', 'DOOR'] }])}><Plus />Add row</Button></div>
               <div className="space-y-2">
                 {outlets.map((o, i) => (
-                  <div key={o.key} className="grid gap-2 rounded-2xl bg-surface p-3 sm:grid-cols-[8rem_1fr_1fr_8rem_auto]">
+                  <div key={o.key} className="grid grid-cols-1 gap-2 rounded-2xl bg-surface p-3 sm:grid-cols-[8rem_1fr_1fr_8rem_auto]">
                     <Input value={o.code} onChange={(e) => setOutlets(outlets.map((x) => (x.key === o.key ? { ...x, code: e.target.value.toUpperCase() } : x)))} className="[&_input]:h-10 [&_input]:font-mono [&_input]:text-xs" aria-label="Code" />
                     <Input value={o.name} onChange={(e) => setOutlets(outlets.map((x) => (x.key === o.key ? { ...x, name: e.target.value } : x)))} placeholder="Indomaret …" className="[&_input]:h-10" aria-label="Outlet name" />
                     <Input value={o.address} onChange={(e) => setOutlets(outlets.map((x) => (x.key === o.key ? { ...x, address: e.target.value } : x)))} placeholder="Address" className="[&_input]:h-10" aria-label="Address" />
@@ -143,7 +143,7 @@ export function SetupWizardPage() {
               {people.length === 0 ? <p className="rounded-2xl bg-surface p-4 text-sm text-muted">Each employee gets a registration token to sign in to the mobile app. You can also import them later from User Management.</p> : null}
               <div className="space-y-2">
                 {people.map((p) => (
-                  <div key={p.key} className="grid gap-2 rounded-2xl bg-surface p-3 sm:grid-cols-[1fr_1fr_1fr_10rem_11rem_auto]">
+                  <div key={p.key} className="grid grid-cols-1 gap-2 rounded-2xl bg-surface p-3 sm:grid-cols-[1fr_1fr_1fr_10rem_11rem_auto]">
                     <Input value={p.name} onChange={(e) => setPeople(people.map((x) => (x.key === p.key ? { ...x, name: e.target.value } : x)))} placeholder="Full name" className="[&_input]:h-10" aria-label="Name" />
                     <Input value={p.email} onChange={(e) => setPeople(people.map((x) => (x.key === p.key ? { ...x, email: e.target.value } : x)))} placeholder="Email" className="[&_input]:h-10" aria-label="Email" />
                     <Input value={p.phone} onChange={(e) => setPeople(people.map((x) => (x.key === p.key ? { ...x, phone: e.target.value } : x)))} placeholder="Phone" className="[&_input]:h-10" aria-label="Phone" />
@@ -159,12 +159,12 @@ export function SetupWizardPage() {
           {step === 4 ? (
             <div className="space-y-4">
               <h2 className="text-lg font-bold">Connect the blackbox</h2>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField label="Backend API base URL" htmlFor="w-api"><Input id="w-api" value={integ.apiBaseUrl} onChange={(e) => setInteg({ ...integ, apiBaseUrl: e.target.value })} className="[&_input]:font-mono [&_input]:text-xs" /></FormField>
                 <FormField label="API key" htmlFor="w-key"><Input id="w-key" type="password" value={integ.apiKey} onChange={(e) => setInteg({ ...integ, apiKey: e.target.value })} className="[&_input]:font-mono [&_input]:text-xs" /></FormField>
                 <FormField label="Webhook secret (paste into the Room Alert account HTTP POST action)" htmlFor="w-secret" className="sm:col-span-2"><div className="flex gap-2"><Input id="w-secret" readOnly value={integ.webhookSecret} className="flex-1 [&_input]:bg-surface [&_input]:font-mono [&_input]:text-xs" /><Button type="button" variant="outline" onClick={() => setInteg({ ...integ, webhookSecret: randomSecret() })}>Regenerate</Button></div></FormField>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <label className="flex items-center justify-between rounded-2xl bg-surface p-4"><span><span className="block text-sm font-medium">Telegram ANBot broadcast</span><span className="block text-xs text-muted">Broadcast every alert to registered chats</span></span><Toggle checked={integ.telegram} onCheckedChange={(v) => setInteg({ ...integ, telegram: v })} label="Telegram" /></label>
                 <label className="flex items-center justify-between rounded-2xl bg-surface p-4"><span><span className="block text-sm font-medium">E-mail parser (IMAP)</span><span className="block text-xs text-muted">For Room Alert accounts without HTTP POST</span></span><Toggle checked={integ.imap} onCheckedChange={(v) => setInteg({ ...integ, imap: v })} label="IMAP" /></label>
               </div>

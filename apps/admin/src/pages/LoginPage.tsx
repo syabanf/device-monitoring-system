@@ -31,7 +31,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="grid min-h-dvh bg-surface p-3 lg:grid-cols-[1.1fr_1fr] lg:p-4">
+    <div className="grid grid-cols-1 min-h-dvh bg-surface p-3 lg:grid-cols-[1.1fr_1fr] lg:p-4">
       <div className="hidden flex-col justify-between rounded-[28px] bg-ink p-10 text-white shadow-float lg:flex">
         <WitMark dark className="text-2xl" />
         <div>

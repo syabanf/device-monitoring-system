@@ -19,7 +19,7 @@ export function MaintenanceSummary() {
   const tech = next?.technicianId ? technicianById.get(next.technicianId) : undefined;
   return (
     <Card>
-      <CardContent className="grid gap-4 p-5 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_auto] md:items-center">
+      <CardContent className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 sm:items-center xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
         <div>
           <div className="flex items-center gap-2"><span className="flex size-8 items-center justify-center rounded-full bg-ink text-white"><Cpu className="size-4" /></span><p className="text-sm font-semibold">Hardware health</p><span className="text-xs text-muted">{devices.length} units</span></div>
           <div className="mt-3 flex h-2.5 w-full overflow-hidden rounded-full bg-surface">
@@ -38,7 +38,7 @@ export function MaintenanceSummary() {
           {next ? <div className="min-w-0"><p className="text-sm font-bold leading-tight">{fmtDate(next.scheduledAt!)}</p><p className="truncate text-xs text-muted">{outletById.get(next.outletId)?.name?.replace('Indomaret ', '')} · {tech ? tech.name.split(' ')[0] : 'unassigned'}</p></div> : <p className="text-xs text-muted">No visit scheduled</p>}
           {tech ? <Avatar name={tech.name} color={tech.avatarColor} size="sm" /> : null}
         </div>
-        <Button asChild variant="outline" size="sm"><Link to="/?view=maintenance">Maintenance view<ArrowUpRight /></Link></Button>
+        <Button asChild variant="outline" size="sm" className="sm:justify-self-end"><Link to="/?view=maintenance">Maintenance view<ArrowUpRight /></Link></Button>
       </CardContent>
     </Card>
   );

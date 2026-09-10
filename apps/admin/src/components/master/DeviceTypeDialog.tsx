@@ -22,19 +22,19 @@ export function DeviceTypeDialog({ deviceType, onClose }: { deviceType: DeviceTy
       <DialogContent size="lg">
         <DialogHeader><DialogTitle>{d.id ? 'Edit device type' : 'Add device type'}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <FormField label="Model code" htmlFor="dt-model"><Input id="dt-model" value={d.model} onChange={(e) => set({ model: e.target.value.toUpperCase() as DeviceType['model'] })} required className="[&_input]:font-mono" /></FormField>
             <FormField label="Name" htmlFor="dt-name" className="sm:col-span-2"><Input id="dt-name" value={d.name} onChange={(e) => set({ name: e.target.value })} required placeholder="Room Alert 32S" /></FormField>
           </div>
           <FormField label="Description" htmlFor="dt-desc"><Textarea id="dt-desc" value={d.description} onChange={(e) => set({ description: e.target.value })} className="min-h-20" /></FormField>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {(['digital', 'switch', 'analog'] as const).map((k) => <FormField key={k} label={`${k[0]!.toUpperCase()}${k.slice(1)} ports`} htmlFor={`dt-${k}`}><Input id={`dt-${k}`} type="number" min={0} max={16} value={portCount(k)} onChange={(e) => setPort(k, Number(e.target.value))} /></FormField>)}
           </div>
           <div>
             <p className="mb-2 text-sm font-medium">Built-in sensors</p>
-            <div className="grid gap-2 sm:grid-cols-2">{(Object.keys(SENSOR_TYPE_LABEL) as SensorType[]).map((t) => <label key={t} className="flex items-center justify-between rounded-2xl bg-surface px-3 py-2"><span className="text-sm">{SENSOR_TYPE_LABEL[t]}</span><Toggle checked={d.builtInSensors.includes(t)} onCheckedChange={(v) => toggleSensor(t, v)} label={SENSOR_TYPE_LABEL[t]} /></label>)}</div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{(Object.keys(SENSOR_TYPE_LABEL) as SensorType[]).map((t) => <label key={t} className="flex items-center justify-between rounded-2xl bg-surface px-3 py-2"><span className="text-sm">{SENSOR_TYPE_LABEL[t]}</span><Toggle checked={d.builtInSensors.includes(t)} onCheckedChange={(v) => toggleSensor(t, v)} label={SENSOR_TYPE_LABEL[t]} /></label>)}</div>
           </div>
-          <div className="grid gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
             <FormField label="Vendor" htmlFor="dt-vendor"><Input id="dt-vendor" value={d.vendor} onChange={(e) => set({ vendor: e.target.value })} /></FormField>
             <FormField label="Price (IDR)" htmlFor="dt-price"><Input id="dt-price" type="number" min={0} step={1000} value={d.priceIdr} onChange={(e) => set({ priceIdr: Number(e.target.value) })} /></FormField>
             <FormField label="Latest firmware" htmlFor="dt-fw"><Input id="dt-fw" value={d.latestFirmware} onChange={(e) => set({ latestFirmware: e.target.value })} className="[&_input]:font-mono [&_input]:text-xs" /></FormField>

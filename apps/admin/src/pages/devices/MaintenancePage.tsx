@@ -63,7 +63,7 @@ export function MaintenancePage() {
   return (
     <div className="space-y-4">
       <PageHeader title="Device Maintenance" description="Hardware health, service tickets and the technician schedule for every Room Alert unit" actions={<Button onClick={() => setCreating(true)}><Plus />New ticket</Button>} />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Critical hardware" value={critical} hint={`${attention} more need attention`} icon={<ShieldAlert />} tone="danger" />
         <StatCard label="Open tickets" value={openTickets.length} hint={`${counts.overdue} overdue · ${counts.IN_PROGRESS} in progress`} icon={<Wrench />} tone="warning" />
         <StatCard label="Scheduled visits" value={counts.SCHEDULED} hint="next 30 days" icon={<CalendarClock />} tone="default" />
@@ -91,7 +91,7 @@ export function MaintenancePage() {
       {view === 'health' ? <Card><DataTable columns={healthColumns} rows={health} rowKey={(h) => h.device.id} onRowClick={(h) => navigate(`/devices/${h.device.id}`)} pageSize={12} initialSort={{ key: 'health', dir: 'asc' }} /></Card> : null}
       {view === 'tickets' ? <Card><DataTable columns={ticketColumns} rows={ticketRows} rowKey={(t) => t.id} onRowClick={(t) => update({ ticket: t.id })} pageSize={12} initialSort={{ key: 'priority', dir: 'asc' }} emptyTitle="No tickets" /></Card> : null}
       {view === 'schedule' ? (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {scheduleByDay.length === 0 ? <Card><EmptyState title="Nothing scheduled" /></Card> : scheduleByDay.map(([day, list]) => (
             <Card key={day}>
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="flex items-center gap-2"><CalendarClock className="size-4 text-muted" />{day}</CardTitle><Badge variant="default">{list.length} visit{list.length > 1 ? 's' : ''}</Badge></CardHeader>
@@ -109,7 +109,7 @@ export function MaintenancePage() {
         </div>
       ) : null}
       {view === 'technicians' ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {technicians.map((tech) => { const mine = openTickets.filter((t) => t.technicianId === tech.id); const done = tickets.filter((t) => t.technicianId === tech.id && t.status === 'DONE').length; return (
             <Card key={tech.id}>
               <CardHeader className="flex-row items-center gap-3 space-y-0"><Avatar name={tech.name} color={tech.avatarColor} size="lg" /><div className="min-w-0 flex-1"><CardTitle>{tech.name}</CardTitle><p className="truncate text-xs text-muted">{tech.specialty} · {tech.phone}</p><p className="truncate text-xs text-muted">{tech.email}</p></div><div className="flex gap-1"><Button variant="ghost" size="icon" className="size-8" aria-label="Edit" onClick={() => setTechEdit(tech)}><Pencil /></Button><Button variant="ghost" size="icon" className="size-8 text-brand-600" aria-label="Delete" onClick={() => setTechRemove(tech)}><Trash2 /></Button></div></CardHeader>

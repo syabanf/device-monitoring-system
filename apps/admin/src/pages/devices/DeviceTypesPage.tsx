@@ -15,7 +15,7 @@ export function DeviceTypesPage() {
   return (
     <div>
       <PageHeader title="Device Types" description="Room Alert models approved for outlet installation" actions={<Button onClick={() => setEditing(emptyDeviceType())}><Plus />Add device type</Button>} />
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {deviceTypes.map((t) => {
           const count = installed.filter((d) => d.deviceTypeId === t.id).length;
           return (

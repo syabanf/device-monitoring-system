@@ -58,7 +58,7 @@ export function DeviceDetailPage() {
         </AlertDialog>
         </div>
       </div>
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Card>
           <CardHeader className="flex-row items-start justify-between space-y-0">
             <div>
@@ -115,7 +115,7 @@ export function DeviceDetailPage() {
           <div><CardTitle className="flex items-center gap-2"><MapIcon className="size-4 text-muted" />Shopfloor position</CardTitle><p className="text-sm text-muted">This unit and its sensors on the {outlet.name} floor plan; other equipment is greyed out.</p></div>
           <div className="flex gap-2"><Button asChild variant="outline" size="sm"><Link to={`/shopfloor?outlet=${device.outletId}`}>Open shopfloor</Link></Button><Button size="sm" variant="outline" onClick={() => setEditing(true)}>Move unit</Button></div>
         </CardHeader>
-        <CardContent className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <CardContent className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <div><FloorPlan markers={floorMarkers} selectedId={sensorEdit?.id ?? null} onSelect={(id) => { const s = sensors.find((x) => x.id === id); if (s) setSensorEdit(s); }} title="Denah outlet" /><FloorLegend className="mt-3" /></div>
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted">Installation points · click to edit position</p>
@@ -130,7 +130,7 @@ export function DeviceDetailPage() {
           <div><CardTitle className="flex items-center gap-2"><Wrench className="size-4 text-muted" />Maintenance</CardTitle><p className="text-sm text-muted">Hardware health, service history and warranty</p></div>
           <div className="flex items-center gap-2"><HealthBadge status={health.status} /><Button size="sm" onClick={() => setCreating(true)}><Plus />Ticket</Button></div>
         </CardHeader>
-        <CardContent className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+        <CardContent className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
           <div>
             <dl className="divide-y divide-border">
               <KeyValue label="Uptime 30d"><span className={cn('font-semibold', device.uptimePct < 95 && 'text-brand-600')}>{device.uptimePct.toFixed(1)}%</span></KeyValue>

@@ -74,7 +74,7 @@ export function IntegrationPage() {
         </>
       } />
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card className={cn('md:col-span-2', config.mode === 'mock' ? 'bg-ink text-white' : 'bg-brand-600 text-white')}>
           <CardContent className="flex items-center gap-4 p-5">
             <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-white/10"><Boxes className="size-6" /></span>
@@ -98,7 +98,7 @@ export function IntegrationPage() {
       </Tabs>
 
       {view === 'channels' ? (
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <div className="space-y-4">
             {CHANNELS.map((ch) => { const r = results[ch.key]; const on = ch.enabled(draft); return (
               <Card key={ch.key}>
@@ -126,7 +126,7 @@ export function IntegrationPage() {
                 <FormField label="Webhook URL (paste into the Room Alert account → Alert action → HTTP POST)" hint={`Secret: ${maskSecret(draft.webhookSecret)}`}>
                   <div className="flex gap-2"><Input readOnly value={webhookUrl} className="flex-1 [&_input]:bg-surface [&_input]:font-mono [&_input]:text-xs" /><Button type="button" variant="outline" onClick={() => copy(webhookUrl)} aria-label="Copy"><Copy /></Button><Button type="button" variant="outline" onClick={() => set({ webhookSecret: randomSecret() })}><RefreshCw />Secret</Button></div>
                 </FormField>
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <FormField label="Room Alert account e-mail" htmlFor="i-ra"><Input id="i-ra" value={draft.roomAlert.accountEmail} onChange={(e) => set({ roomAlert: { ...draft.roomAlert, accountEmail: e.target.value } })} /></FormField>
                   <FormField label="Device push interval (sec)" htmlFor="i-push"><Input id="i-push" type="number" min={30} value={draft.roomAlert.pushIntervalSec} onChange={(e) => set({ roomAlert: { ...draft.roomAlert, pushIntervalSec: Number(e.target.value) } })} /></FormField>
                 </div>
@@ -134,7 +134,7 @@ export function IntegrationPage() {
             </Card>
             <Card>
               <CardHeader><CardTitle className="flex items-center gap-2"><Mail className="size-4 text-muted" />IMAP mail parser</CardTitle></CardHeader>
-              <CardContent className="grid gap-4 sm:grid-cols-2">
+              <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField label="Host" htmlFor="i-host"><Input id="i-host" value={draft.imap.host} onChange={(e) => set({ imap: { ...draft.imap, host: e.target.value } })} /></FormField>
                 <FormField label="Port" htmlFor="i-port"><Input id="i-port" type="number" value={draft.imap.port} onChange={(e) => set({ imap: { ...draft.imap, port: Number(e.target.value) } })} /></FormField>
                 <FormField label="Mailbox user" htmlFor="i-user"><Input id="i-user" value={draft.imap.user} onChange={(e) => set({ imap: { ...draft.imap, user: e.target.value } })} /></FormField>
@@ -144,7 +144,7 @@ export function IntegrationPage() {
             </Card>
             <Card>
               <CardHeader><CardTitle className="flex items-center gap-2"><Send className="size-4 text-muted" />Telegram ANBot & push</CardTitle></CardHeader>
-              <CardContent className="grid gap-4 sm:grid-cols-2">
+              <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField label="Bot token" htmlFor="i-bot"><Input id="i-bot" type="password" value={draft.telegram.botToken} onChange={(e) => set({ telegram: { ...draft.telegram, botToken: e.target.value } })} className="[&_input]:font-mono [&_input]:text-xs" /></FormField>
                 <FormField label="Default chat / channel id" htmlFor="i-chat"><Input id="i-chat" value={draft.telegram.chatId} onChange={(e) => set({ telegram: { ...draft.telegram, chatId: e.target.value } })} /></FormField>
                 <FormField label="Push provider"><Select value={draft.push.provider} onValueChange={(v) => set({ push: { ...draft.push, provider: v as 'fcm' | 'webpush' } })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="fcm">Firebase Cloud Messaging</SelectItem><SelectItem value="webpush">Web Push (PWA)</SelectItem></SelectContent></Select></FormField>
@@ -155,7 +155,7 @@ export function IntegrationPage() {
       ) : null}
 
       {view === 'blackbox' ? (
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <Card>
             <CardHeader className="flex-row items-start justify-between space-y-0">
               <div><CardTitle>Replay a payload</CardTitle><p className="text-sm text-muted">Paste a Room Alert webhook JSON or an alert e-mail, parse it, then push it through the same pipeline the backend will use.</p></div>

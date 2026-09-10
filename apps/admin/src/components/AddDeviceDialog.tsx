@@ -43,7 +43,7 @@ export function AddDeviceDialog({ open, onClose, outletId }: { open: boolean; on
           </div>
         ) : (
           <form onSubmit={submit} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormField label="Outlet"><Select value={outlet} onValueChange={setOutlet}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent></Select></FormField>
               <FormField label="Model"><Select value={model} onValueChange={(v) => setModel(v as DeviceModel)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{deviceTypes.map((t) => <SelectItem key={t.id} value={t.model}>{t.name}</SelectItem>)}</SelectContent></Select></FormField>
               <FormField label="Serial" htmlFor="dev-serial"><Input id="dev-serial" value={serial} onChange={(e) => setSerial(e.target.value)} required className="[&_input]:font-mono [&_input]:text-xs" /></FormField>
@@ -51,7 +51,7 @@ export function AddDeviceDialog({ open, onClose, outletId }: { open: boolean; on
             </div>
             <div>
               <p className="mb-2 text-sm font-medium">Sensors to install <span className="text-xs font-normal text-muted">({usedDigital}/{capacity.digital} digital · {usedSwitch}/{capacity.switch} switch ports)</span></p>
-              <div className="grid gap-2 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {DEFAULT_SENSORS.map((s) => (
                   <label key={s.type} className="flex items-center justify-between rounded-2xl bg-surface p-3"><span><span className="block text-sm font-medium">{s.name}</span><span className="block text-xs text-muted">{SENSOR_TYPE_LABEL[s.type]} · {s.portKind} port</span></span><Toggle checked={!!enabled[s.type]} onCheckedChange={(v) => setEnabled({ ...enabled, [s.type]: v })} label={s.name} /></label>
                 ))}

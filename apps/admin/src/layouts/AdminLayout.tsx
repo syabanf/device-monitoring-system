@@ -18,6 +18,7 @@ export function AdminLayout() {
   const [open, setOpen] = React.useState(false);
   const [q, setQ] = React.useState('');
   const [searchFocused, setSearchFocused] = React.useState(false);
+  const [searchOpen, setSearchOpen] = React.useState(false);
   const [adding, setAdding] = React.useState(false);
   const distributor = session ? distributorById.get(session.distributorId) : undefined;
   const openCount = alerts.filter((a) => a.status !== 'RESOLVED' && a.status !== 'VERIFIED').length;
@@ -40,25 +41,15 @@ export function AdminLayout() {
     return results.slice(0, 8);
   }, [q, outlets, devices, sensors, alerts, tickets, outletById]);
 
-  const goToResult = (href: string) => { navigate(href); setQ(''); setSearchFocused(false); };
+  const goToResult = (href: string) => { navigate(href); setQ(''); setSearchFocused(false); setSearchOpen(false); };
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchResults[0]) goToResult(searchResults[0].href);
     else if (q.trim()) goToResult(`/devices?q=${encodeURIComponent(q.trim())}`);
   };
 
-  return (
-    <div className="flex h-dvh gap-4 overflow-hidden bg-surface p-3 lg:p-4">
-      <p className="sr-only" role="alert" aria-live="assertive" aria-atomic="true">{announcement}</p>
-      <div className="hidden shrink-0 lg:block"><RailNav /></div>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="left" hideClose className="w-72 bg-ink p-0"><DrawerNav onNavigate={() => setOpen(false)} /></SheetContent>
-      </Sheet>
-
-      <div className="flex min-w-0 flex-1 flex-col gap-4">
-        <header className="flex h-14 shrink-0 items-center gap-3">
-          <Button variant="ghost" size="icon" className="bg-white shadow-card lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></Button>
-          <form onSubmit={submitSearch} className="relative ml-auto w-full max-w-sm md:ml-0 md:mr-auto" onFocus={() => setSearchFocused(true)} onBlur={() => window.setTimeout(() => setSearchFocused(false), 120)}>
+  const searchForm = (
+          <form onSubmit={submitSearch} className="relative w-full md:max-w-sm" onFocus={() => setSearchFocused(true)} onBlur={() => window.setTimeout(() => setSearchFocused(false), 120)}>
             <Input aria-label="Global search" aria-expanded={searchFocused && q.trim().length >= 2} aria-controls="global-search-results" placeholder="Search outlets, devices, sensors, alerts, tickets…" leftIcon={<Search />} value={q} onChange={(e) => setQ(e.target.value)} className="[&_input]:h-11 [&_input]:rounded-full [&_input]:border-0 [&_input]:bg-white [&_input]:shadow-card" />
             {searchFocused && q.trim().length >= 2 ? <div id="global-search-results" aria-label="Search results" className="absolute inset-x-0 top-12 z-50 overflow-hidden rounded-2xl border border-border bg-white p-2 shadow-float">
               {searchResults.length ? <>{searchResults.map((result) => <button key={result.key} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => goToResult(result.href)} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-surface">
@@ -66,6 +57,21 @@ export function AdminLayout() {
               </button>)}</> : <p className="px-3 py-4 text-center text-sm text-muted">No direct matches. Press Enter to search devices.</p>}
             </div> : null}
           </form>
+  );
+
+  return (
+    <div className="flex h-dvh gap-4 overflow-hidden bg-surface p-3 lg:p-4">
+      <p className="sr-only" role="alert" aria-live="assertive" aria-atomic="true">{announcement}</p>
+      <div className="hidden shrink-0 md:block"><RailNav /></div>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent side="left" hideClose className="w-72 bg-ink p-0"><DrawerNav onNavigate={() => setOpen(false)} /></SheetContent>
+      </Sheet>
+
+      <div className="flex min-w-0 flex-1 flex-col gap-4">
+        <header className="flex h-14 shrink-0 items-center gap-2 sm:gap-3">
+          <Button variant="ghost" size="icon" className="bg-white shadow-card md:hidden" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></Button>
+          <div className="hidden min-w-0 flex-1 md:block">{searchForm}</div>
+          <Button variant="ghost" size="icon" className="ml-auto bg-white shadow-card md:hidden" onClick={() => setSearchOpen((v) => !v)} aria-label="Search" aria-expanded={searchOpen}><Search /></Button>
           <Button className="hidden sm:inline-flex" onClick={() => setAdding(true)}><Plus />Add device</Button>
           <Button asChild variant="ghost" size="icon" className="relative bg-white shadow-card" aria-label="Alerts">
             <Link to="/alerts?tab=unacknowledged">
@@ -96,6 +102,7 @@ export function AdminLayout() {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
+        {searchOpen ? <div className="-mt-2 md:hidden">{searchForm}</div> : null}
         <main className="min-h-0 flex-1 overflow-y-auto pb-2 pr-0.5">
           <PageNavigation />
           <Outlet />

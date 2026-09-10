@@ -21,8 +21,9 @@ export function AlertListItem({ alert, className, compact }: { alert: Alert; cla
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-semibold">{alert.message}</span>
         <span className="block truncate text-xs text-muted">{outlet?.name}{compact ? '' : ` · ${alert.sensorName}`}</span>
+        <span className="mt-1.5 flex items-center gap-2 sm:hidden"><AlertStatusBadge status={alert.status} /><span className="text-[11px] text-muted">{fmtRelativeDay(alert.triggerTime)}</span></span>
       </span>
-      <span className="flex shrink-0 flex-col items-end gap-1">
+      <span className="hidden shrink-0 flex-col items-end gap-1 sm:flex">
         <AlertStatusBadge status={alert.status} />
         <span className="text-[11px] text-muted">{fmtRelativeDay(alert.triggerTime)}</span>
       </span>

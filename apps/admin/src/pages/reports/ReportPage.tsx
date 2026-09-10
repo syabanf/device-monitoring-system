@@ -63,7 +63,7 @@ export function ReportPage() {
         <Button onClick={tab === 'alerts' ? exportAlerts : exportReadings}><Download />Export CSV ({tab === 'alerts' ? rows.length : readingRows.length})</Button>
       } />
       <Card>
-        <div className="grid gap-4 p-5 md:grid-cols-5">
+        <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-5">
           <FormField label="From" htmlFor="from"><Input id="from" type="date" value={from} max={to} onChange={(e) => update({ from: e.target.value === defaults.from ? null : e.target.value })} /></FormField>
           <FormField label="To" htmlFor="to"><Input id="to" type="date" value={to} min={from} onChange={(e) => update({ to: e.target.value === defaults.to ? null : e.target.value })} /></FormField>
           <FormField label="Outlet"><Select value={outletFilter} onValueChange={(v) => update({ outlet: v === 'all' ? null : v })}><SelectTrigger className="h-11"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All outlets</SelectItem>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent></Select></FormField>

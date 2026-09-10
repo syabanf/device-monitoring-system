@@ -20,7 +20,7 @@ export function TechnicianDialog({ technician, onClose }: { technician: Technici
         <DialogHeader><DialogTitle>{d.id ? 'Edit technician' : 'Add technician'}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <FormField label="Full name" htmlFor="t-name"><Input id="t-name" value={d.name} onChange={(e) => set({ name: e.target.value })} required /></FormField>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="Email" htmlFor="t-email"><Input id="t-email" type="email" value={d.email} onChange={(e) => set({ email: e.target.value })} required /></FormField>
             <FormField label="Phone" htmlFor="t-phone"><Input id="t-phone" value={d.phone} onChange={(e) => set({ phone: e.target.value })} required /></FormField>
           </div>

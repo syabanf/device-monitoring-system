@@ -77,7 +77,7 @@ export function DevicesPage() {
           <DataTable columns={columns} rows={rows} rowKey={(d) => d.id} onRowClick={(d) => navigate(`/devices/${d.id}`)} pageSize={12} emptyTitle="No devices match" />
         </Card>
       ) : (
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
           <Card>
             <CardHeader className="flex-row items-center justify-between space-y-0">
               <div><CardTitle>Installation points</CardTitle><p className="text-sm text-muted">Where each unit and sensor sits inside the outlet</p></div>
