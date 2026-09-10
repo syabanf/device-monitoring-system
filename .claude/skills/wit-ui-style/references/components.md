@@ -21,8 +21,20 @@ Dark hero: `relative overflow-hidden bg-ink text-on-ink` + blob `pointer-events-
 Accent card (the one urgent thing): `bg-accent text-white`, progress bar `h-1.5 rounded-full bg-white/25` with `bg-white` fill.
 
 ## StatCard
-`flex flex-col gap-4 rounded-card bg-card p-5 shadow-card` → row: label `text-sm font-medium text-muted` + icon tile `flex size-10 items-center justify-center rounded-full [&_svg]:size-[18px]` (tone: default `bg-surface text-body`, danger `bg-accent text-white`, success `bg-ink text-on-ink`, warning `bg-info-soft text-info`) → value `truncate text-3xl font-bold leading-none tracking-tight` → hint `mt-1.5 text-xs text-muted`.
-Mobile stat tile (3-up): `rounded-[24px] px-4 py-5 shadow-card`, number `text-[32px] font-bold leading-none`, label `mt-2 text-xs font-medium`; tones ink / accent / card.
+Label / value / hint on the left, a **soft-tinted square icon tile** on the right:
+```html
+<div class="flex items-start gap-3 rounded-card bg-card p-5 shadow-card">
+  <div class="min-w-0 flex-1">
+    <p class="text-[13px] font-semibold text-body/80">Avg response time</p>
+    <p class="mt-1.5 truncate text-[28px] font-extrabold leading-[1.15] tracking-[-0.5px]">30m</p>
+    <p class="mt-1 text-xs text-muted">Last 7 days</p>
+  </div>
+  <div class="flex size-[42px] shrink-0 items-center justify-center rounded-[13px] bg-success-soft text-success [&_svg]:size-[18px]"><Clock /></div>
+</div>
+```
+Tones are **tints**, never solid fills: `default` `bg-surface text-body` · `danger` `bg-accent-soft text-accent` · `success` `bg-success-soft text-success` · `warning` `bg-warning-soft text-warning` · `info` `bg-info-soft text-info` · `ink` `bg-ink text-on-ink` (reserve the solid ink tile for the single primary stat on a screen).
+Rows: `grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4`, or a phone snap row (see layouts → Responsive rules).
+Mobile PWA stat tile (3-up, different component): `rounded-[24px] px-4 py-5 shadow-card`, number `text-[32px] font-bold leading-none`, label `mt-2 text-xs font-medium`; tones ink / accent / card.
 
 ## Readout (sensor value)
 label `text-xs font-medium text-muted`; value `text-4xl font-bold tracking-tight` with unit `pt-1 text-sm font-semibold text-muted` in a `flex items-start gap-1 leading-none`.
@@ -86,18 +98,6 @@ sentinel: `flex items-center justify-center gap-2 py-4 text-xs text-muted` → `
 ## Floor plan / map markers (if a spatial view exists)
 marker: `absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-full ring-2 ring-card shadow-float`; device marker `rounded-2xl`; states normal `bg-ink text-white`, alarm `bg-accent text-white animate-pulse`, offline `bg-silver`, fault `bg-warning-soft text-ink`, muted `bg-card text-muted ring-border`; selected `scale-125 ring-4 ring-accent/40`.
 
-## Stat tile (tinted icon square)
-```tsx
-<div class="flex items-start gap-3 rounded-card bg-card p-5 shadow-card">
-  <div class="min-w-0 flex-1">
-    <p class="text-[13px] font-semibold text-body/80">Active agents</p>
-    <p class="mt-1.5 truncate text-[28px] font-extrabold leading-[1.15] tracking-[-0.5px]">7</p>
-    <p class="mt-1 text-xs text-muted">Currently running</p>
-  </div>
-  <div class="flex size-[42px] shrink-0 items-center justify-center rounded-[13px] bg-green-soft text-green [&_svg]:size-[18px]"><Check /></div>
-</div>
-```
-Tints: `accent-soft/accent`, `green-soft/green`, `amber-soft/amber`, `info-soft/info`, `surface/body`; `ink/on-ink` only for the single primary stat. Rows: `grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4` (or a phone snap row).
 
 ## Split-stat footer
 ```tsx

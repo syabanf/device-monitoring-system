@@ -48,7 +48,7 @@ Detail header: round back button `size-11 rounded-full bg-card shadow-card activ
 Login: centered column `px-6 pb-10 pt-16`, wordmark, `text-3xl font-bold` title with accent period, inputs `h-12`, primary `size lg w-full`, demo hint in `text-xs text-muted`.
 Sticky bottom CTA on forms: `pb-28` on the form + fixed primary button if needed.
 
-## Rail extras (merged from the REDDIE agent console)
+## Rail extras (create button, workspace switcher, collapse pill)
 ```tsx
 <Rail expanded={expanded} onToggle={toggle}
   header={<Link to="/">wordmark</Link>}
