@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link, useParams } from 'react-router';
-import { ArrowLeft, Pencil, Plus, Send, Trash2, Wrench } from 'lucide-react';
+import { Pencil, Plus, Send, Trash2, Wrench } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { SENSOR_TYPE_LABEL } from '@monitoring/types';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle, AlertDialogTrigger, Badge, Button, Card, CardContent, CardHeader, CardTitle, EmptyState, FloorLegend, FloorPlan, KeyValue, cn } from '@monitoring/ui';
@@ -45,8 +45,7 @@ export function DeviceDetailPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Button asChild variant="ghost" size="sm" className="-ml-2"><Link to="/devices"><ArrowLeft />All devices</Link></Button>
+      <div className="flex items-center justify-end">
         <div className="flex gap-2">
         <Button variant="outline" size="sm" onClick={() => setEditing(true)}><Pencil />Edit device</Button>
         <AlertDialog>

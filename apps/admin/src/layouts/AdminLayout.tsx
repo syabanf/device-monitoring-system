@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router';
+import { Link, Outlet, useNavigate } from 'react-router';
 import { Bell, LogOut, MapPin, Menu, Plug, Plus, Search, ShieldCheck, User, Wand2, Wrench } from 'lucide-react';
 import {
   Avatar, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Input, Sheet, SheetContent,
@@ -8,14 +8,13 @@ import { distributorById } from '@monitoring/fixtures';
 import { useAuth } from '../auth/auth';
 import { useScoped } from '../state/app-state';
 import { DrawerNav, RailNav } from './SidebarNav';
-import { pageTitle } from './nav-items';
+import { PageNavigation } from './PageNavigation';
 import { AddDeviceDialog } from '../components/AddDeviceDialog';
 
 export function AdminLayout() {
   const { user, session, logout } = useAuth();
   const { alerts, outlets, devices, sensors, tickets, outletById } = useScoped();
   const navigate = useNavigate();
-  const { pathname } = useLocation();
   const [open, setOpen] = React.useState(false);
   const [q, setQ] = React.useState('');
   const [searchFocused, setSearchFocused] = React.useState(false);
@@ -59,11 +58,7 @@ export function AdminLayout() {
       <div className="flex min-w-0 flex-1 flex-col gap-4">
         <header className="flex h-14 shrink-0 items-center gap-3">
           <Button variant="ghost" size="icon" className="bg-white shadow-card lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></Button>
-          <div className="hidden min-w-0 md:block">
-            <h2 className="truncate text-lg font-bold leading-tight">{pageTitle(pathname)}</h2>
-            <p className="truncate text-xs text-muted">{distributor?.name}</p>
-          </div>
-          <form onSubmit={submitSearch} className="relative ml-auto w-full max-w-sm md:ml-6 md:mr-auto" onFocus={() => setSearchFocused(true)} onBlur={() => window.setTimeout(() => setSearchFocused(false), 120)}>
+          <form onSubmit={submitSearch} className="relative ml-auto w-full max-w-sm md:ml-0 md:mr-auto" onFocus={() => setSearchFocused(true)} onBlur={() => window.setTimeout(() => setSearchFocused(false), 120)}>
             <Input aria-label="Global search" aria-expanded={searchFocused && q.trim().length >= 2} aria-controls="global-search-results" placeholder="Search outlets, devices, sensors, alerts, tickets…" leftIcon={<Search />} value={q} onChange={(e) => setQ(e.target.value)} className="[&_input]:h-11 [&_input]:rounded-full [&_input]:border-0 [&_input]:bg-white [&_input]:shadow-card" />
             {searchFocused && q.trim().length >= 2 ? <div id="global-search-results" aria-label="Search results" className="absolute inset-x-0 top-12 z-50 overflow-hidden rounded-2xl border border-border bg-white p-2 shadow-float">
               {searchResults.length ? <>{searchResults.map((result) => <button key={result.key} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => goToResult(result.href)} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-surface">
@@ -102,6 +97,7 @@ export function AdminLayout() {
           </DropdownMenu>
         </header>
         <main className="min-h-0 flex-1 overflow-y-auto pb-2 pr-0.5">
+          <PageNavigation />
           <Outlet />
         </main>
         <AddDeviceDialog open={adding} onClose={() => setAdding(false)} />

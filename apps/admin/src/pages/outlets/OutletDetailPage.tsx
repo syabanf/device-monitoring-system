@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link, useParams } from 'react-router';
-import { ArrowLeft, Clock, ExternalLink, MapPin, Pencil, Phone, Trash2 } from 'lucide-react';
+import { Clock, ExternalLink, MapPin, Pencil, Phone, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { EMPLOYEE_ROLE_LABEL } from '@monitoring/types';
 import { Avatar, Badge, Button, Card, CardContent, CardHeader, CardTitle, EmptyState, FloorLegend, FloorPlan, Tabs, TabsContent, TabsList, TabsTrigger } from '@monitoring/ui';
@@ -36,7 +36,6 @@ export function OutletDetailPage() {
 
   return (
     <div className="space-y-6">
-      <Button asChild variant="ghost" size="sm" className="-ml-2"><Link to="/outlets"><ArrowLeft />All outlets</Link></Button>
       <Card>
         <CardContent className="flex flex-wrap items-start justify-between gap-4 p-5">
           <div>
