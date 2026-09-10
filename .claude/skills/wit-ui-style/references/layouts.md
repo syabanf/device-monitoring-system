@@ -47,3 +47,29 @@ Screen header: `flex items-center justify-between pt-3` → left `p text-sm text
 Detail header: round back button `size-11 rounded-full bg-card shadow-card active:scale-95` + `h1 text-lg font-bold leading-tight` + `p text-xs text-muted`; tab bar hidden.
 Login: centered column `px-6 pb-10 pt-16`, wordmark, `text-3xl font-bold` title with accent period, inputs `h-12`, primary `size lg w-full`, demo hint in `text-xs text-muted`.
 Sticky bottom CTA on forms: `pb-28` on the form + fixed primary button if needed.
+
+## Responsive rules (admin)
+
+Three tiers, Tailwind breakpoints: **phone `< md` (375 reference)**, **tablet `md–xl` (768 / 1024)**, **desktop `≥ xl`**.
+
+| Element | Phone | Tablet | Desktop |
+|---|---|---|---|
+| Nav | left drawer `Sheet` (`w-72 bg-ink`) + round menu button in header | collapsed icon rail `w-[76px]` | rail, expandable to `w-60` |
+| Header | menu · search icon button (`ml-auto`) · bell · avatar (avatar text `hidden xl:block`); search opens as a full-width row under the header (`-mt-2 md:hidden`) | pill search `hidden md:block flex-1 min-w-0` + primary CTA `hidden sm:inline-flex` | same |
+| Canvas padding | `p-3` | `p-3` | `lg:p-4` |
+| Hero grid | 1 col | 1 col | `xl:grid-cols-[1.5fr_1fr]` |
+| Mini stat tiles (attention) | `grid-cols-3`, content stacked (`flex-col sm:flex-row`), arrow `hidden sm:block` | 3-up row | 1 col beside the alerts card (`xl:grid-cols-1`) |
+| Small stat pair (temp / devices) | `grid-cols-2 gap-3` | `gap-4` | same |
+| 3 stat cards | swipeable snap row: `flex snap-x snap-mandatory gap-3 overflow-x-auto [scrollbar-width:none] [&>*]:min-w-[72%] [&>*]:snap-start` | `sm:grid sm:grid-cols-3` | same |
+| List columns + analysis | stacked | `md:grid-cols-2`, analysis `md:col-span-2` | `xl:grid-cols-[1fr_1fr_20rem]`, analysis `xl:col-span-1` |
+| Summary strip | stacked | `sm:grid-cols-2`, CTA `sm:justify-self-end` | `xl:grid-cols-[1.4fr_1fr_1fr_auto]` |
+| List row status | compact line under subtitle (`mt-1.5 flex gap-2 sm:hidden`) | right column `hidden sm:flex flex-col items-end` | same |
+| Captions ("Point of view…") | `hidden md:block` | shown | shown |
+
+Hard rules
+- **`grid-cols-1` base on every breakpoint-only grid.** `grid gap-4 xl:grid-cols-[…]` alone lets the implicit `auto` track grow to the widest `whitespace-nowrap` child and the page scrolls sideways.
+- Flex rows that hold a button on the right (`justify-between`) get `flex-wrap gap-2` so the button drops below on phones instead of clipping.
+- Banners: `flex flex-wrap items-center gap-3`, text `min-w-[12rem] flex-1`.
+- No negative-margin bleed (`-mx-3`) inside the admin `main` — it is a scroll container and the bleed becomes horizontal scroll. Bleed rows (`-mx-5 px-5`) are for the mobile PWA only.
+- Verify: at 375 and 768, `document.querySelector('main').scrollWidth === clientWidth` and no element's `getBoundingClientRect().right > innerWidth` (ignoring `overflow-hidden` decor). Real device emulation is required — a desktop Chrome window cannot go below ~500px, so a "390px" headless screenshot is a cropped wider layout.
+
