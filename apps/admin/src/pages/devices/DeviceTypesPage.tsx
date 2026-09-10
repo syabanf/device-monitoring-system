@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Cpu, Pencil, Plus, Trash2 } from 'lucide-react';
 import type { DeviceType } from '@monitoring/types';
 import { SENSOR_TYPE_LABEL } from '@monitoring/types';
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle, PageHeader } from '@monitoring/ui';
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle, PageHeader, SplitStats } from '@monitoring/ui';
 import { fmtIdr } from '@monitoring/fixtures';
 import { useScoped } from '../../state/app-state';
 import { DeviceTypeDialog, emptyDeviceType } from '../../components/master/DeviceTypeDialog';
@@ -40,10 +40,7 @@ export function DeviceTypesPage() {
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Built-in sensors</p>
                   <div className="flex flex-wrap gap-2">{t.builtInSensors.map((s) => <Badge key={s} variant="info">{SENSOR_TYPE_LABEL[s]}</Badge>)}</div>
                 </div>
-                <div className="flex items-center justify-between border-t border-border pt-3 text-sm">
-                  <span className="text-muted">Unit price (excl. VAT)</span>
-                  <span className="font-semibold">{fmtIdr(t.priceIdr)}</span>
-                </div>
+                <SplitStats className="pt-0" items={[{ label: 'Installed', value: count }, { label: 'Ports', value: t.ports.reduce((n, p) => n + p.count, 0) }, { label: 'Unit price', value: fmtIdr(t.priceIdr) }]} />
               </CardContent>
             </Card>
           );

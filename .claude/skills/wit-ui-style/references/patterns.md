@@ -10,6 +10,9 @@
 5. `grid sm:grid-cols-3` of StatCards.
 6. `grid xl:grid-cols-[1fr_1fr_0.9fr]`: two list columns (title + count badge + ghost select filter + "View all" outline button, 5 compact items) and an analysis card (donut with legend, date select).
 
+## Gallery page (agents / device types / technicians / integrations)
+Page card → header (title + description | search pill + ink primary) → stat tile row (4-up, tinted icon squares) → underline tabs (All · Mine · Templates · Favorites) with Filter/Sort pills → `grid-cols-[repeat(auto-fill,minmax(216px,1fr))]` of entity cards (icon/avatar, name, status chip, role, 2-line description, `SplitStats` footer, kebab + favourite icon buttons top-right, hover lift) → centred "Show more" pill. Optional right inspector column on ≥ xl with setting rows and a "Talk to / Preview" widget card.
+
 ## Master data (list → dialog CRUD)
 `PageHeader` (search `w-72` + primary "Add X") → `Card` containing `DataTable` (row click opens detail; trailing ghost edit/delete icons) → `XDialog` (`size="lg"`, `grid sm:grid-cols-2 gap-4`, toggles in `rounded-2xl bg-surface px-3 py-2` rows, footer Cancel/Save) → `ConfirmDelete` AlertDialog (title "Delete X?", one-sentence consequence). Empty table → EmptyState with the Add action.
 Card-grid alternative (few records, e.g. types): `grid md:grid-cols-2 xl:grid-cols-3`, header with icon tile + count badge + ghost icon actions.

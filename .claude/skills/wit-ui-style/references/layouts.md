@@ -48,13 +48,32 @@ Detail header: round back button `size-11 rounded-full bg-card shadow-card activ
 Login: centered column `px-6 pb-10 pt-16`, wordmark, `text-3xl font-bold` title with accent period, inputs `h-12`, primary `size lg w-full`, demo hint in `text-xs text-muted`.
 Sticky bottom CTA on forms: `pb-28` on the form + fixed primary button if needed.
 
+## Rail extras (merged from the REDDIE agent console)
+```tsx
+<Rail expanded={expanded} onToggle={toggle}
+  header={<Link to="/">wordmark</Link>}
+  action={<RailAction label="Add device" onClick={openCreate}><Plus /></RailAction>}   // round accent button, glow
+  workspace={<DropdownMenu><DropdownMenuTrigger asChild>
+      <RailWorkspace icon={<Building2 />} kicker="Distribution center" name={tenant.name} />
+    </DropdownMenuTrigger><DropdownMenuContent side="top">…tenant links, sign out…</DropdownMenuContent></DropdownMenu>}>
+  {NAV_SECTIONS.map(section => <RailGroup …>{items}</RailGroup>)}
+</Rail>
+```
+- Collapse control is a full-width outline pill with a label when expanded (`h-10 rounded-2xl border border-white/10 text-xs font-semibold`), a bare chevron when collapsed.
+- Sign out lives in the workspace menu, not as a rail item.
+- Ambient glow on the canvas: `absolute -right-[8%] -top-[30%] h-[120%] w-[70%] opacity-70 blur-xl` with two accent radial gradients (≤ 10% alpha) + one light-pink one; `pointer-events-none`, behind everything.
+- Header bell badge is numbered: `absolute -right-1 -top-1 h-[19px] min-w-[19px] rounded-full border-2 border-surface bg-accent text-[10.5px] font-bold text-on-ink`.
+
+## Phone bottom bar (admin)
+`nav.fixed.inset-x-3.bottom-3.z-40.flex.h-[68px].items-center.justify-between.rounded-[22px].bg-ink.px-3.shadow-float.md:hidden` — five slots: Home, Alerts (white count badge), **round accent Add** (`size-12 rounded-full bg-accent` + glow), Shopfloor, Devices, then a Menu button that opens the drawer with the full grouped nav. Active item = accent tile `size-11 rounded-2xl` with glow. `main` gets `pb-24 md:pb-2`. The header keeps only search-icon · bell · avatar on phones.
+
 ## Responsive rules (admin)
 
 Three tiers, Tailwind breakpoints: **phone `< md` (375 reference)**, **tablet `md–xl` (768 / 1024)**, **desktop `≥ xl`**.
 
 | Element | Phone | Tablet | Desktop |
 |---|---|---|---|
-| Nav | left drawer `Sheet` (`w-72 bg-ink`) + round menu button in header | collapsed icon rail `w-[76px]` | rail, expandable to `w-60` |
+| Nav | floating bottom bar (Home · Alerts · accent Add · Shopfloor · Devices · Menu) + drawer `Sheet` (`w-72 bg-ink`) for the full nav | collapsed icon rail `w-[76px]` | rail, expandable to `w-60` |
 | Header | menu · search icon button (`ml-auto`) · bell · avatar (avatar text `hidden xl:block`); search opens as a full-width row under the header (`-mt-2 md:hidden`) | pill search `hidden md:block flex-1 min-w-0` + primary CTA `hidden sm:inline-flex` | same |
 | Canvas padding | `p-3` | `p-3` | `lg:p-4` |
 | Hero grid | 1 col | 1 col | `xl:grid-cols-[1.5fr_1fr]` |

@@ -4,7 +4,7 @@ import { AlertTriangle, CalendarClock, Cpu, Pencil, Plus, ShieldAlert, Trash2, U
 import type { Technician } from '@monitoring/types';
 import type { Device, MaintenanceTicket, TicketStatus } from '@monitoring/types';
 import { MAINTENANCE_TYPE_LABEL } from '@monitoring/types';
-import { Avatar, Badge, Button, Card, CardContent, CardHeader, CardTitle, DataTable, EmptyState, PageHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, StatCard, Tabs, TabsList, TabsTrigger, cn, type Column } from '@monitoring/ui';
+import { Avatar, Badge, Button, Card, CardContent, CardHeader, CardTitle, DataTable, EmptyState, PageHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, StatCard, Tabs, TabsList, TabsTrigger, cn, type Column, SplitStats } from '@monitoring/ui';
 import { FIXTURE_NOW_MS, deviceHealth, fmtDate, fmtDateTime, fmtRelativeDay, isTicketOpen, isTicketOverdue, ticketCounts } from '@monitoring/fixtures';
 import { outletById, technicianById, deviceTypeById } from '../../state/lookups';
 import { useScoped } from '../../state/app-state';
@@ -114,12 +114,8 @@ export function MaintenancePage() {
             <Card key={tech.id}>
               <CardHeader className="flex-row items-center gap-3 space-y-0"><Avatar name={tech.name} color={tech.avatarColor} size="lg" /><div className="min-w-0 flex-1"><CardTitle>{tech.name}</CardTitle><p className="truncate text-xs text-muted">{tech.specialty} · {tech.phone}</p><p className="truncate text-xs text-muted">{tech.email}</p></div><div className="flex gap-1"><Button variant="ghost" size="icon" className="size-8" aria-label="Edit" onClick={() => setTechEdit(tech)}><Pencil /></Button><Button variant="ghost" size="icon" className="size-8 text-brand-600" aria-label="Delete" onClick={() => setTechRemove(tech)}><Trash2 /></Button></div></CardHeader>
               <CardContent>
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="rounded-2xl bg-surface p-3"><p className="text-2xl font-bold">{mine.length}</p><p className="text-[11px] text-muted">open</p></div>
-                  <div className="rounded-2xl bg-surface p-3"><p className="text-2xl font-bold">{mine.filter(isTicketOverdue).length}</p><p className="text-[11px] text-muted">overdue</p></div>
-                  <div className="rounded-2xl bg-surface p-3"><p className="text-2xl font-bold">{done}</p><p className="text-[11px] text-muted">done</p></div>
-                </div>
-                <div className="mt-3 space-y-1.5">{mine.slice(0, 3).map((t) => <button key={t.id} type="button" onClick={() => update({ ticket: t.id })} className="flex w-full items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-left text-xs hover:bg-surface"><span className="truncate">{t.title}</span><TicketStatusBadge status={t.status} /></button>)}</div>
+                <div className="space-y-1.5">{mine.slice(0, 3).map((t) => <button key={t.id} type="button" onClick={() => update({ ticket: t.id })} className="flex w-full items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-left text-xs hover:bg-surface"><span className="truncate">{t.title}</span><TicketStatusBadge status={t.status} /></button>)}</div>
+                <SplitStats className="mt-4" items={[{ label: 'Open', value: mine.length }, { label: 'Overdue', value: mine.filter(isTicketOverdue).length }, { label: 'Done', value: done }]} />
               </CardContent>
             </Card>
           ); })}

@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { Link, matchPath, useLocation } from 'react-router';
-import { LogOut } from 'lucide-react';
-import { Rail, RailGroup, RailItem, Sidebar, SidebarItem, WitMark } from '@monitoring/ui';
+import { Building2, LogOut, MapPin, Plug, Plus, Users, Wand2 } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { distributorById } from '@monitoring/fixtures';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Rail, RailAction, RailGroup, RailItem, RailWorkspace, Sidebar, SidebarItem, WitMark } from '@monitoring/ui';
 import { NAV_SECTIONS } from './nav-items';
 import { useScoped } from '../state/app-state';
 import { useAuth } from '../auth/auth';
@@ -13,10 +15,12 @@ export function Brand({ dark }: { dark?: boolean }) {
 const EXPAND_KEY = 'ms.admin.sidebar';
 function readExpanded() { try { return localStorage.getItem(EXPAND_KEY) === '1'; } catch { return false; } }
 
-export function RailNav() {
+export function RailNav({ onAdd }: { onAdd?: () => void }) {
   const { pathname } = useLocation();
-  const { alerts } = useScoped();
-  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const { alerts, outlets } = useScoped();
+  const { logout, session } = useAuth();
+  const distributor = session ? distributorById.get(session.distributorId) : undefined;
   const [expanded, setExpanded] = React.useState(readExpanded);
   const toggle = () => setExpanded((v) => { try { localStorage.setItem(EXPAND_KEY, v ? '0' : '1'); } catch { /* ignore */ } return !v; });
   const openCount = alerts.filter((a) => a.status !== 'RESOLVED' && a.status !== 'VERIFIED').length;
@@ -25,7 +29,22 @@ export function RailNav() {
   return (
     <Rail expanded={expanded} onToggle={toggle}
       header={<Link to="/" className={expanded ? 'flex h-11 items-center gap-2.5 rounded-2xl bg-white/5 px-3' : 'flex size-11 items-center justify-center rounded-2xl bg-white/5'}><WitMark dark className="text-lg" />{expanded ? <span className="text-xs font-medium text-sidebar-muted">Monitoring</span> : null}</Link>}
-      footer={<RailItem icon={<LogOut />} label="Sign out" onClick={logout} />}>
+      action={onAdd ? <RailAction label="Add device" onClick={onAdd}><Plus /></RailAction> : undefined}
+      workspace={
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild><RailWorkspace icon={<Building2 />} kicker="Distribution center" name={distributor?.name ?? 'Workspace'} /></DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="start" className="w-64">
+            <DropdownMenuLabel><span className="block text-sm font-semibold text-foreground">{distributor?.name}</span><span className="block font-normal">{outlets.length} outlets · {distributor?.city}</span></DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => navigate('/outlets')}><MapPin />Outlets</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => navigate('/users')}><Users />User Management</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => navigate('/integration')}><Plug />API Integration</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => navigate('/setup')}><Wand2 />Setup wizard</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem destructive onSelect={() => { logout(); navigate('/login'); }}><LogOut />Sign out</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      }>
       {NAV_SECTIONS.map((section) => {
         const active = section.items.some((item) => isActive(item.to, 'end' in item ? item.end : false));
         const primary = section.items[0];

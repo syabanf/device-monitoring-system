@@ -15,18 +15,24 @@ export function WitMark({ className, dark }: { className?: string; dark?: boolea
 const RailCtx = React.createContext<boolean>(false);
 
 /** Floating dark sidebar (desktop): icon rail that can expand to show labels. */
-export function Rail({ header, footer, children, className, expanded = false, onToggle }: { header?: React.ReactNode; footer?: React.ReactNode; children: React.ReactNode; className?: string; expanded?: boolean; onToggle?: () => void }) {
+export function Rail({ header, action, workspace, footer, children, className, expanded = false, onToggle }: { header?: React.ReactNode; action?: React.ReactNode; workspace?: React.ReactNode; footer?: React.ReactNode; children: React.ReactNode; className?: string; expanded?: boolean; onToggle?: () => void }) {
   return (
     <RailCtx.Provider value={expanded}>
       <aside className={cn('flex h-full flex-col rounded-[28px] bg-ink py-4 text-white shadow-float transition-[width] duration-200', expanded ? 'w-60 px-3' : 'w-[76px] items-center', className)}>
-        {header ? <div className={cn('mb-4 shrink-0', expanded && 'px-1')}>{header}</div> : null}
-        <nav className={cn('flex flex-1 flex-col gap-1', !expanded && 'items-center')}>{children}</nav>
-        <div className={cn('mt-2 flex shrink-0 flex-col gap-1', !expanded && 'items-center')}>
+        {header || action ? (
+          <div className={cn('mb-4 flex shrink-0 items-center gap-2', expanded ? 'px-1' : 'flex-col gap-3')}>
+            {header ? <div className={cn(expanded && 'min-w-0 flex-1')}>{header}</div> : null}
+            {action}
+          </div>
+        ) : null}
+        <nav className={cn('flex flex-1 flex-col gap-1 overflow-y-auto [scrollbar-width:none]', !expanded && 'items-center')}>{children}</nav>
+        <div className={cn('mt-2 flex shrink-0 flex-col gap-2', !expanded && 'items-center')}>
+          {workspace}
           {footer}
           {onToggle ? (
-            <button type="button" onClick={onToggle} aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'} className={cn('flex h-10 items-center gap-3 rounded-2xl text-sidebar-muted transition-colors hover:bg-white/10 hover:text-white', expanded ? 'w-full px-3' : 'w-11 justify-center')}>
-              <svg viewBox="0 0 24 24" className={cn('size-5 transition-transform', expanded && 'rotate-180')} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-              {expanded ? <span className="text-xs font-semibold">Collapse</span> : null}
+            <button type="button" onClick={onToggle} aria-label={expanded ? 'Collapse menu' : 'Expand menu'} className={cn('flex h-10 items-center justify-center gap-2 rounded-2xl text-xs font-semibold text-sidebar-muted transition-colors hover:bg-white/10 hover:text-white', expanded ? 'w-full border border-white/10' : 'w-11')}>
+              <svg viewBox="0 0 24 24" className={cn('size-4 transition-transform', expanded && 'rotate-180')} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+              {expanded ? <span>Collapse menu</span> : null}
             </button>
           ) : null}
         </div>
@@ -34,6 +40,39 @@ export function Rail({ header, footer, children, className, expanded = false, on
     </RailCtx.Provider>
   );
 }
+
+/** Round accent "create" button that lives in the rail header (REDDIE-style). */
+export const RailAction = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & { label: string }>(({ label, className, children, ...props }, ref) => (
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <button ref={ref} type="button" aria-label={label} className={cn('flex size-11 shrink-0 items-center justify-center rounded-full bg-brand-600 text-white shadow-[0_6px_18px_rgb(237_28_36_/_0.45)] transition-transform hover:-translate-y-px hover:scale-105 [&_svg]:size-5', className)} {...props}>{children}</button>
+    </TooltipTrigger>
+    <TooltipContent side="right" sideOffset={10}>{label}</TooltipContent>
+  </Tooltip>
+));
+RailAction.displayName = 'RailAction';
+
+/** Workspace / tenant switcher card at the bottom of the rail. Collapses to a white icon tile. */
+export const RailWorkspace = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & { icon: React.ReactNode; kicker: string; name: string }>(({ icon, kicker, name, className, ...props }, ref) => {
+  const expanded = React.useContext(RailCtx);
+  const tile = <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-ink [&_svg]:size-4">{icon}</span>;
+  if (!expanded) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild><button ref={ref} type="button" aria-label={name} className={cn('flex size-11 items-center justify-center rounded-2xl transition-colors hover:bg-white/10', className)} {...props}>{tile}</button></TooltipTrigger>
+        <TooltipContent side="right" sideOffset={10}>{name}</TooltipContent>
+      </Tooltip>
+    );
+  }
+  return (
+    <button ref={ref} type="button" className={cn('flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-ink-2 p-2.5 text-left transition-colors hover:bg-ink-3', className)} {...props}>
+      {tile}
+      <span className="min-w-0 flex-1"><span className="block text-[10.5px] font-semibold text-sidebar-muted">{kicker}</span><span className="block truncate text-[12.5px] font-bold text-white">{name}</span></span>
+      <svg viewBox="0 0 24 24" className="size-4 shrink-0 text-sidebar-muted" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+    </button>
+  );
+});
+RailWorkspace.displayName = 'RailWorkspace';
 
 export interface RailItemProps extends React.HTMLAttributes<HTMLElement> {
   icon: React.ReactNode;

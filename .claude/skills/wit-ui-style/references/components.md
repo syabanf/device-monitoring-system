@@ -85,3 +85,38 @@ sentinel: `flex items-center justify-center gap-2 py-4 text-xs text-muted` → `
 
 ## Floor plan / map markers (if a spatial view exists)
 marker: `absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-full ring-2 ring-card shadow-float`; device marker `rounded-2xl`; states normal `bg-ink text-white`, alarm `bg-accent text-white animate-pulse`, offline `bg-silver`, fault `bg-warning-soft text-ink`, muted `bg-card text-muted ring-border`; selected `scale-125 ring-4 ring-accent/40`.
+
+## Stat tile (tinted icon square)
+```tsx
+<div class="flex items-start gap-3 rounded-card bg-card p-5 shadow-card">
+  <div class="min-w-0 flex-1">
+    <p class="text-[13px] font-semibold text-body/80">Active agents</p>
+    <p class="mt-1.5 truncate text-[28px] font-extrabold leading-[1.15] tracking-[-0.5px]">7</p>
+    <p class="mt-1 text-xs text-muted">Currently running</p>
+  </div>
+  <div class="flex size-[42px] shrink-0 items-center justify-center rounded-[13px] bg-green-soft text-green [&_svg]:size-[18px]"><Check /></div>
+</div>
+```
+Tints: `accent-soft/accent`, `green-soft/green`, `amber-soft/amber`, `info-soft/info`, `surface/body`; `ink/on-ink` only for the single primary stat. Rows: `grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4` (or a phone snap row).
+
+## Split-stat footer
+```tsx
+<div class="-mx-5 -mb-5 mt-auto grid grid-cols-2 divide-x divide-border border-t border-border">
+  <div class="px-2 py-3 text-center"><span class="block text-[10.5px] font-medium text-muted">Conversations</span><span class="block text-[15px] font-extrabold tabular-nums">423</span></div>
+  …
+</div>
+```
+Place as the last child of `CardContent` so it sits flush with the card edge. 2–4 cells.
+
+## Inspector row list (right column)
+Card with small-caps title (`text-[13px] font-bold uppercase tracking-[0.4px]`) and a close/×; rows are `rounded-2xl border border-border p-3.5 flex items-center gap-3 hover:bg-surface-2`: icon tile `size-9 rounded-xl bg-surface`, `text-sm font-bold` title + `text-xs text-muted` subtitle, chevron right; an accent dot on the row marks unsaved changes. Below: outline full-width primary ("Preview") and a `text-accent text-sm font-semibold` danger link ("Delete").
+
+## Underline tabs + filter pills
+`div.flex.items-end.gap-3.flex-wrap` → `div.flex.flex-1.gap-6.border-b.border-border.overflow-x-auto` of `button.py-3.text-sm.font-semibold.text-muted.border-b-2.border-transparent.-mb-px.whitespace-nowrap` (active `text-accent border-accent`) + right-side outline pills `h-10 rounded-full border bg-card px-4 text-sm font-semibold` ("Filter", "Sort"). Use inside a page card above a card grid; pill tabs remain the choice for view switches.
+
+## Page card + "Show more"
+Wrap a gallery page in one `rounded-card bg-card p-6 shadow-card`: header row (`h2 text-[29px] font-extrabold tracking-[-1px]` + `p text-sm text-body/70 max-w-[30rem]`, actions right: search pill + ink primary), stat tile row, underline tabs, the grid, then a centred outline pill "Show more ▾" that reveals the next page.
+
+## Rail action / workspace card
+`RailAction`: `size-11 rounded-full bg-accent text-on-ink shadow-[0_6px_18px_accent/45] hover:-translate-y-px hover:scale-105`. `RailWorkspace` (expanded): `flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-ink-2 p-2.5` with `size-9 rounded-xl bg-card text-ink` tile, kicker `text-[10.5px] font-semibold text-on-ink-muted`, name `text-[12.5px] font-bold`, caret; collapsed → the tile alone.
+

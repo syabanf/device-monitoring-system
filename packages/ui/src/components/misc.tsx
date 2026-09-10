@@ -20,18 +20,39 @@ export function EmptyState({ icon, title, description, action, className }: { ic
   );
 }
 
-export function StatCard({ label, value, hint, icon, tone = 'default', className }: { label: string; value: React.ReactNode; hint?: React.ReactNode; icon?: React.ReactNode; tone?: 'default' | 'danger' | 'success' | 'warning'; className?: string }) {
-  const toneCls = { default: 'bg-surface text-body', danger: 'bg-brand-600 text-white', success: 'bg-ink text-white', warning: 'bg-sky-300 text-ink' }[tone];
+export type StatTone = 'default' | 'danger' | 'success' | 'warning' | 'info' | 'ink';
+const STAT_TONE: Record<StatTone, string> = {
+  default: 'bg-surface text-body',
+  danger: 'bg-brand-50 text-brand-600',
+  success: 'bg-emerald-50 text-emerald-600',
+  warning: 'bg-amber-50 text-amber-600',
+  info: 'bg-sky-50 text-sky-600',
+  ink: 'bg-ink text-white',
+};
+/** Stat tile: label / big value / hint on the left, a soft-tinted square icon tile top-right. */
+export function StatCard({ label, value, hint, icon, tone = 'default', className }: { label: string; value: React.ReactNode; hint?: React.ReactNode; icon?: React.ReactNode; tone?: StatTone; className?: string }) {
   return (
-    <div className={cn('flex flex-col gap-4 rounded-card bg-card p-5 shadow-card', className)}>
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-muted">{label}</p>
-        {icon ? <div className={cn('flex size-10 shrink-0 items-center justify-center rounded-full [&_svg]:size-[18px]', toneCls)}>{icon}</div> : null}
+    <div className={cn('flex items-start gap-3 rounded-card bg-card p-5 shadow-card', className)}>
+      <div className="min-w-0 flex-1">
+        <p className="text-[13px] font-semibold text-body/80">{label}</p>
+        <p className="mt-1.5 truncate text-[28px] font-extrabold leading-[1.15] tracking-[-0.5px] text-foreground">{value}</p>
+        {hint ? <p className="mt-1 text-xs text-muted">{hint}</p> : null}
       </div>
-      <div className="min-w-0">
-        <p className="truncate text-3xl font-bold leading-none tracking-tight text-foreground">{value}</p>
-        {hint ? <p className="mt-1.5 text-xs text-muted">{hint}</p> : null}
-      </div>
+      {icon ? <div className={cn('flex size-[42px] shrink-0 items-center justify-center rounded-[13px] [&_svg]:size-[18px]', STAT_TONE[tone])}>{icon}</div> : null}
+    </div>
+  );
+}
+
+/** Two-to-four cell split footer for cards (label above bold value), drawn flush with the card edge. */
+export function SplitStats({ items, className }: { items: { label: string; value: React.ReactNode }[]; className?: string }) {
+  return (
+    <div className={cn('-mx-5 -mb-5 mt-auto grid divide-x divide-border border-t border-border', className)} style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
+      {items.map((it) => (
+        <div key={it.label} className="px-2 py-3 text-center">
+          <span className="block text-[10.5px] font-medium text-muted">{it.label}</span>
+          <span className="block text-[15px] font-extrabold tabular-nums text-foreground">{it.value}</span>
+        </div>
+      ))}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Link, Outlet, useNavigate } from 'react-router';
-import { Bell, LogOut, MapPin, Menu, Plug, Plus, Search, ShieldCheck, User, Wand2, Wrench } from 'lucide-react';
+import { Bell, Home, LogOut, Map, MapPin, Menu, Plug, Plus, Search, ShieldCheck, User, Wand2, Wrench } from 'lucide-react';
+import { useLocation, matchPath } from 'react-router';
 import {
   Avatar, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Input, Sheet, SheetContent,
 } from '@monitoring/ui';
@@ -15,6 +16,7 @@ export function AdminLayout() {
   const { user, session, logout } = useAuth();
   const { alerts, outlets, devices, sensors, tickets, outletById } = useScoped();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [open, setOpen] = React.useState(false);
   const [q, setQ] = React.useState('');
   const [searchFocused, setSearchFocused] = React.useState(false);
@@ -60,23 +62,24 @@ export function AdminLayout() {
   );
 
   return (
-    <div className="flex h-dvh gap-4 overflow-hidden bg-surface p-3 lg:p-4">
+    <div className="relative flex h-dvh gap-4 overflow-hidden bg-surface p-3 lg:p-4">
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden"><div className="absolute -right-[8%] -top-[30%] h-[120%] w-[70%] opacity-70 blur-xl [background:radial-gradient(45%_40%_at_60%_30%,rgb(237_28_36_/_0.10),transparent_70%),radial-gradient(40%_55%_at_85%_55%,rgb(237_28_36_/_0.07),transparent_70%),radial-gradient(60%_35%_at_40%_8%,rgb(255_180_182_/_0.16),transparent_70%)]" /></div>
       <p className="sr-only" role="alert" aria-live="assertive" aria-atomic="true">{announcement}</p>
-      <div className="hidden shrink-0 md:block"><RailNav /></div>
+      <div className="hidden shrink-0 md:block"><RailNav onAdd={() => setAdding(true)} /></div>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="left" hideClose className="w-72 bg-ink p-0"><DrawerNav onNavigate={() => setOpen(false)} /></SheetContent>
       </Sheet>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-4">
+      <div className="relative flex min-w-0 flex-1 flex-col gap-4">
         <header className="flex h-14 shrink-0 items-center gap-2 sm:gap-3">
-          <Button variant="ghost" size="icon" className="bg-white shadow-card md:hidden" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></Button>
+          
           <div className="hidden min-w-0 flex-1 md:block">{searchForm}</div>
           <Button variant="ghost" size="icon" className="ml-auto bg-white shadow-card md:hidden" onClick={() => setSearchOpen((v) => !v)} aria-label="Search" aria-expanded={searchOpen}><Search /></Button>
           <Button className="hidden sm:inline-flex" onClick={() => setAdding(true)}><Plus />Add device</Button>
           <Button asChild variant="ghost" size="icon" className="relative bg-white shadow-card" aria-label="Alerts">
             <Link to="/alerts?tab=unacknowledged">
               <Bell />
-              {openCount ? <span className="absolute right-2 top-2 size-2 rounded-full bg-brand-600 ring-2 ring-white" /> : null}
+              {openCount ? <span className="absolute -right-1 -top-1 flex h-[19px] min-w-[19px] items-center justify-center rounded-full border-2 border-surface bg-brand-600 px-1 text-[10.5px] font-bold text-white">{openCount > 99 ? '99+' : openCount}</span> : null}
             </Link>
           </Button>
           <DropdownMenu>
@@ -103,11 +106,21 @@ export function AdminLayout() {
           </DropdownMenu>
         </header>
         {searchOpen ? <div className="-mt-2 md:hidden">{searchForm}</div> : null}
-        <main className="min-h-0 flex-1 overflow-y-auto pb-2 pr-0.5">
+        <main className="min-h-0 flex-1 overflow-y-auto pb-24 pr-0.5 md:pb-2">
           <PageNavigation />
           <Outlet />
         </main>
         <AddDeviceDialog open={adding} onClose={() => setAdding(false)} />
+        <nav aria-label="Primary" className="fixed inset-x-3 bottom-3 z-40 flex h-[68px] items-center justify-between rounded-[22px] bg-ink px-3 shadow-float md:hidden">
+          {([['/', 'Home', Home, true], ['/alerts', 'Alerts', Bell, false]] as const).map(([to, label, Icon, end]) => { const active = !!matchPath({ path: to, end }, pathname); return (
+            <Link key={to} to={to} aria-label={label} className={`relative flex size-11 items-center justify-center rounded-2xl transition-colors ${active ? 'bg-brand-600 text-white shadow-[0_8px_20px_-6px_rgb(237_28_36_/_0.7)]' : 'text-sidebar-muted hover:text-white'}`}><Icon className="size-5" />{to === '/alerts' && openCount && !active ? <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold text-brand-600">{openCount > 99 ? '99+' : openCount}</span> : null}</Link>
+          ); })}
+          <button type="button" onClick={() => setAdding(true)} aria-label="Add device" className="flex size-12 items-center justify-center rounded-full bg-brand-600 text-white shadow-[0_6px_18px_rgb(237_28_36_/_0.45)]"><Plus className="size-5" /></button>
+          {([['/shopfloor', 'Shopfloor', Map], ['/devices', 'Devices', ShieldCheck]] as const).map(([to, label, Icon]) => { const active = pathname.startsWith(to); return (
+            <Link key={to} to={to} aria-label={label} className={`flex size-11 items-center justify-center rounded-2xl transition-colors ${active ? 'bg-brand-600 text-white shadow-[0_8px_20px_-6px_rgb(237_28_36_/_0.7)]' : 'text-sidebar-muted hover:text-white'}`}><Icon className="size-5" /></Link>
+          ); })}
+          <button type="button" onClick={() => setOpen(true)} aria-label="Open menu" className="flex size-11 items-center justify-center rounded-2xl text-sidebar-muted hover:text-white"><Menu className="size-5" /></button>
+        </nav>
       </div>
     </div>
   );
