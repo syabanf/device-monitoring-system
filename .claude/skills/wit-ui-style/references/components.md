@@ -103,7 +103,9 @@ admin row item: `flex items-center gap-3 rounded-2xl bg-surface-2 p-3 hover:bg-c
 ## Dialog / Sheet / AlertDialog
 overlay `fixed inset-0 z-50 bg-ink/50 backdrop-blur-[2px]` (fade in/out).
 dialog `fixed left-1/2 top-1/2 w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-card bg-card p-6 shadow-float` sizes `max-w-sm / max-w-lg / max-w-2xl`; header `mb-4 pr-6`, title `text-lg font-semibold`, description `text-sm text-muted`; footer `mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end` (outline Cancel, primary Submit); close = `absolute right-4 top-4 p-1 text-muted`.
-sheet right `inset-y-0 right-0 w-full max-w-xl border-l` (slide-in); left drawer `w-72 bg-ink p-0`; bottom `max-h-[85vh] rounded-t-2xl`.
+sheet right `inset-y-0 right-0 w-full max-w-xl border-l` (slide-in, detail panels on tablet and up).
+bottom sheet `inset-x-0 bottom-0 max-h-[80dvh] overflow-y-auto rounded-t-[28px] pb-[max(env(safe-area-inset-bottom),1rem)]` with a grab handle `mx-auto mt-3 h-1.5 w-10 rounded-full bg-border`; dark variant `bg-ink text-on-ink` with handle `bg-white/20` for navigation.
+**On phones every menu is a bottom sheet**: the bottom bar "More" list, row overflow menus, filters, sort, share, and action lists. Side drawers are for tablet and up only, and the searchable combobox panel follows the same rule.
 alert dialog `max-w-md`, action = destructive-styled button (`bg-danger text-white`), cancel = outline.
 
 ## Banner / callout

@@ -4,7 +4,7 @@
 ```tsx
 <div className="flex h-dvh gap-4 overflow-hidden bg-surface p-3 lg:p-4">
   <div className="hidden shrink-0 lg:block"><Rail …/></div>          {/* floating dark rail */}
-  <Sheet side="left" className="w-72 bg-ink p-0"><DrawerNav/></Sheet> {/* < lg */}
+  <Sheet side="bottom" className="rounded-t-[28px] bg-ink p-0"><MoreMenu/></Sheet> {/* phone "More", never a side drawer */}
   <div className="flex min-w-0 flex-1 flex-col gap-4">
     <header className="flex h-14 shrink-0 items-center gap-3">
       <Button variant="ghost" size="icon" className="bg-card shadow-card lg:hidden"><Menu/></Button>
@@ -65,7 +65,21 @@ Sticky bottom CTA on forms: `pb-28` on the form + fixed primary button if needed
 - Header bell badge is numbered: `absolute -right-1 -top-1 h-[19px] min-w-[19px] rounded-full border-2 border-surface bg-accent text-[10.5px] font-bold text-on-ink`.
 
 ## Phone bottom bar (admin)
-`nav.fixed.inset-x-3.bottom-3.z-40.flex.h-[68px].items-center.justify-between.rounded-[22px].bg-ink.px-3.shadow-float.md:hidden` — five slots: Home, Alerts (white count badge), **round accent Add** (`size-12 rounded-full bg-accent` + glow), Shopfloor, Devices, then a Menu button that opens the drawer with the full grouped nav. Active item = accent tile `size-11 rounded-2xl` with glow. `main` gets `pb-24 md:pb-2`. The header keeps only search-icon · bell · avatar on phones.
+`nav.fixed.inset-x-3.bottom-3.z-40.flex.h-[68px].items-center.justify-between.rounded-[22px].bg-ink.px-3.shadow-float.md:hidden` — five slots: Home, Alerts (white count badge), **round accent Add** (`size-12 rounded-full bg-accent` + glow), Shopfloor, Devices, then a **More** button that opens the bottom sheet below. Active item = accent tile `size-11 rounded-2xl` with glow. `main` gets `pb-24 md:pb-2`. The header keeps only search-icon · bell · avatar on phones.
+
+## Phone "More" menu (bottom sheet)
+The last slot of the bottom bar opens a **bottom sheet, never a side drawer**. A left drawer on a phone covers the screen edge to edge and hides the bar the user just tapped.
+
+overlay `fixed inset-0 z-50 bg-ink/50 backdrop-blur-[2px]`; panel `fixed inset-x-0 bottom-0 z-50 max-h-[80dvh] overflow-y-auto rounded-t-[28px] bg-ink text-on-ink shadow-float pb-[max(env(safe-area-inset-bottom),1rem)]`, entering with `slide-in-from-bottom`.
+1. grab handle `mx-auto mt-3 h-1.5 w-10 rounded-full bg-white/20`.
+2. section label `px-5 pt-4 text-[11px] font-semibold uppercase tracking-wider text-on-ink-muted`.
+3. destinations as a 3-column icon grid (`grid grid-cols-3 gap-2 p-4`; cell `flex flex-col items-center gap-2 rounded-2xl p-3 hover:bg-white/10`, icon tile `size-11 rounded-2xl bg-white/10`, label `text-xs font-medium text-center`), or the grouped `SidebarItem` list when the sections carry meaning.
+4. the current destination keeps the accent tile and glow used in the bar.
+5. account and sign out sit in a footer row above `border-t border-white/10`.
+
+behaviour: close on backdrop tap, swipe down, Escape, and on navigate; leave the bottom bar visible behind the overlay; replace the sheet content instead of stacking a second sheet.
+
+Every other phone menu follows the same shell: row overflow, filter, sort, share, and action lists open as a bottom sheet in the light variant (`bg-card text-foreground`, handle `bg-border`) rather than a dropdown anchored to a small target.
 
 ## Responsive rules (admin)
 
@@ -73,7 +87,7 @@ Three tiers, Tailwind breakpoints: **phone `< md` (375 reference)**, **tablet `m
 
 | Element | Phone | Tablet | Desktop |
 |---|---|---|---|
-| Nav | floating bottom bar (Home · Alerts · accent Add · Shopfloor · Devices · Menu) + drawer `Sheet` (`w-72 bg-ink`) for the full nav | collapsed icon rail `w-[76px]` | rail, expandable to `w-60` |
+| Nav | floating bottom bar (Home · Alerts · accent Add · Shopfloor · Devices · More) + **bottom sheet** for the rest of the nav | collapsed icon rail `w-[76px]` | rail, expandable to `w-60` |
 | Header | menu · search icon button (`ml-auto`) · bell · avatar (avatar text `hidden xl:block`); search opens as a full-width row under the header (`-mt-2 md:hidden`) | pill search `hidden md:block flex-1 min-w-0` + primary CTA `hidden sm:inline-flex` | same |
 | Canvas padding | `p-3` | `p-3` | `lg:p-4` |
 | Hero grid | 1 col | 1 col | `xl:grid-cols-[1.5fr_1fr]` |
