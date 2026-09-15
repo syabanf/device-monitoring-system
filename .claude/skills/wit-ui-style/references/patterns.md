@@ -48,6 +48,7 @@ Mode card (ink or accent full-width with a select on the right) + 3 small stat c
 - [ ] Mobile title ends with the accent period; avatar top-right; tab bar hidden on detail.
 - [ ] Lists on mobile are tabbed and lazy-loaded (6 per page); tables on admin paginate.
 - [ ] Numbers big + unit muted beside them; identifiers mono.
+- [ ] Every data-backed dropdown is searchable (search row, keyboard nav, no-matches state); plain selects only for fixed enums of 6 or fewer options.
 - [ ] Empty states have a title, description and next action; every button works.
 - [ ] Hover = surface/white-10, press = scale 0.98, focus = accent ring; nothing else animates except live-alarm pulse.
 - [ ] Responsive: every breakpoint-only grid has a `grid-cols-1` base; header/banner/card-header rows wrap; checked at 375 (drawer, icon search, snap stat row, compact list rows) and 768 (icon rail, paired columns) with `main.scrollWidth === main.clientWidth`.

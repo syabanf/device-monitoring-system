@@ -49,7 +49,26 @@ input: `h-11 w-full rounded-2xl border border-border bg-card px-4 text-sm placeh
 textarea: same, `min-h-28 py-3`. Inside a white card: `border-0 bg-surface`.
 search pill: `[&_input]:h-11 [&_input]:rounded-full [&_input]:border-0 [&_input]:bg-card [&_input]:shadow-card`.
 label `mb-1.5 block text-sm font-medium`; hint `mt-1 text-xs text-muted`; error `mt-1 text-xs text-danger`.
-Select trigger matches input height/radius; `variant="ghost"` for inline filters (`h-7 text-xs`).
+See **Select / Combobox** below for dropdown fields.
+
+## Select / Combobox (searchable by default)
+**Every dropdown is a searchable combobox.** The only exception is a fixed enum of 6 or fewer values that will never grow (status, priority, mode, provider). Anything backed by data (outlets, devices, sensors, employees, technicians, models, time zones, tags) gets a search row even when it holds three rows today, because the list grows in production.
+
+trigger, shaped like an input so forms stay aligned: `flex h-11 w-full items-center justify-between gap-2 rounded-2xl border border-border bg-card px-4 text-sm` plus `<ChevronDown class="size-4 shrink-0 opacity-60" />`; placeholder `text-muted`, value `truncate`; inside a white card `border-0 bg-surface`; inline filter variant `h-8 rounded-full px-3 font-medium hover:bg-black/5`.
+
+panel (popover, `min-w-[var(--radix-popover-trigger-width)]`, `overflow-hidden rounded-2xl border border-border bg-card shadow-float`):
+1. search row `flex h-11 items-center gap-2 border-b border-border px-3` with `<Search class="size-4 text-muted" />` and `input.h-full.flex-1.bg-transparent.text-sm.outline-none.placeholder:text-muted`, focused on open.
+2. list `max-h-64 overflow-y-auto p-1`; option `flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm hover:bg-surface aria-selected:bg-surface`, secondary line `text-xs text-muted` (code, serial, outlet), selected row ends with `<Check class="ml-auto size-4 text-accent" />`.
+3. empty state `px-3 py-6 text-center text-sm text-muted` quoting the typed query.
+4. optional footer `border-t border-border p-1` holding a `text-accent font-semibold` create row when the user may add a record.
+
+behaviour: filter case-insensitively across the label and every secondary field; keep the selected option visible while the query is empty; arrow keys move the highlight, Enter picks, Escape closes and restores the previous value; clear the query on close; show `N of M` in the search row once M passes 20; optional fields get a Clear row at the top of the list.
+
+a11y: trigger `role="combobox" aria-expanded aria-controls`, list `role="listbox"`, rows `role="option" aria-selected`, `aria-activedescendant` tracks the highlight, and the search input inherits the field label.
+
+mobile: below `md` render the same panel as a bottom sheet (`rounded-t-[28px] max-h-[70dvh]`, search row pinned) so the keyboard never covers the list.
+
+build: Radix Popover plus cmdk, or Radix Select with a filter input pinned above the viewport. Multi-select reuses the panel with checkboxes and shows chips in the trigger.
 
 ## Tabs
 pill list: `w-fit flex items-center gap-1 rounded-full bg-card p-1 shadow-card`; trigger `rounded-full px-4 py-1.5 text-sm font-medium text-muted hover:text-foreground data-[state=active]:bg-ink data-[state=active]:text-on-ink`.
