@@ -18,7 +18,7 @@ import (
 func main() {
 	dataDir := flag.String("data", "../../packages/fixtures/data", "directory holding the generated fixture JSON")
 	password := flag.String("password", "admin123", "password given to every seeded admin")
-	maxReadings := flag.Int("readings", 5000, "how many recent readings to load")
+	maxReadings := flag.Int("readings", 200, "how many recent readings to load per sensor")
 	flag.Parse()
 
 	if err := run(*dataDir, *password, *maxReadings); err != nil {
@@ -213,10 +213,19 @@ func run(dataDir, password string, maxReadings int) error {
 		return err
 	}
 
-	recent := readings
-	if len(recent) > maxReadings {
-		recent = recent[len(recent)-maxReadings:]
+	// Keep a window per sensor rather than the global tail, so every outlet has a trend to draw.
+	bySensor := map[string][]reading{}
+	for _, r := range readings {
+		bySensor[r.SensorID] = append(bySensor[r.SensorID], r)
 	}
+	recent := make([]reading, 0, len(bySensor)*maxReadings)
+	for _, series := range bySensor {
+		if len(series) > maxReadings {
+			series = series[len(series)-maxReadings:]
+		}
+		recent = append(recent, series...)
+	}
+
 	for _, r := range recent {
 		if _, err := db.Exec(ctx, `INSERT INTO reading (sensor_id, at, temperature_c, humidity_pct)
 			VALUES ($1,$2,$3,$4) ON CONFLICT DO NOTHING`, r.SensorID, r.At, r.TemperatureC, r.HumidityPct); err != nil {

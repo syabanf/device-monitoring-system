@@ -17,11 +17,15 @@ import (
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/contacts"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/devices"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/devicetypes"
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/distributors"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/employees"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/httpx"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/ingest"
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/integration"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/jobs"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/outlets"
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/readings"
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/stats"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/store"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/technicians"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/tickets"
@@ -71,6 +75,7 @@ func New(d Deps) http.Handler {
 		private.Mount("/alerts", alerts.ItemRoutes(d.DB, d.Queue))
 
 		private.Route("/distributors/{distributorId}", func(tenant chi.Router) {
+			distributors.Register(tenant, d.DB)
 			tenant.Mount("/outlets", outlets.Routes(d.DB))
 			tenant.Mount("/devices", devices.Routes(d.DB))
 			tenant.Mount("/employees", employees.Routes(d.DB))
@@ -78,6 +83,9 @@ func New(d Deps) http.Handler {
 			tenant.Mount("/contact-persons", contacts.Routes(d.DB))
 			tenant.Mount("/alerts", alerts.TenantRoutes(d.DB, d.Queue))
 			tenant.Mount("/tickets", tickets.Routes(d.DB, d.Queue))
+			tenant.Mount("/readings", readings.Routes(d.DB))
+			tenant.Mount("/stats", stats.Routes(d.DB))
+			tenant.Mount("/integration", integration.Routes(d.DB))
 		})
 	})
 

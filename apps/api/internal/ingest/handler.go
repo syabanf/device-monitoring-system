@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/httpx"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/jobs"
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/readings"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/store"
 )
 
@@ -37,6 +39,44 @@ func Routes(db store.DB, q jobs.Queue, secret string, production bool, log *slog
 			return
 		}
 		respond(w, req, db, q, "/webhooks/roomalert", "roomalert", event)
+	})
+
+	// Periodic push status: the units send sensor samples on their interval, which is also how
+	// the fleet stays marked online.
+	r.Post("/readings", func(w http.ResponseWriter, req *http.Request) {
+		raw, err := verified(req, secret, production, log)
+		if err != nil {
+			httpx.Fail(w, req, err)
+			return
+		}
+		var push readings.Push
+		if err := json.Unmarshal([]byte(raw), &push); err != nil {
+			httpx.Fail(w, req, httpx.BadRequest("VALIDATION_FAILED", "Body is not a reading push: "+err.Error()))
+			return
+		}
+		if err := push.Validate(); err != nil {
+			httpx.Fail(w, req, httpx.BadRequest("VALIDATION_FAILED", err.Error()))
+			return
+		}
+		started := time.Now()
+		result, err := readings.Store(req.Context(), db, push)
+		if err != nil {
+			httpx.Fail(w, req, err)
+			return
+		}
+		status := http.StatusAccepted
+		summary := fmt.Sprintf("%d readings stored", result.Accepted)
+		if result.Reason != "" {
+			status, summary = http.StatusUnprocessableEntity, result.Reason
+		}
+		if _, err := db.Exec(req.Context(), `
+			INSERT INTO request_log (id, direction, channel, method, path, status, ms, summary)
+			VALUES ($1,'inbound','roomalert','POST','/webhooks/readings',$2,$3,$4)`,
+			httpx.NewID("log"), status, time.Since(started).Milliseconds(), summary); err != nil {
+			httpx.Fail(w, req, err)
+			return
+		}
+		httpx.JSON(w, status, result)
 	})
 
 	r.Post("/email", func(w http.ResponseWriter, req *http.Request) {

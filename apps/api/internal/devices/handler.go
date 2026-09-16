@@ -65,6 +65,38 @@ func Routes(db store.DB) chi.Router {
 		httpx.JSON(w, http.StatusCreated, out)
 	})
 
+	r.Put("/{deviceId}", func(w http.ResponseWriter, req *http.Request) {
+		c, err := auth.Admin(req, chi.URLParam(req, "distributorId"))
+		if err != nil {
+			httpx.Fail(w, req, err)
+			return
+		}
+		var in UpdateInput
+		if err := httpx.Decode(req, &in); err != nil {
+			httpx.Fail(w, req, err)
+			return
+		}
+		out, err := NewService(db, c).Update(req.Context(), chi.URLParam(req, "deviceId"), in)
+		if err != nil {
+			httpx.Fail(w, req, err)
+			return
+		}
+		httpx.JSON(w, http.StatusOK, out)
+	})
+
+	r.Delete("/{deviceId}/sensors/{sensorId}", func(w http.ResponseWriter, req *http.Request) {
+		c, err := auth.Admin(req, chi.URLParam(req, "distributorId"))
+		if err != nil {
+			httpx.Fail(w, req, err)
+			return
+		}
+		if err := NewService(db, c).DeleteSensor(req.Context(), chi.URLParam(req, "deviceId"), chi.URLParam(req, "sensorId")); err != nil {
+			httpx.Fail(w, req, err)
+			return
+		}
+		httpx.JSON(w, http.StatusNoContent, nil)
+	})
+
 	r.Delete("/{deviceId}", func(w http.ResponseWriter, req *http.Request) {
 		c, err := auth.Admin(req, chi.URLParam(req, "distributorId"))
 		if err != nil {

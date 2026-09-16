@@ -28,6 +28,7 @@ func TenantRoutes(db store.DB, q jobs.Queue) chi.Router {
 			Status:   req.URL.Query().Get("status"),
 			Category: req.URL.Query().Get("category"),
 			Since:    req.URL.Query().Get("since"),
+			Until:    req.URL.Query().Get("until"),
 		})
 		if err != nil {
 			httpx.Fail(w, req, err)

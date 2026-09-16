@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/big"
 	"strings"
+	"time"
 
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/auth"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/domain"
@@ -65,6 +66,34 @@ func (i SensorInput) Validate() error {
 	return nil
 }
 
+// UpdateInput is what the edit dialog and the shopfloor position editor send.
+type UpdateInput struct {
+	OutletID          string              `json:"outletId"`
+	IP                string              `json:"ip"`
+	Firmware          string              `json:"firmware"`
+	Status            domain.DeviceStatus `json:"status"`
+	PushIntervalSec   int                 `json:"pushIntervalSec"`
+	WarrantyUntil     time.Time           `json:"warrantyUntil"`
+	LastMaintenanceAt *time.Time          `json:"lastMaintenanceAt"`
+	NextMaintenanceAt time.Time           `json:"nextMaintenanceAt"`
+	SensorFaults      int                 `json:"sensorFaults"`
+	Floor             domain.FloorPoint   `json:"floor"`
+	Channels          []domain.Channel    `json:"channels"`
+}
+
+func (i UpdateInput) Validate() error {
+	if i.OutletID == "" {
+		return fmt.Errorf("outletId is required")
+	}
+	if i.Status != domain.DeviceOnline && i.Status != domain.DeviceOffline {
+		return fmt.Errorf("status must be online or offline")
+	}
+	if i.PushIntervalSec < 30 {
+		return fmt.Errorf("pushIntervalSec must be at least 30")
+	}
+	return nil
+}
+
 type WithSensors struct {
 	Device  domain.Device   `json:"device"`
 	Sensors []domain.Sensor `json:"sensors"`
@@ -78,6 +107,7 @@ type Service struct {
 func NewService(db store.DB, c auth.Ctx) Service { return Service{repo: NewRepo(db, c.Tenant), ctx: c} }
 
 func (s Service) List(ctx context.Context, o ListOpts) (httpx.Page[domain.Device], error) {
+	o.Scope = s.ctx.OutletScope()
 	return s.repo.List(ctx, o)
 }
 
@@ -171,7 +201,57 @@ func (s Service) Create(ctx context.Context, in CreateInput) (WithSensors, error
 	return WithSensors{Device: device, Sensors: sensors}, nil
 }
 
+// Update also moves the sensors when the unit changes outlet, so the floor plan stays whole.
+func (s Service) Update(ctx context.Context, id string, in UpdateInput) (WithSensors, error) {
+	device, err := s.repo.Find(ctx, id)
+	if err != nil {
+		return WithSensors{}, err
+	}
+	ok, err := s.repo.OutletExists(ctx, in.OutletID)
+	if err != nil {
+		return WithSensors{}, err
+	}
+	if !ok {
+		return WithSensors{}, httpx.NotFound("Outlet", in.OutletID)
+	}
+
+	device.OutletID = in.OutletID
+	device.IP = in.IP
+	device.Firmware = in.Firmware
+	device.Status = in.Status
+	device.PushIntervalSec = in.PushIntervalSec
+	device.WarrantyUntil = in.WarrantyUntil
+	device.LastMaintenanceAt = in.LastMaintenanceAt
+	device.NextMaintenanceAt = in.NextMaintenanceAt
+	device.SensorFaults = in.SensorFaults
+	device.Floor = in.Floor
+	if len(in.Channels) > 0 {
+		device.Channels = in.Channels
+	}
+
+	updated, err := s.repo.Update(ctx, device)
+	if err != nil {
+		return WithSensors{}, err
+	}
+	if err := s.repo.MoveSensors(ctx, id, in.OutletID); err != nil {
+		return WithSensors{}, err
+	}
+	sensors, err := s.repo.SensorsOf(ctx, id)
+	if err != nil {
+		return WithSensors{}, err
+	}
+	return WithSensors{Device: updated, Sensors: sensors}, nil
+}
+
 func (s Service) Delete(ctx context.Context, id string) error { return s.repo.Delete(ctx, id) }
+
+// DeleteSensor frees the port it held.
+func (s Service) DeleteSensor(ctx context.Context, deviceID, sensorID string) error {
+	if _, err := s.repo.Find(ctx, deviceID); err != nil {
+		return err
+	}
+	return s.repo.DeleteSensor(ctx, deviceID, sensorID)
+}
 
 // UpsertSensor checks the port before writing; the unique index is the real guard.
 func (s Service) UpsertSensor(ctx context.Context, deviceID, sensorID string, in SensorInput) (domain.Sensor, error) {

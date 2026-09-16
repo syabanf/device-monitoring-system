@@ -73,10 +73,8 @@ func (s Service) List(ctx context.Context, o ListOpts) (httpx.Page[domain.Alert]
 		if o.OutletID != "" && !s.ctx.CoversOutlet(o.OutletID) {
 			return httpx.Page[domain.Alert]{}, httpx.Forbidden("Outlet is outside your registration")
 		}
-		if o.OutletID == "" && len(s.ctx.OutletIDs) == 1 {
-			o.OutletID = s.ctx.OutletIDs[0]
-		}
 	}
+	o.Scope = s.ctx.OutletScope()
 	return s.repo.List(ctx, o)
 }
 

@@ -61,16 +61,20 @@ func (i Input) Validate() error {
 type Service struct {
 	db     store.DB
 	tenant string
+	scope  []string
 }
 
-func NewService(db store.DB, c auth.Ctx) Service { return Service{db: db, tenant: c.Tenant} }
+func NewService(db store.DB, c auth.Ctx) Service {
+	return Service{db: db, tenant: c.Tenant, scope: c.OutletScope()}
+}
 
 // List joins through outlet so a contact from another tenant can never leak.
 func (s Service) List(ctx context.Context, outletID string) ([]ContactPerson, error) {
 	rows, err := s.db.Query(ctx, `SELECT `+columns+` FROM contact_person c
 		JOIN outlet o ON o.id = c.outlet_id
 		WHERE o.distributor_id = $1 AND ($2 = '' OR c.outlet_id = $2)
-		ORDER BY c.is_primary DESC, c.name`, s.tenant, outletID)
+		  AND ($3::text[] IS NULL OR c.outlet_id = ANY($3))
+		ORDER BY c.is_primary DESC, c.name`, s.tenant, outletID, s.scope)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +93,8 @@ func (s Service) List(ctx context.Context, outletID string) ([]ContactPerson, er
 
 func (s Service) Get(ctx context.Context, id string) (ContactPerson, error) {
 	c, err := scan(s.db.QueryRow(ctx, `SELECT `+columns+` FROM contact_person c
-		JOIN outlet o ON o.id = c.outlet_id WHERE c.id = $1 AND o.distributor_id = $2`, id, s.tenant))
+		JOIN outlet o ON o.id = c.outlet_id WHERE c.id = $1 AND o.distributor_id = $2
+		  AND ($3::text[] IS NULL OR c.outlet_id = ANY($3))`, id, s.tenant, s.scope))
 	if errors.Is(err, pgx.ErrNoRows) {
 		return ContactPerson{}, httpx.NotFound("Contact person", id)
 	}

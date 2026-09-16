@@ -95,19 +95,25 @@ type ListOpts struct {
 	Cursor       string
 	Limit        int
 	OutletID     string
+	DeviceID     string
 	Status       string
 	TechnicianID string
+	// Scope narrows the list to an employee's own outlets; nil means the whole tenant.
+	Scope []string
 }
 
 func (s Service) List(ctx context.Context, o ListOpts) (httpx.Page[domain.Ticket], error) {
+	o.Scope = s.ctx.OutletScope()
 	rows, err := s.db.Query(ctx, `SELECT `+columns+` FROM ticket
 		WHERE distributor_id = $1
 		  AND ($2 = '' OR outlet_id = $2)
 		  AND ($3 = '' OR status::text = $3)
 		  AND ($4 = '' OR technician_id = $4)
 		  AND ($5 = '' OR id < $5)
+		  AND ($6 = '' OR device_id = $6)
+		  AND ($7::text[] IS NULL OR outlet_id = ANY($7))
 		ORDER BY id DESC
-		LIMIT $6`, s.tenant, o.OutletID, o.Status, o.TechnicianID, httpx.DecodeCursor(o.Cursor), o.Limit+1)
+		LIMIT $8`, s.tenant, o.OutletID, o.Status, o.TechnicianID, httpx.DecodeCursor(o.Cursor), o.DeviceID, o.Scope, o.Limit+1)
 	if err != nil {
 		return httpx.Page[domain.Ticket]{}, err
 	}
@@ -251,6 +257,7 @@ func Routes(db store.DB, q jobs.Queue) chi.Router {
 			Cursor:       req.URL.Query().Get("cursor"),
 			Limit:        httpx.Limit(req, 50, 200),
 			OutletID:     req.URL.Query().Get("outletId"),
+			DeviceID:     req.URL.Query().Get("deviceId"),
 			Status:       req.URL.Query().Get("status"),
 			TechnicianID: req.URL.Query().Get("technicianId"),
 		})

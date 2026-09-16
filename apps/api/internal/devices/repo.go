@@ -29,6 +29,9 @@ type ListOpts struct {
 	Limit    int
 	OutletID string
 	Status   string
+	// Scope narrows the list to the outlets an employee is registered at. Nil means the whole
+	// distribution center, which is what admins and technicians get.
+	Scope []string
 }
 
 func (r Repo) List(ctx context.Context, o ListOpts) (httpx.Page[domain.Device], error) {
@@ -38,8 +41,9 @@ func (r Repo) List(ctx context.Context, o ListOpts) (httpx.Page[domain.Device], 
 		  AND ($2 = '' OR outlet_id = $2)
 		  AND ($3 = '' OR status::text = $3)
 		  AND ($4 = '' OR serial > $4)
+		  AND ($5::text[] IS NULL OR outlet_id = ANY($5))
 		ORDER BY serial
-		LIMIT $5`, r.tenant, o.OutletID, o.Status, httpx.DecodeCursor(o.Cursor), o.Limit+1)
+		LIMIT $6`, r.tenant, o.OutletID, o.Status, httpx.DecodeCursor(o.Cursor), o.Scope, o.Limit+1)
 	if err != nil {
 		return httpx.Page[domain.Device]{}, err
 	}
@@ -119,6 +123,40 @@ func (r Repo) InsertWithSensors(ctx context.Context, d domain.Device, sensors []
 		}
 	}
 	return tx.Commit(ctx)
+}
+
+// Update changes the mutable columns. Serial and MAC stay put: they are printed on the unit.
+func (r Repo) Update(ctx context.Context, d domain.Device) (domain.Device, error) {
+	row := r.db.QueryRow(ctx, `
+		UPDATE device SET outlet_id=$3, ip=$4, firmware=$5, status=$6, push_interval_sec=$7, warranty_until=$8,
+			last_maintenance_at=$9, next_maintenance_at=$10, sensor_faults=$11, floor_x=$12, floor_y=$13, channels=$14
+		WHERE id = $1 AND distributor_id = $2
+		RETURNING `+deviceColumns,
+		d.ID, r.tenant, d.OutletID, d.IP, d.Firmware, d.Status, d.PushIntervalSec, d.WarrantyUntil,
+		d.LastMaintenanceAt, d.NextMaintenanceAt, d.SensorFaults, d.Floor.X, d.Floor.Y, domain.ChannelsText(d.Channels))
+	out, err := scanDevice(row)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return domain.Device{}, httpx.NotFound("Device", d.ID)
+	}
+	return out, err
+}
+
+// MoveSensors follows a device to another outlet so the floor plan stays consistent.
+func (r Repo) MoveSensors(ctx context.Context, deviceID, outletID string) error {
+	_, err := r.db.Exec(ctx, `UPDATE sensor SET outlet_id = $2 WHERE device_id = $1`, deviceID, outletID)
+	return err
+}
+
+func (r Repo) DeleteSensor(ctx context.Context, deviceID, sensorID string) error {
+	tag, err := r.db.Exec(ctx, `DELETE FROM sensor WHERE id = $1 AND device_id = $2 AND distributor_id = $3`,
+		sensorID, deviceID, r.tenant)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return httpx.NotFound("Sensor", sensorID)
+	}
+	return nil
 }
 
 func (r Repo) Delete(ctx context.Context, id string) error {

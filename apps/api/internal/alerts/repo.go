@@ -35,6 +35,8 @@ type ListOpts struct {
 	Status   string
 	Category string
 	Since    string
+	Until    string
+	Scope    []string
 }
 
 // List returns newest first. The cursor carries both sort keys so equal timestamps stay stable.
@@ -50,10 +52,12 @@ func (r Repo) List(ctx context.Context, o ListOpts) (httpx.Page[domain.Alert], e
 		  AND ($3 = '' OR a.status::text = $3)
 		  AND ($4 = '' OR a.category::text = $4)
 		  AND ($5 = '' OR a.trigger_time >= $5::timestamptz)
+		  AND ($9 = '' OR a.trigger_time < $9::timestamptz)
+		  AND ($10::text[] IS NULL OR a.outlet_id = ANY($10))
 		  AND ($6 = '' OR a.trigger_time < $6::timestamptz OR (a.trigger_time = $6::timestamptz AND a.id < $7::bigint))
 		ORDER BY a.trigger_time DESC, a.id DESC
 		LIMIT $8`,
-		r.tenant, o.OutletID, o.Status, o.Category, o.Since, afterTime, zeroIfEmpty(afterID), o.Limit+1)
+		r.tenant, o.OutletID, o.Status, o.Category, o.Since, afterTime, zeroIfEmpty(afterID), o.Limit+1, o.Until, o.Scope)
 	if err != nil {
 		return httpx.Page[domain.Alert]{}, err
 	}

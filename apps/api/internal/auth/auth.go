@@ -39,6 +39,18 @@ type Ctx struct {
 	Now       time.Time
 }
 
+// OutletScope returns the outlets a list must be narrowed to, or nil when the session sees the
+// whole distribution center. Admins and technicians work across outlets; employees do not.
+func (c Ctx) OutletScope() []string {
+	if c.Kind != KindEmployee {
+		return nil
+	}
+	if len(c.OutletIDs) == 0 {
+		return []string{""} // an employee with no outlet sees nothing rather than everything
+	}
+	return c.OutletIDs
+}
+
 func (c Ctx) CoversOutlet(outletID string) bool {
 	if c.Kind != KindEmployee {
 		return true

@@ -78,9 +78,12 @@ func (i Input) Validate() error {
 type Service struct {
 	db     store.DB
 	tenant string
+	scope  []string
 }
 
-func NewService(db store.DB, c auth.Ctx) Service { return Service{db: db, tenant: c.Tenant} }
+func NewService(db store.DB, c auth.Ctx) Service {
+	return Service{db: db, tenant: c.Tenant, scope: c.OutletScope()}
+}
 
 type ListOpts struct {
 	OutletID string
@@ -92,7 +95,8 @@ func (s Service) List(ctx context.Context, o ListOpts) ([]Employee, error) {
 		WHERE e.distributor_id = $1
 		  AND ($2 = '' OR e.registration_status::text = $2)
 		  AND ($3 = '' OR EXISTS (SELECT 1 FROM employee_outlet eo WHERE eo.employee_id = e.id AND eo.outlet_id = $3))
-		ORDER BY e.name`, s.tenant, o.Status, o.OutletID)
+		  AND ($4::text[] IS NULL OR EXISTS (SELECT 1 FROM employee_outlet eo WHERE eo.employee_id = e.id AND eo.outlet_id = ANY($4)))
+		ORDER BY e.name`, s.tenant, o.Status, o.OutletID, s.scope)
 	if err != nil {
 		return nil, err
 	}

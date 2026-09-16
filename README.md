@@ -87,16 +87,20 @@ flow, and `POST /webhooks/roomalert` and `/webhooks/email` ingest signed payload
 | Area | Endpoints |
 |---|---|
 | System | `GET /health` |
+| Distribution center | `GET,PUT /distributors/{id}` |
 | Auth | `POST /auth/admin/login`, `POST /auth/token/login` |
 | Outlets | `GET,POST /distributors/{id}/outlets`, `GET,PUT,DELETE …/outlets/{outletId}` |
 | Device types | `GET,POST /device-types`, `GET,PUT,DELETE /device-types/{deviceTypeId}` |
-| Devices | `GET,POST …/devices`, `GET,DELETE …/devices/{deviceId}`, `PUT …/devices/{deviceId}/sensors/{sensorId}` |
+| Devices | `GET,POST …/devices`, `GET,PUT,DELETE …/devices/{deviceId}`, `PUT,DELETE …/devices/{deviceId}/sensors/{sensorId}` |
 | Employees | `GET,POST …/employees`, `GET,PUT,DELETE …/employees/{employeeId}`, `POST …/{approve,token,revoke}` |
 | Technicians | `GET,POST …/technicians`, `GET,PUT,DELETE …/technicians/{technicianId}`, `POST …/token` |
 | Contacts | `GET,POST …/contact-persons`, `GET,PUT,DELETE …/contact-persons/{contactId}` |
 | Alerts | `GET …/alerts`, `GET /alerts/{alertId}`, `POST /alerts/{alertId}/respond`, `POST /alerts/{alertId}/status` |
 | Tickets | `GET,POST …/tickets`, `PATCH …/tickets/{ticketId}` |
-| Ingestion | `POST /webhooks/roomalert`, `POST /webhooks/email` |
+| Readings | `GET …/readings/latest`, `GET …/readings?sensorId&outletId&from&to&bucket=hour` |
+| Stats | `GET …/stats?period=today\|7d\|30d\|all` |
+| Integration | `GET,PUT …/integration`, `GET …/integration/request-log`, `GET …/integration/unmatched`, `POST …/integration/test/{channel}` |
+| Ingestion | `POST /webhooks/roomalert`, `POST /webhooks/email`, `POST /webhooks/readings` |
 
 Conventions: JSON with camelCase keys, ISO-8601 timestamps, prefixed string ids, cursor
 pagination as `{items, nextCursor}`, and `application/problem+json` for every non-2xx answer.
@@ -104,5 +108,10 @@ Admins sign in with a password; employees and technicians exchange the registrat
 admin issued. Every repo query filters by the tenant in the token, and a URL naming another
 distribution center answers 403.
 
-Still open: an OpenAPI document at `/docs`, a Redis-backed queue (the outbox dispatcher runs
-inline today), the IMAP poller, and real FCM and Telegram notifiers in place of the logging stub.
+Employee sessions are narrowed to their own outlets on every list, not only alerts. Admins and
+technicians see the whole distribution center.
+
+Still open: push through FCM with a device-token endpoint, the Telegram bot and its `/register`
+flow, the IMAP poller, a scheduled job that marks a device offline when its push status stops,
+a Redis-backed queue in place of the inline dispatcher, refresh tokens, and an OpenAPI document
+at `/docs`.
