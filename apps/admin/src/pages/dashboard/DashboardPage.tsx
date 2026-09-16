@@ -7,9 +7,10 @@ import {
   Badge, Button, Card, CardContent, CardHeader, CardTitle, Chip, EmptyState, Readout, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, StatCard, cn,
 } from '@monitoring/ui';
 import {
-  FIXTURE_NOW_MS, avgResponseSec, fmtAgo, humanizeShort, inPeriod, isSolved, isTicketOverdue, latestReadingBySensor, openVsSolved, readingsBySensor, type Period,
+  nowMs, avgResponseSec, fmtAgo, humanizeShort, inPeriod, isSolved, isTicketOverdue, openVsSolved, type Period,
 } from '@monitoring/fixtures';
 import { useScoped } from '../../state/app-state';
+import { latestReadingBySensor, useReadingSeries } from '../../state/readings';
 import { AlertListItem, alertHref } from '../../components/AlertListItem';
 import { SensorIcon } from '../../components/badges';
 import { MaintenanceDashboard } from './MaintenanceDashboard';
@@ -197,22 +198,24 @@ function OperationsDashboard() {
     return outlets.find((o) => o.id === first?.outletId) ?? outlets[0]!;
   }, [open, outlets]);
 
+  // The comfort tile averages today's readings, so it asks the API for the last day rather than
+  // holding every sample in memory.
+  const day = React.useMemo(() => ({ from: new Date(nowMs() - 24 * 3_600_000).toISOString(), to: new Date().toISOString(), bucket: 'hour' as const }), []);
+  const { readings } = useReadingSeries(day);
   const { avgTemp, avgHum, spark } = React.useMemo(() => {
-    const ids = outlets.flatMap((o) => (sensorsByOutlet.get(o.id) ?? []).filter((s) => s.type === 'TEMPERATURE_HUMIDITY').map((s) => s.id));
+    const ids = new Set(outlets.flatMap((o) => (sensorsByOutlet.get(o.id) ?? []).filter((s) => s.type === 'TEMPERATURE_HUMIDITY').map((s) => s.id)));
     let t = 0, h = 0, n = 0;
     for (const id of ids) { const r = latestReadingBySensor.get(id); if (r) { t += r.temperatureC; h += r.humidityPct; n++; } }
     const buckets = new Map<number, { t: number; n: number }>();
-    const since = FIXTURE_NOW_MS - 24 * 3_600_000;
-    for (const id of ids) for (const r of readingsBySensor.get(id) ?? []) {
-      const ms = Date.parse(r.at);
-      if (ms < since) continue;
-      const k = Math.floor(ms / 3_600_000);
+    for (const r of readings) {
+      if (!ids.has(r.sensorId)) continue;
+      const k = Math.floor(Date.parse(r.at) / 3_600_000);
       const b = buckets.get(k) ?? { t: 0, n: 0 };
       b.t += r.temperatureC; b.n++; buckets.set(k, b);
     }
     const spark = [...buckets.entries()].sort((a, b) => a[0] - b[0]).map(([k, b]) => ({ k, v: b.t / b.n }));
     return { avgTemp: n ? t / n : null, avgHum: n ? h / n : null, spark };
-  }, [outlets, sensorsByOutlet]);
+  }, [outlets, sensorsByOutlet, readings]);
 
   const donut = [
     { name: 'Solved Alert', value: stats.solved, color: '#ED1C24' },

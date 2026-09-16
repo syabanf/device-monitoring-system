@@ -3,7 +3,7 @@ import { Link, Outlet, matchPath, useLocation } from 'react-router';
 import { Bell, ShieldCheck, User, Wrench } from 'lucide-react';
 import { cn } from '@monitoring/ui';
 import { useAuth } from '../auth/auth';
-import { useMobileScope, useReadAlerts } from '../state/app-state';
+import { useAppState, useMobileScope, useReadAlerts } from '../state/app-state';
 
 const TABS = [
   { to: '/alerts', label: 'Alerts', icon: Bell },
@@ -16,6 +16,8 @@ export function MobileLayout() {
   const { pathname } = useLocation();
   const { user } = useAuth();
   const { alerts, tickets } = useMobileScope(user?.outletIds ?? []);
+  const { status, error, clearError, reload, state } = useAppState();
+  const loaded = status === 'ready' || state.outlets.length > 0;
   const myOpenTickets = user?.kind === 'technician' ? tickets.filter((t) => t.status !== 'DONE' && t.technicianId === user.id).length : 0;
   const { read } = useReadAlerts();
   const unread = alerts.filter((a) => a.status === 'UNACKNOWLEDGED' && !read.has(a.id)).length;
@@ -31,8 +33,26 @@ export function MobileLayout() {
     <PhoneFrame>
       <p className="sr-only" role="alert" aria-live="assertive" aria-atomic="true">{announcement}</p>
       <main className={cn('flex-1 px-5 pt-[max(env(safe-area-inset-top),0.75rem)]', hideNav ? 'pb-8' : 'pb-32')}>
-        <Outlet />
+        {/* Screens read their outlets from state, so they wait for the first load. */}
+        {loaded ? <Outlet /> : status === 'error' ? (
+          <div role="alert" className="mt-10 rounded-[24px] bg-white p-5 text-center shadow-card">
+            <p className="text-sm font-semibold">The API did not answer</p>
+            <p className="mt-1 text-xs text-muted">{error}</p>
+            <button type="button" onClick={() => void reload()} className="mt-4 h-11 w-full rounded-full bg-ink text-sm font-semibold text-white">Try again</button>
+          </div>
+        ) : (
+          <div className="space-y-3 pt-6" role="status" aria-live="polite">
+            <p className="text-sm text-muted">Loading your outlets…</p>
+            {[0, 1, 2].map((i) => <div key={i} className="h-24 animate-pulse rounded-[24px] bg-white/70" />)}
+          </div>
+        )}
       </main>
+      {error && status !== 'error' ? (
+        <div role="alert" className="fixed inset-x-4 bottom-28 z-50 mx-auto flex max-w-md items-center justify-between gap-3 rounded-2xl bg-ink p-4 text-xs text-white shadow-float">
+          <span className="min-w-0 flex-1">{error}</span>
+          <button type="button" onClick={clearError} className="shrink-0 rounded-full bg-white/10 px-3 py-1.5 font-semibold">Dismiss</button>
+        </div>
+      ) : null}
       {!hideNav ? (
         <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-md">
           <div className="pointer-events-none h-8 bg-gradient-to-t from-surface to-transparent" />

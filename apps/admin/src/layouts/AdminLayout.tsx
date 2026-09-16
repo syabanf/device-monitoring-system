@@ -5,9 +5,9 @@ import { useLocation, matchPath } from 'react-router';
 import {
   Avatar, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Input, Sheet, SheetContent,
 } from '@monitoring/ui';
-import { distributorById } from '@monitoring/fixtures';
+import { distributorById } from '../state/lookups';
 import { useAuth } from '../auth/auth';
-import { useScoped } from '../state/app-state';
+import { useAppState, useScoped } from '../state/app-state';
 import { DrawerNav, RailNav } from './SidebarNav';
 import { PageNavigation } from './PageNavigation';
 import { AddDeviceDialog } from '../components/AddDeviceDialog';
@@ -15,6 +15,8 @@ import { AddDeviceDialog } from '../components/AddDeviceDialog';
 export function AdminLayout() {
   const { user, session, logout } = useAuth();
   const { alerts, outlets, devices, sensors, tickets, outletById } = useScoped();
+  const { status, error, clearError, reload } = useAppState();
+  const loaded = status === 'ready' || outlets.length > 0;
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [open, setOpen] = React.useState(false);
@@ -108,9 +110,28 @@ export function AdminLayout() {
         {searchOpen ? <div className="-mt-2 md:hidden">{searchForm}</div> : null}
         <main className="min-h-0 flex-1 overflow-y-auto pb-24 pr-0.5 md:pb-2">
           <PageNavigation />
-          <Outlet />
+          {status === 'error' ? (
+            <div role="alert" className="mb-3 flex items-center justify-between gap-3 rounded-2xl bg-brand-50 p-4 text-sm text-brand-700">
+              <span>{error ?? 'The API did not answer.'}</span>
+              <Button size="sm" variant="outline" onClick={() => void reload()}>Try again</Button>
+            </div>
+          ) : null}
+          {/* Pages read the tenant straight from state, so they wait for the first load. */}
+          {loaded ? <Outlet /> : status === 'error' ? null : (
+            <div className="space-y-3" role="status" aria-live="polite">
+              <p className="text-sm text-muted">Loading the distribution center from the API…</p>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">{[0, 1, 2, 3].map((i) => <div key={i} className="h-28 animate-pulse rounded-[22px] bg-surface-2" />)}</div>
+              <div className="h-72 animate-pulse rounded-[22px] bg-surface-2" />
+            </div>
+          )}
         </main>
-        <AddDeviceDialog open={adding} onClose={() => setAdding(false)} />
+        {error && status !== 'error' ? (
+          <div role="alert" className="fixed inset-x-4 bottom-24 z-50 mx-auto flex max-w-md items-center justify-between gap-3 rounded-2xl bg-ink p-4 text-sm text-white shadow-float md:bottom-6">
+            <span className="min-w-0 flex-1">{error}</span>
+            <Button size="sm" variant="outline" className="border-white/30 bg-white/10 text-white hover:bg-white/20" onClick={clearError}>Dismiss</Button>
+          </div>
+        ) : null}
+        {adding ? <AddDeviceDialog open onClose={() => setAdding(false)} /> : null}
         <nav aria-label="Primary" className="fixed inset-x-3 bottom-3 z-40 flex h-[68px] items-center justify-between rounded-[22px] bg-ink px-3 shadow-float md:hidden">
           {([['/', 'Home', Home, true], ['/alerts', 'Alerts', Bell, false]] as const).map(([to, label, Icon, end]) => { const active = !!matchPath({ path: to, end }, pathname); return (
             <Link key={to} to={to} aria-label={label} className={`relative flex size-11 items-center justify-center rounded-2xl transition-colors ${active ? 'bg-brand-600 text-white shadow-[0_8px_20px_-6px_rgb(237_28_36_/_0.7)]' : 'text-sidebar-muted hover:text-white'}`}><Icon className="size-5" />{to === '/alerts' && openCount && !active ? <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold text-brand-600">{openCount > 99 ? '99+' : openCount}</span> : null}</Link>

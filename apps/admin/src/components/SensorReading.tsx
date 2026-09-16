@@ -1,6 +1,7 @@
 import type { Sensor } from '@monitoring/types';
 import { SENSOR_TYPE_LABEL } from '@monitoring/types';
-import { fmtAgo, latestReadingBySensor } from '@monitoring/fixtures';
+import { fmtAgo } from '@monitoring/fixtures';
+import { latestReadingBySensor } from '../state/readings';
 import { Badge, cn } from '@monitoring/ui';
 import { SensorIcon } from './badges';
 

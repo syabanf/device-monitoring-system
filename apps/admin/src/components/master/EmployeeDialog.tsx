@@ -2,12 +2,12 @@ import * as React from 'react';
 import type { Employee, EmployeeRole } from '@monitoring/types';
 import { EMPLOYEE_ROLE_LABEL } from '@monitoring/types';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Toggle } from '@monitoring/ui';
-import { FIXTURE_NOW, generateToken, newId } from '@monitoring/fixtures';
+import { nowIso, generateToken, newId } from '@monitoring/fixtures';
 import { useScoped } from '../../state/app-state';
 
 const COLORS = ['#ed1c24', '#101112', '#1d4ed8', '#047857', '#b45309', '#6d28d9', '#0e7490', '#be185d'];
 export function emptyEmployee(distributorId: string, outletId: string): Employee {
-  return { id: '', distributorId, outletIds: outletId ? [outletId] : [], primaryOutletId: outletId, name: '', phone: '', email: '', role: 'staff', registrationToken: generateToken(), registrationStatus: 'pending', registeredAt: FIXTURE_NOW, approvedAt: null, avatarColor: COLORS[Math.floor(Math.random() * COLORS.length)]! };
+  return { id: '', distributorId, outletIds: outletId ? [outletId] : [], primaryOutletId: outletId, name: '', phone: '', email: '', role: 'staff', registrationToken: generateToken(), registrationStatus: 'pending', registeredAt: nowIso(), approvedAt: null, avatarColor: COLORS[Math.floor(Math.random() * COLORS.length)]! };
 }
 
 export function EmployeeDialog({ employee, onClose }: { employee: Employee | null; onClose: () => void }) {
@@ -37,7 +37,7 @@ export function EmployeeDialog({ employee, onClose }: { employee: Employee | nul
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="Primary outlet"><Select value={d.primaryOutletId} onValueChange={(v) => set({ primaryOutletId: v })} disabled={!d.outletIds.length}><SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger><SelectContent>{d.outletIds.map((id) => <SelectItem key={id} value={id}>{outlets.find((o) => o.id === id)?.name}</SelectItem>)}</SelectContent></Select></FormField>
-            <FormField label="Registration"><Select value={d.registrationStatus} onValueChange={(v) => set({ registrationStatus: v as Employee['registrationStatus'], approvedAt: v === 'approved' ? (d.approvedAt ?? FIXTURE_NOW) : null })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="pending">Pending</SelectItem><SelectItem value="approved">Approved</SelectItem></SelectContent></Select></FormField>
+            <FormField label="Registration"><Select value={d.registrationStatus} onValueChange={(v) => set({ registrationStatus: v as Employee['registrationStatus'], approvedAt: v === 'approved' ? (d.approvedAt ?? nowIso()) : null })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="pending">Pending</SelectItem><SelectItem value="approved">Approved</SelectItem></SelectContent></Select></FormField>
           </div>
           <DialogFooter><Button type="button" variant="outline" onClick={onClose}>Cancel</Button><Button type="submit" disabled={!d.outletIds.length}>{d.id ? 'Save changes' : 'Create employee'}</Button></DialogFooter>
         </form>

@@ -1,17 +1,24 @@
-# Monitoring System UI
+# Monitoring System
 
-Frontend-only monorepo for an outlet environment & security monitoring system (Room Alert IoT devices), modelled on the Indomaret RoomAlert proposal deck. WIT.ID visual language (WIT Red `#ED1C24`, ink `#101112`, DM Sans) in a smart-home dashboard style.
+Monorepo for an outlet environment & security monitoring system (Room Alert IoT devices), modelled
+on the Indomaret RoomAlert proposal deck. WIT.ID visual language (WIT Red `#ED1C24`, ink `#101112`,
+DM Sans) in a smart-home dashboard style.
 
-No backend yet: every screen reads static JSON fixtures from `packages/fixtures/data`, and session-only actions (respond to alert, approve registration, maintenance tickets, contact CRUD) live in an in-memory reducer.
+Both frontends run against the Go API in `apps/api`. They sign in with a real token, load the
+distribution center from the API, and write every change back to it: master data, the alert
+lifecycle, maintenance tickets, photo uploads and the integration settings. The generated JSON in
+`packages/fixtures/data` is now the seed the API loads, not what the browser reads.
 
 ## Apps
 
 | App | Path | Dev URL | Demo login |
 |---|---|---|---|
-| Admin dashboard (distributor office) | `apps/admin` | http://localhost:5173 | `admin@indomaret.co.id` / token `admin123` |
+| Admin dashboard (distributor office) | `apps/admin` | http://localhost:5173 | `admin@indomaret.co.id` / password `admin123` |
 | Employee mobile PWA | `apps/mobile` | http://localhost:5174 | employee `user123@indomaret.co.id` / `9634871231` · technician `tech@wit.id` / `2468013579` |
 
-Master data has full create / edit / delete in the admin (session state): Outlet, Device Type, Device (plus its Sensors and port map), Employee, Contact Person, Technician, and Maintenance tickets.
+Master data has full create / edit / delete in the admin, each one a call to the API: Outlet,
+Device Type, Device (plus its Sensors and port map), Employee, Contact Person, Technician, and
+Maintenance tickets.
 
 Admin pages: Setup wizard (`/setup`, distribution center → outlets → units & sensors → employees → integration), API Integration (`/integration`, channel settings, blackbox console to replay webhook / e-mail payloads into the alert engine, request log, endpoint reference), Dashboard (Operations and Maintenance points of view, with a hardware-health strip in both), Outlet (with floor plan tab), Shopfloor (OpenStreetMap of all installation points + in-store floor plan with sensor markers), Contact Person, Device Type, Device Info (table or shopfloor view, add / edit / remove devices and sensors), Device Maintenance (hardware health, tickets, schedule, technicians), User Management, Alerts, Analysis, Report (CSV export). The sidebar rail expands to show labels.
 
@@ -20,8 +27,9 @@ Mobile screens: Login (employee or technician), Alerts (outlet filter, needs-res
 ## Packages
 
 - `packages/types` – domain TypeScript types
-- `packages/fixtures` – generated JSON data, typed accessors, formatting/KPI/maintenance helpers, session reducer
-- `packages/integration` – the API blackbox: `MonitoringApi` adapter contract (mock + HTTP implementations), Room Alert webhook / e-mail parsers, integration config
+- `packages/api-client` – the typed HTTP client both apps use: problem+json errors, cursor paging, photo upload, and `loadSnapshot` for the whole tenant
+- `packages/fixtures` – generated JSON seed data, formatting/KPI/maintenance helpers, and the reducer that holds the loaded tenant
+- `packages/integration` – Room Alert webhook / e-mail parsers and the endpoint reference the Integration page lists
 - `packages/ui` – shared component kit (Radix + Tailwind v4, shadcn-style)
 - `packages/tailwind-config` – WIT.ID theme tokens (`theme.css`)
 - `packages/tsconfig` – shared TS configs
@@ -30,6 +38,10 @@ Mobile screens: Login (employee or technician), Alerts (outlet filter, needs-res
 
 ```bash
 pnpm install
+pnpm infra:up         # postgres on :5442, redis on :6382, mailpit on :8025
+pnpm db:migrate       # apply the embedded migrations
+pnpm db:seed          # load the fixtures, shifted so the newest row lands now
+pnpm dev:api          # API on :3000
 pnpm dev:admin        # admin on :5173
 pnpm dev:mobile       # mobile PWA on :5174
 pnpm typecheck
@@ -38,7 +50,20 @@ pnpm preview:mobile   # serve the built PWA (service worker + manifest) on :4174
 pnpm gen:fixtures     # regenerate packages/fixtures/data (seeded, deterministic)
 ```
 
-All relative times ("Today, 13:24", "Ongoing for 6 minutes") are computed against the fixed fixture clock `2026-09-07 13:30 WIB`, so the demo never drifts.
+Both apps read `VITE_API_URL` (see `apps/*/.env.example`) and fall back to `http://localhost:3000`.
+The seeder shifts every fixture timestamp by the same delta so the newest alert lands at the
+current time, and the apps read their clock from the wall: "Today, 13:24" means today.
+
+### How a page reaches the API
+
+`AppStateProvider` loads the whole distribution center in one round of parallel calls and keeps it
+in the reducer from `@monitoring/fixtures`. Pages read that state exactly as before. A write still
+dispatches the action it always did; `state/commands.ts` maps that action onto the call behind it
+and applies the row the server answered with, so the ids, tokens and ticket numbers on screen are
+the ones in the database. A failed write leaves the state alone and shows the API's message.
+
+The API scopes every list to the token, so the mobile app receives only the outlets its employee
+is registered at without asking for them.
 
 ## House style skill (`wit-ui-style`)
 
@@ -92,6 +117,7 @@ flow, and `POST /webhooks/roomalert` and `/webhooks/email` ingest signed payload
 | Outlets | `GET,POST /distributors/{id}/outlets`, `GET,PUT,DELETE …/outlets/{outletId}` |
 | Device types | `GET,POST /device-types`, `GET,PUT,DELETE /device-types/{deviceTypeId}` |
 | Devices | `GET,POST …/devices`, `GET,PUT,DELETE …/devices/{deviceId}`, `PUT,DELETE …/devices/{deviceId}/sensors/{sensorId}` |
+| Sensors | `GET …/sensors?outletId&deviceId` (every sensor in one call, for the floor plans) |
 | Employees | `GET,POST …/employees`, `GET,PUT,DELETE …/employees/{employeeId}`, `POST …/{approve,token,revoke}` |
 | Technicians | `GET,POST …/technicians`, `GET,PUT,DELETE …/technicians/{technicianId}`, `POST …/token` |
 | Contacts | `GET,POST …/contact-persons`, `GET,PUT,DELETE …/contact-persons/{contactId}` |
@@ -173,6 +199,11 @@ docker run -p 3000:3000 -e DATABASE_URL=… -e JWT_SECRET=… -e WEBHOOK_SECRET=
 `.github/workflows/ci.yml` runs three jobs on every push and pull request: the frontend
 workspaces through `turbo typecheck` and `turbo build`, the API through `gofmt -l`, `go vet` and
 `go test` against a PostgreSQL service container, and a Docker build of the API image.
+
+**Alert lifecycle.** An employee who acknowledges an alert or starts an inspection takes
+responsibility for it, and the alert records them as the assignee. Another employee at the same
+outlet is then refused, which is the no-double-response rule from the deck. Saving the field
+report resolves the alert; an admin verifies it afterwards.
 
 Still open: push through FCM with a device-token endpoint, the Telegram bot and its `/register` flow, the IMAP poller, a scheduled job
 that marks a device offline when its push status stops, a Redis-backed queue in place of the

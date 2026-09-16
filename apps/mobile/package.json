@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@monitoring/api-client": "workspace:*",
     "@monitoring/fixtures": "workspace:*",
     "@monitoring/types": "workspace:*",
     "@monitoring/ui": "workspace:*",

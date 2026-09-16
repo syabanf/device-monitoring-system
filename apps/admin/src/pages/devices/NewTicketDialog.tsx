@@ -2,7 +2,7 @@ import * as React from 'react';
 import type { MaintenanceTicket, MaintenanceType, TicketPriority } from '@monitoring/types';
 import { MAINTENANCE_TYPE_LABEL } from '@monitoring/types';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '@monitoring/ui';
-import { FIXTURE_NOW, nextTicketId } from '@monitoring/fixtures';
+import { nowIso, nextTicketId } from '@monitoring/fixtures';
 import { outletById } from '../../state/lookups';
 import { useScoped } from '../../state/app-state';
 
@@ -24,7 +24,7 @@ export function NewTicketDialog({ open, onClose, deviceId }: { open: boolean; on
     const ticket: MaintenanceTicket = {
       id: nextTicketId(tickets), distributorId, outletId: device.outletId, deviceId: device.id, sensorId: null, type, priority,
       status: date ? 'SCHEDULED' : 'OPEN', title: title.trim(), description: desc.trim(), technicianId: tech === 'none' ? null : tech,
-      createdAt: FIXTURE_NOW, scheduledAt: date ? `${date}T09:00:00+07:00` : null, completedAt: null, partsUsed: [], notes: null, photoUrls: [],
+      createdAt: nowIso(), scheduledAt: date ? `${date}T09:00:00+07:00` : null, completedAt: null, partsUsed: [], notes: null, photoUrls: [],
     };
     dispatch({ type: 'tickets/create', ticket });
     setTitle(''); setDesc(''); setDate(''); setTech('none');

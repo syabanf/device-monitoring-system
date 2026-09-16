@@ -4,8 +4,7 @@ import { ArrowLeft, ArrowRight, Building2, Check, Cpu, MapPin, Plug, Plus, Spark
 import type { Employee, EmployeeRole, SensorType } from '@monitoring/types';
 import { EMPLOYEE_ROLE_LABEL, SENSOR_TYPE_LABEL } from '@monitoring/types';
 import { Badge, Button, Card, CardContent, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Toggle, WitMark, cn } from '@monitoring/ui';
-import { FIXTURE_NOW, generateToken, newId } from '@monitoring/fixtures';
-import { randomSecret } from '@monitoring/integration';
+import { nowIso, generateToken, newId } from '@monitoring/fixtures';
 import { useAuth } from '../../auth/auth';
 import { useAppState, useScoped } from '../../state/app-state';
 import { useApi } from '../../state/api';
@@ -31,39 +30,53 @@ export function SetupWizardPage() {
   const { session } = useAuth();
   const { distributorId, deviceTypes, dispatch } = useScoped();
   const { state } = useAppState();
-  const { config, setConfig } = useApi();
+  const { config, saveConfig } = useApi();
   const distributor = state.distributors.find((d) => d.id === distributorId);
   const [step, setStep] = React.useState(0);
   const [org, setOrg] = React.useState({ name: distributor?.name ?? '', code: distributor?.code ?? '', city: distributor?.city ?? '', region: distributor?.region ?? '', address: distributor?.address ?? '' });
   const [outlets, setOutlets] = React.useState<OutletDraft[]>([{ key: newId('o'), code: 'IDM-SBY-0021', name: 'Indomaret ', address: '', city: 'Surabaya', model: deviceTypes[0]?.model ?? 'RA3S', sensors: ['TEMPERATURE_HUMIDITY', 'DOOR'] }]);
   const [people, setPeople] = React.useState<EmployeeDraft[]>([]);
-  const [integ, setInteg] = React.useState({ apiBaseUrl: config.apiBaseUrl, apiKey: config.apiKey, webhookSecret: config.webhookSecret || randomSecret(), telegram: config.telegram.enabled, imap: config.imap.enabled });
+  const [integ, setInteg] = React.useState({ apiBaseUrl: '', telegram: false, imap: false });
+  React.useEffect(() => {
+    if (config) setInteg({ apiBaseUrl: config.apiBaseUrl, telegram: config.telegram.enabled, imap: config.imap.enabled });
+  }, [config]);
   const [created, setCreated] = React.useState<{ outlets: number; devices: number; employees: number } | null>(null);
+  const [saving, setSaving] = React.useState(false);
   if (!session) return null;
 
   const validOutlets = outlets.filter((o) => o.name.trim().length > 10 && o.code.trim());
   const canNext = step === 0 ? org.name.trim().length > 2 : step === 1 ? validOutlets.length > 0 : true;
 
-  const finish = () => {
-    if (distributor) dispatch({ type: 'distributors/upsert', distributor: { ...distributor, ...org } });
+  // Each step waits for the API, because an outlet has to exist before its unit can point at it.
+  const strip = (c: NonNullable<typeof config>) => ({ apiBaseUrl: c.apiBaseUrl, webhookPath: c.webhookPath, roomAlert: c.roomAlert, imap: c.imap, telegram: c.telegram, push: c.push });
+
+  const finish = async () => {
+    setSaving(true);
+    if (distributor) await dispatch({ type: 'distributors/upsert', distributor: { ...distributor, ...org } });
     const keyToId = new Map<string, string>();
     let devices = 0;
     for (const o of validOutlets) {
-      const id = newId('out');
-      keyToId.set(o.key, id);
-      dispatch({ type: 'outlets/upsert', outlet: { id, distributorId, code: o.code.trim().toUpperCase(), name: o.name.trim(), address: o.address.trim() || `${o.city}`, city: o.city, province: distributor?.region ?? 'Jawa Timur', lat: -7.2756 + (Math.random() - 0.5) * 0.1, lng: 112.7422 + (Math.random() - 0.5) * 0.1, mapsUrl: '', openTime: '07:00', closeTime: '22:00', timezone: 'Asia/Jakarta', phone: '' } });
+      const draft = { id: newId('out'), distributorId, code: o.code.trim().toUpperCase(), name: o.name.trim(), address: o.address.trim() || `${o.city}`, city: o.city, province: distributor?.region ?? 'Jawa Timur', lat: -7.2756 + (Math.random() - 0.5) * 0.1, lng: 112.7422 + (Math.random() - 0.5) * 0.1, mapsUrl: '', openTime: '07:00', closeTime: '22:00', timezone: 'Asia/Jakarta', phone: '' };
+      const [saved] = await dispatch({ type: 'outlets/upsert', outlet: draft });
+      if (saved?.type !== 'outlets/upsert') continue;
+      keyToId.set(o.key, saved.outlet.id);
       const type = deviceTypes.find((t) => t.model === o.model);
-      if (type) { const built = buildDevice({ outletId: id, type, sensorTypes: o.sensors }); dispatch({ type: 'devices/add', device: built.device, sensors: built.sensors }); devices++; }
+      if (type) {
+        const built = buildDevice({ outletId: saved.outlet.id, type, sensorTypes: o.sensors });
+        const [addition] = await dispatch({ type: 'devices/add', device: built.device, sensors: built.sensors });
+        if (addition?.type === 'devices/add') devices++;
+      }
     }
     for (const p of people) {
       const oid = keyToId.get(p.outletKey);
       if (!oid || !p.name.trim()) continue;
-      const emp: Employee = { id: newId('emp'), distributorId, outletIds: [oid], primaryOutletId: oid, name: p.name.trim(), phone: p.phone, email: p.email.trim().toLowerCase(), role: p.role, registrationToken: generateToken(), registrationStatus: 'pending', registeredAt: FIXTURE_NOW, approvedAt: null, avatarColor: '#101112' };
-      dispatch({ type: 'employees/upsert', employee: emp });
+      const emp: Employee = { id: newId('emp'), distributorId, outletIds: [oid], primaryOutletId: oid, name: p.name.trim(), phone: p.phone, email: p.email.trim().toLowerCase(), role: p.role, registrationToken: generateToken(), registrationStatus: 'pending', registeredAt: nowIso(), approvedAt: null, avatarColor: '#101112' };
+      await dispatch({ type: 'employees/upsert', employee: emp });
     }
-    setConfig({ ...config, apiBaseUrl: integ.apiBaseUrl, apiKey: integ.apiKey, webhookSecret: integ.webhookSecret, telegram: { ...config.telegram, enabled: integ.telegram }, imap: { ...config.imap, enabled: integ.imap } });
+    if (config) await saveConfig({ ...strip(config), apiBaseUrl: integ.apiBaseUrl, telegram: { ...config.telegram, enabled: integ.telegram }, imap: { ...config.imap, enabled: integ.imap } });
     try { localStorage.setItem(SETUP_KEY, '1'); } catch { /* ignore */ }
-    setCreated({ outlets: validOutlets.length, devices, employees: people.filter((p) => p.name.trim() && keyToId.has(p.outletKey)).length });
+    setCreated({ outlets: keyToId.size, devices, employees: people.filter((p) => p.name.trim() && keyToId.has(p.outletKey)).length });
+    setSaving(false);
     setStep(STEPS.length - 1);
   };
 
@@ -161,8 +174,7 @@ export function SetupWizardPage() {
               <h2 className="text-lg font-bold">Connect the blackbox</h2>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField label="Backend API base URL" htmlFor="w-api"><Input id="w-api" value={integ.apiBaseUrl} onChange={(e) => setInteg({ ...integ, apiBaseUrl: e.target.value })} className="[&_input]:font-mono [&_input]:text-xs" /></FormField>
-                <FormField label="API key" htmlFor="w-key"><Input id="w-key" type="password" value={integ.apiKey} onChange={(e) => setInteg({ ...integ, apiKey: e.target.value })} className="[&_input]:font-mono [&_input]:text-xs" /></FormField>
-                <FormField label="Webhook secret (paste into the Room Alert account HTTP POST action)" htmlFor="w-secret" className="sm:col-span-2"><div className="flex gap-2"><Input id="w-secret" readOnly value={integ.webhookSecret} className="flex-1 [&_input]:bg-surface [&_input]:font-mono [&_input]:text-xs" /><Button type="button" variant="outline" onClick={() => setInteg({ ...integ, webhookSecret: randomSecret() })}>Regenerate</Button></div></FormField>
+                <FormField label="Webhook URL (paste into the Room Alert account HTTP POST action)" htmlFor="w-secret" className="sm:col-span-2" hint="The signing secret lives in the API environment as WEBHOOK_SECRET."><Input id="w-secret" readOnly value={`${integ.apiBaseUrl.replace(/\/$/, '')}${config?.webhookPath ?? '/webhooks/roomalert'}`} className="[&_input]:bg-surface [&_input]:font-mono [&_input]:text-xs" /></FormField>
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <label className="flex items-center justify-between rounded-2xl bg-surface p-4"><span><span className="block text-sm font-medium">Telegram ANBot broadcast</span><span className="block text-xs text-muted">Broadcast every alert to registered chats</span></span><Toggle checked={integ.telegram} onCheckedChange={(v) => setInteg({ ...integ, telegram: v })} label="Telegram" /></label>
@@ -186,7 +198,7 @@ export function SetupWizardPage() {
       {step < 5 ? (
         <div className="flex items-center justify-between">
           <Button variant="outline" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}><ArrowLeft />Back</Button>
-          {step < 4 ? <Button onClick={() => setStep((s) => s + 1)} disabled={!canNext}>Continue<ArrowRight /></Button> : <Button onClick={finish}><Sparkles />Finish setup</Button>}
+          {step < 4 ? <Button onClick={() => setStep((s) => s + 1)} disabled={!canNext}>Continue<ArrowRight /></Button> : <Button onClick={() => void finish()} loading={saving}><Sparkles />Finish setup</Button>}
         </div>
       ) : null}
     </div>

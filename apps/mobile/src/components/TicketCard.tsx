@@ -2,7 +2,8 @@ import { Link } from 'react-router';
 import { Wrench } from 'lucide-react';
 import type { MaintenanceTicket } from '@monitoring/types';
 import { MAINTENANCE_TYPE_LABEL, TICKET_STATUS_LABEL } from '@monitoring/types';
-import { fmtDate, fmtRelativeDay, isTicketOverdue, outletById, technicianById } from '@monitoring/fixtures';
+import { fmtDate, fmtRelativeDay, isTicketOverdue } from '@monitoring/fixtures';
+import { outletById, technicianById } from '../state/lookups';
 import { Avatar, cn } from '@monitoring/ui';
 
 export function TicketCard({ ticket }: { ticket: MaintenanceTicket }) {

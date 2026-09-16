@@ -1,5 +1,5 @@
 import { format, isSameDay, isYesterday } from 'date-fns';
-import { FIXTURE_NOW_MS, TZ_LABEL } from './constants';
+import { nowMs, TZ_LABEL } from './constants';
 
 const TZ_OFFSET_MS = 7 * 3_600_000;
 
@@ -13,7 +13,6 @@ function shifted(isoOrMs: string | number): Date {
   const w = wall(isoOrMs);
   return new Date(w.getUTCFullYear(), w.getUTCMonth(), w.getUTCDate(), w.getUTCHours(), w.getUTCMinutes(), w.getUTCSeconds());
 }
-const NOW_SHIFTED = shifted(FIXTURE_NOW_MS);
 
 export function fmtTime(iso: string): string {
   return format(shifted(iso), 'HH:mm');
@@ -30,13 +29,14 @@ export function fmtDateTimeLong(iso: string): string {
 /** "Today, 13:24" / "Yesterday, 08:10" / "02 Sep, 21:45" */
 export function fmtRelativeDay(iso: string): string {
   const d = shifted(iso);
-  if (isSameDay(d, NOW_SHIFTED)) return `Today, ${format(d, 'HH:mm')}`;
-  if (isYesterday(d) || isSameDay(d, new Date(NOW_SHIFTED.getTime() - 86_400_000))) return `Yesterday, ${format(d, 'HH:mm')}`;
+  const today = shifted(nowMs());
+  if (isSameDay(d, today)) return `Today, ${format(d, 'HH:mm')}`;
+  if (isYesterday(d) || isSameDay(d, new Date(today.getTime() - 86_400_000))) return `Yesterday, ${format(d, 'HH:mm')}`;
   return format(d, 'dd MMM, HH:mm');
 }
-/** "5 min ago", "3 hours ago", "2 days ago" relative to FIXTURE_NOW */
+/** "5 min ago", "3 hours ago", "2 days ago" relative to the current time. */
 export function fmtAgo(iso: string): string {
-  const diff = Math.max(0, FIXTURE_NOW_MS - Date.parse(iso));
+  const diff = Math.max(0, nowMs() - Date.parse(iso));
   const min = Math.floor(diff / 60_000);
   if (min < 1) return 'just now';
   if (min < 60) return `${min} min ago`;
@@ -70,7 +70,7 @@ export function humanizeShort(seconds: number): string {
   return `${m}m`;
 }
 export function ongoingSeconds(triggerIso: string, endIso?: string | null): number {
-  const end = endIso ? Date.parse(endIso) : FIXTURE_NOW_MS;
+  const end = endIso ? Date.parse(endIso) : nowMs();
   return Math.max(0, (end - Date.parse(triggerIso)) / 1000);
 }
 export const cToF = (c: number) => c * 1.8 + 32;

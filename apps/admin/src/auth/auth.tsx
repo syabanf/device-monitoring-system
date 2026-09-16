@@ -1,47 +1,71 @@
 import * as React from 'react';
 import { Navigate, useLocation } from 'react-router';
 import type { AdminUser, Session } from '@monitoring/types';
-import { DEMO_ACCOUNTS, FIXTURE_NOW, adminUserById, findAdminByEmail } from '@monitoring/fixtures';
-
-const STORAGE_KEY = 'ms.admin.session';
+import { ApiError, auth as authApi } from '@monitoring/api-client';
+import { apiClient, clearSession, onSessionExpired, readSession, writeSession, type StoredSession } from '../state/client';
 
 interface AuthCtx {
   session: Session | null;
   user: AdminUser | null;
-  login: (email: string, token: string) => { ok: true } | { ok: false; error: string };
+  login: (email: string, password: string) => Promise<{ ok: true } | { ok: false; error: string }>;
   logout: () => void;
 }
 const Ctx = React.createContext<AuthCtx | null>(null);
 
-function readSession(): Session | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Session) : null;
-  } catch {
-    return null;
-  }
+/** A stable colour per account, so the avatar looks the same on every machine. */
+function avatarColor(seed: string): string {
+  const palette = ['#1F2937', '#3F3F46', '#4C1D95', '#065F46', '#7C2D12', '#155E75'];
+  let sum = 0;
+  for (const ch of seed) sum += ch.charCodeAt(0);
+  return palette[sum % palette.length];
+}
+
+function toUser(s: StoredSession): AdminUser {
+  return { id: s.userId, distributorId: s.distributorId, name: s.name, email: s.email, role: 'admin', avatarColor: avatarColor(s.email) };
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = React.useState<Session | null>(readSession);
-  const user = session ? (adminUserById.get(session.userId) ?? null) : null;
+  const [stored, setStored] = React.useState<StoredSession | null>(readSession);
 
-  const login = React.useCallback<AuthCtx['login']>((email, token) => {
-    const admin = findAdminByEmail(email);
-    if (!admin) return { ok: false, error: 'No admin account found for this email.' };
-    if (token.trim() !== DEMO_ACCOUNTS.admin.token) return { ok: false, error: 'Invalid token.' };
-    const s: Session = { kind: 'admin', userId: admin.id, distributorId: admin.distributorId, loggedInAt: FIXTURE_NOW };
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch { /* ignore */ }
-    setSession(s);
-    return { ok: true };
+  React.useEffect(() => {
+    onSessionExpired(() => {
+      clearSession();
+      setStored(null);
+    });
+  }, []);
+
+  const login = React.useCallback<AuthCtx['login']>(async (email, password) => {
+    try {
+      const result = await authApi.adminLogin(apiClient, email.trim().toLowerCase(), password);
+      const session: StoredSession = {
+        kind: 'admin',
+        userId: result.session.sub,
+        distributorId: result.session.distributorId,
+        loggedInAt: new Date().toISOString(),
+        accessToken: result.accessToken,
+        name: result.session.name,
+        email: result.session.email,
+        role: result.session.role ?? 'admin',
+      };
+      writeSession(session);
+      setStored(session);
+      return { ok: true };
+    } catch (err) {
+      if (err instanceof ApiError) return { ok: false, error: err.detail };
+      return { ok: false, error: 'Cannot reach the API. Check that it is running.' };
+    }
   }, []);
 
   const logout = React.useCallback(() => {
-    try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
-    setSession(null);
+    clearSession();
+    setStored(null);
   }, []);
 
-  return <Ctx.Provider value={{ session, user, login, logout }}>{children}</Ctx.Provider>;
+  const value = React.useMemo<AuthCtx>(
+    () => ({ session: stored, user: stored ? toUser(stored) : null, login, logout }),
+    [stored, login, logout],
+  );
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
 export function useAuth() {

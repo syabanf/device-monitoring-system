@@ -111,6 +111,16 @@ func (s Service) List(ctx context.Context, o ListOpts) (httpx.Page[domain.Device
 	return s.repo.List(ctx, o)
 }
 
+// Sensors answers the sensor list for the whole distribution center, narrowed to an employee's
+// own outlets like every other list.
+func (s Service) Sensors(ctx context.Context, o SensorOpts) ([]domain.Sensor, error) {
+	if o.OutletID != "" && !s.ctx.CoversOutlet(o.OutletID) {
+		return nil, httpx.Forbidden("Outlet is outside your registration")
+	}
+	o.Scope = s.ctx.OutletScope()
+	return s.repo.ListSensors(ctx, o)
+}
+
 func (s Service) Get(ctx context.Context, id string) (WithSensors, error) {
 	device, err := s.repo.Find(ctx, id)
 	if err != nil {

@@ -83,6 +83,7 @@ func New(d Deps) http.Handler {
 			distributors.Register(tenant, d.DB)
 			tenant.Mount("/outlets", outlets.Routes(d.DB))
 			tenant.Mount("/devices", devices.Routes(d.DB))
+			tenant.Mount("/sensors", devices.SensorRoutes(d.DB))
 			tenant.Mount("/employees", employees.Routes(d.DB))
 			tenant.Mount("/technicians", technicians.Routes(d.DB))
 			tenant.Mount("/contact-persons", contacts.Routes(d.DB))

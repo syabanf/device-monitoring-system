@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link, matchPath, useLocation } from 'react-router';
 import { Building2, LogOut, MapPin, Plug, Plus, Users, Wand2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
-import { distributorById } from '@monitoring/fixtures';
+import { distributorById } from '../state/lookups';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Rail, RailAction, RailGroup, RailItem, RailWorkspace, Sidebar, SidebarItem, WitMark } from '@monitoring/ui';
 import { NAV_SECTIONS } from './nav-items';
 import { useScoped } from '../state/app-state';

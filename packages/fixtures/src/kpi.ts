@@ -1,6 +1,6 @@
 import type { Alert, AlertCategory } from '@monitoring/types';
 import { format } from 'date-fns';
-import { FIXTURE_NOW_MS } from './constants';
+import { nowMs } from './constants';
 import { toWallClockDate } from './format';
 
 export const isOpen = (a: Alert) => a.status === 'UNACKNOWLEDGED' || a.status === 'ACKNOWLEDGED' || a.status === 'RESPONDING';
@@ -11,14 +11,14 @@ export type Period = 'today' | '7d' | '30d' | 'all';
 export function periodStartMs(p: Period): number {
   if (p === 'all') return 0;
   if (p === 'today') {
-    const w = toWallClockDate(FIXTURE_NOW_MS);
+    const w = toWallClockDate(nowMs());
     w.setHours(0, 0, 0, 0);
     // convert back: wall-clock midnight -> real ms
     const wallMidnightUtc = Date.UTC(w.getFullYear(), w.getMonth(), w.getDate());
     return wallMidnightUtc - 7 * 3_600_000;
   }
   const days = p === '7d' ? 7 : 30;
-  return FIXTURE_NOW_MS - days * 86_400_000;
+  return nowMs() - days * 86_400_000;
 }
 export function inPeriod(a: Alert, p: Period): boolean {
   return Date.parse(a.triggerTime) >= periodStartMs(p);
@@ -35,7 +35,7 @@ export function alertsPerDay(list: Alert[], days = 14): DayBucket[] {
   const buckets: DayBucket[] = [];
   const map = new Map<string, DayBucket>();
   for (let i = days - 1; i >= 0; i--) {
-    const d = toWallClockDate(FIXTURE_NOW_MS - i * 86_400_000);
+    const d = toWallClockDate(nowMs() - i * 86_400_000);
     const key = format(d, 'yyyy-MM-dd');
     const b: DayBucket = { day: key, label: format(d, 'dd MMM'), COMFORT: 0, SECURITY: 0, total: 0 };
     buckets.push(b);

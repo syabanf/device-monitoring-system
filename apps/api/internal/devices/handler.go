@@ -6,9 +6,32 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/auth"
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/domain"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/httpx"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/store"
 )
+
+// SensorRoutes mounts the tenant-wide sensor list at /distributors/{id}/sensors.
+func SensorRoutes(db store.DB) chi.Router {
+	r := chi.NewRouter()
+	r.Get("/", func(w http.ResponseWriter, req *http.Request) {
+		c, err := auth.Tenant(req, chi.URLParam(req, "distributorId"))
+		if err != nil {
+			httpx.Fail(w, req, err)
+			return
+		}
+		items, err := NewService(db, c).Sensors(req.Context(), SensorOpts{
+			OutletID: req.URL.Query().Get("outletId"),
+			DeviceID: req.URL.Query().Get("deviceId"),
+		})
+		if err != nil {
+			httpx.Fail(w, req, err)
+			return
+		}
+		httpx.JSON(w, http.StatusOK, httpx.Page[domain.Sensor]{Items: items})
+	})
+	return r
+}
 
 func Routes(db store.DB) chi.Router {
 	r := chi.NewRouter()

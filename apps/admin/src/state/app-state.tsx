@@ -1,19 +1,83 @@
 import * as React from 'react';
-import { appReducer, buildInitialState, type AppAction, type AppState } from '@monitoring/fixtures';
+import { appReducer, emptyState, type AppAction, type AppState } from '@monitoring/fixtures';
+import { ApiError, loadSnapshot, type Endpoints } from '@monitoring/api-client';
 import type { Device, Sensor } from '@monitoring/types';
 import { setLookups } from './lookups';
+import { setLatestReadings } from './readings';
+import { perform } from './commands';
+import { apiFor } from './client';
 import { useAuth } from '../auth/auth';
+
+type Status = 'loading' | 'ready' | 'error';
 
 interface StateCtx {
   state: AppState;
-  dispatch: React.Dispatch<AppAction>;
+  /** Sends the action to the API, then applies what the server wrote. */
+  dispatch: (action: AppAction) => Promise<AppAction[]>;
+  api: Endpoints;
+  status: Status;
+  /** The last failed write, which the layout shows and the user dismisses. */
+  error: string | null;
+  clearError: () => void;
+  reload: () => Promise<void>;
 }
 const Ctx = React.createContext<StateCtx | null>(null);
 
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = React.useReducer(appReducer, undefined, buildInitialState);
+  const { session } = useAuth();
+  const distributorId = session?.distributorId ?? '';
+  const api = React.useMemo(() => apiFor(distributorId), [distributorId]);
+
+  const [state, apply] = React.useReducer(appReducer, undefined, emptyState);
+  const [status, setStatus] = React.useState<Status>('loading');
+  const [error, setError] = React.useState<string | null>(null);
+  const stateRef = React.useRef(state);
+  stateRef.current = state;
   setLookups(state);
-  return <Ctx.Provider value={{ state, dispatch }}>{children}</Ctx.Provider>;
+
+  const reload = React.useCallback(async () => {
+    if (!distributorId) return;
+    setStatus('loading');
+    try {
+      const snapshot = await loadSnapshot(api);
+      setLatestReadings(snapshot.latestReadings);
+      apply({ type: 'state/hydrate', state: snapshot });
+      setStatus('ready');
+    } catch (err) {
+      setError(describe(err));
+      setStatus('error');
+    }
+  }, [api, distributorId]);
+
+  React.useEffect(() => {
+    void reload();
+  }, [reload]);
+
+  const dispatch = React.useCallback<StateCtx['dispatch']>(
+    async (action) => {
+      try {
+        const applied = await perform(api, stateRef.current, action);
+        for (const next of applied) apply(next);
+        return applied;
+      } catch (err) {
+        setError(describe(err));
+        return [];
+      }
+    },
+    [api],
+  );
+
+  const value = React.useMemo<StateCtx>(
+    () => ({ state, dispatch, api, status, error, clearError: () => setError(null), reload }),
+    [state, dispatch, api, status, error, reload],
+  );
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+}
+
+function describe(err: unknown): string {
+  if (err instanceof ApiError) return err.detail;
+  if (err instanceof Error) return `${err.message}. Is the API running?`;
+  return 'The request failed.';
 }
 
 export function useAppState() {

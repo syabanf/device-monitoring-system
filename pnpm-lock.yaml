@@ -26,6 +26,9 @@ importers:
 
   apps/admin:
     dependencies:
+      '@monitoring/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
       '@monitoring/fixtures':
         specifier: workspace:*
         version: link:../../packages/fixtures
@@ -98,6 +101,9 @@ importers:
 
   apps/mobile:
     dependencies:
+      '@monitoring/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
       '@monitoring/fixtures':
         specifier: workspace:*
         version: link:../../packages/fixtures
@@ -153,6 +159,19 @@ importers:
       vite-plugin-pwa:
         specifier: ^0.21.1
         version: 0.21.2(vite@6.4.3(@types/node@22.20.3)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.1))(workbox-build@7.4.1(@types/babel__core@7.20.5))(workbox-window@7.4.1)
+
+  packages/api-client:
+    dependencies:
+      '@monitoring/types':
+        specifier: workspace:*
+        version: link:../types
+    devDependencies:
+      '@monitoring/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
 
   packages/fixtures:
     dependencies:

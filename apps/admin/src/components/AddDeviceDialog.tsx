@@ -16,8 +16,8 @@ export function AddDeviceDialog({ open, onClose, outletId }: { open: boolean; on
   const [created, setCreated] = React.useState<string | null>(null);
   React.useEffect(() => { if (outletId) setOutlet(outletId); }, [outletId]);
   React.useEffect(() => { if (open) { setSerial(`${model.replace(/[SEW]$/, '')}-F${Math.floor(60000 + Math.random() * 39999)}-${model}`); setIp(`192.168.${10 + Math.floor(Math.random() * 50)}.${20 + Math.floor(Math.random() * 230)}`); setCreated(null); } }, [open, model]);
-  const type = deviceTypes.find((t) => t.model === model) ?? deviceTypes[0]!;
-  const capacity = { digital: type.ports.find((p) => p.kind === 'digital')?.count ?? 0, switch: type.ports.find((p) => p.kind === 'switch')?.count ?? 0 };
+  const type = deviceTypes.find((t) => t.model === model) ?? deviceTypes[0];
+  const capacity = { digital: type?.ports.find((p) => p.kind === 'digital')?.count ?? 0, switch: type?.ports.find((p) => p.kind === 'switch')?.count ?? 0 };
   const chosen = DEFAULT_SENSORS.filter((s) => enabled[s.type]);
   const usedDigital = chosen.filter((s) => s.portKind === 'digital').length;
   const usedSwitch = chosen.filter((s) => s.portKind === 'switch').length;
@@ -25,7 +25,7 @@ export function AddDeviceDialog({ open, onClose, outletId }: { open: boolean; on
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (overCapacity || !outlet) return;
+    if (overCapacity || !outlet || !type) return;
     const secondary = devices.filter((d) => d.outletId === outlet).length > 0;
     const { device, sensors } = buildDevice({ outletId: outlet, type, serial, ip, sensorTypes: chosen.map((c) => c.type), secondary });
     dispatch({ type: 'devices/add', device, sensors });

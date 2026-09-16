@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import type { Alert } from '@monitoring/types';
-import { fmtRelativeDay, outletById } from '@monitoring/fixtures';
+import { fmtRelativeDay } from '@monitoring/fixtures';
+import { outletById } from '../state/lookups';
 import { cn } from '@monitoring/ui';
 import { CircleAlert, CircleCheck, Eye, LoaderCircle, ShieldCheck } from 'lucide-react';
 import { SensorIcon } from './SensorIcon';

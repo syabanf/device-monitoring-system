@@ -7,7 +7,8 @@ import { ExternalLink, MapPin, Plus, Router, Search, Wrench } from 'lucide-react
 import type { Outlet } from '@monitoring/types';
 import { SENSOR_TYPE_LABEL } from '@monitoring/types';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, EmptyState, FloorLegend, FloorPlan, Input, KeyValue, PageHeader, cn } from '@monitoring/ui';
-import { deviceHealth, fmtAgo, fmtDateTime, isSolved, latestReadingBySensor } from '@monitoring/fixtures';
+import { deviceHealth, fmtAgo, fmtDateTime, isSolved } from '@monitoring/fixtures';
+import { latestReadingBySensor } from '../../state/readings';
 import { useScoped } from '../../state/app-state';
 import { useFloorMarkers } from '../../components/useFloorMarkers';
 import { AlertStatusBadge, DeviceStatusBadge, HealthBadge, SensorIcon } from '../../components/badges';

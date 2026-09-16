@@ -4,7 +4,8 @@ import { ArrowLeft, Check } from 'lucide-react';
 import type { MaintenanceTicket, MaintenanceType, TicketPriority } from '@monitoring/types';
 import { MAINTENANCE_TYPE_LABEL } from '@monitoring/types';
 import { Button, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea, cn } from '@monitoring/ui';
-import { FIXTURE_NOW, nextTicketId, outletById } from '@monitoring/fixtures';
+import { nowIso, nextTicketId } from '@monitoring/fixtures';
+import { outletById } from '../state/lookups';
 import { useAuth } from '../auth/auth';
 import { useAppState, useMobileScope } from '../state/app-state';
 
@@ -21,15 +22,19 @@ export function ReportIssuePage() {
   const [title, setTitle] = React.useState('');
   const [desc, setDesc] = React.useState('');
   const [done, setDone] = React.useState<string | null>(null);
+  const [saving, setSaving] = React.useState(false);
   if (!user) return null;
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const device = devices.find((d) => d.id === deviceId);
     if (!device) return;
-    const ticket: MaintenanceTicket = { id: nextTicketId(state.tickets), distributorId: user.distributorId, outletId: device.outletId, deviceId: device.id, sensorId: null, type, priority, status: 'OPEN', title: title.trim(), description: `${desc.trim()}\n\nReported by ${user.name} (${user.phone}) via mobile app.`, technicianId: null, createdAt: FIXTURE_NOW, scheduledAt: null, completedAt: null, partsUsed: [], notes: null, photoUrls: [] };
-    dispatch({ type: 'tickets/create', ticket });
-    setDone(ticket.id);
+    const draft: MaintenanceTicket = { id: nextTicketId(state.tickets), distributorId: user.distributorId, outletId: device.outletId, deviceId: device.id, sensorId: null, type, priority, status: 'OPEN', title: title.trim(), description: `${desc.trim()}\n\nReported by ${user.name} (${user.phone}) via mobile app.`, technicianId: null, createdAt: nowIso(), scheduledAt: null, completedAt: null, partsUsed: [], notes: null, photoUrls: [] };
+    setSaving(true);
+    // The API assigns the ticket number, so the confirmation shows what it wrote.
+    const [applied] = await dispatch({ type: 'tickets/create', ticket: draft });
+    setSaving(false);
+    if (applied?.type === 'tickets/replace') setDone(applied.ticket.id);
   };
 
   return (
@@ -45,7 +50,7 @@ export function ReportIssuePage() {
           <Button size="lg" variant="ghost" className="w-full" onClick={() => navigate('/maintenance')}>Back to maintenance</Button>
         </div>
       ) : (
-        <form onSubmit={submit} className="space-y-4">
+        <form onSubmit={(e) => void submit(e)} className="space-y-4">
           <div className="space-y-4 rounded-[24px] bg-white p-5 shadow-card">
             <FormField label="Device"><Select value={deviceId} onValueChange={setDeviceId}><SelectTrigger className="h-12"><SelectValue placeholder="Choose device" /></SelectTrigger><SelectContent>{devices.map((d) => <SelectItem key={d.id} value={d.id}>{outletById.get(d.outletId)?.name?.replace('Indomaret ', '')} · {d.serial}</SelectItem>)}</SelectContent></Select></FormField>
             <FormField label="Issue type"><Select value={type} onValueChange={(v) => setType(v as MaintenanceType)}><SelectTrigger className="h-12"><SelectValue /></SelectTrigger><SelectContent>{(['CORRECTIVE', 'REPLACEMENT', 'FIRMWARE', 'PREVENTIVE'] as MaintenanceType[]).map((k) => <SelectItem key={k} value={k}>{MAINTENANCE_TYPE_LABEL[k]}</SelectItem>)}</SelectContent></Select></FormField>
@@ -56,7 +61,7 @@ export function ReportIssuePage() {
             <FormField label="Title" htmlFor="r-title"><Input id="r-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Door sensor keeps triggering" required className="[&_input]:h-12 [&_input]:bg-surface [&_input]:border-0" /></FormField>
             <FormField label="Describe the problem" htmlFor="r-desc"><Textarea id="r-desc" value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="When did it start? Which sensor? Any error light on the unit?" className="min-h-28 border-0 bg-surface" required /></FormField>
           </div>
-          <Button type="submit" size="lg" className="w-full" disabled={!deviceId}>Submit ticket</Button>
+          <Button type="submit" size="lg" className="w-full" disabled={!deviceId} loading={saving}>Submit ticket</Button>
         </form>
       )}
     </div>

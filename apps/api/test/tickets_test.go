@@ -87,6 +87,23 @@ func TestTicketAssignedToAnotherTechnicianIsClosed(t *testing.T) {
 	other.patch(f.path("/tickets/MT-2600"), map[string]any{"status": "IN_PROGRESS"}).expect(http.StatusForbidden)
 }
 
+func TestTicketUnassign(t *testing.T) {
+	f := reset(t)
+	admin := as(t, f.AdminToken)
+
+	admin.patch(f.path("/tickets/MT-2600"), map[string]any{"technicianId": f.TechnicianID}).expect(http.StatusOK)
+	// Leaving the field out keeps the technician.
+	if got := admin.patch(f.path("/tickets/MT-2600"), map[string]any{"priority": "HIGH"}).
+		expect(http.StatusOK).str("technicianId"); got != f.TechnicianID {
+		t.Errorf("a patch without technicianId dropped the assignment, got %q", got)
+	}
+	// An empty string hands the ticket back to the pool.
+	if got := admin.patch(f.path("/tickets/MT-2600"), map[string]any{"technicianId": ""}).
+		expect(http.StatusOK).field("technicianId"); got != nil {
+		t.Errorf("want an unassigned ticket, got %v", got)
+	}
+}
+
 func TestTicketFilters(t *testing.T) {
 	f := reset(t)
 	admin := as(t, f.AdminToken)

@@ -5,7 +5,9 @@ import { format } from 'date-fns';
 import type { Alert } from '@monitoring/types';
 import { ALERT_CATEGORY_LABEL, ALERT_STATUS_LABEL } from '@monitoring/types';
 import { Badge, Button, Card, DataTable, FormField, Input, PageHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Tabs, TabsList, TabsTrigger, type Column } from '@monitoring/ui';
-import { FIXTURE_NOW_MS, downloadCsv, employeeById, fmtDateTime, humanizeShort, readingsBySensor, sensorsByOutlet, toCsv, toWallClockDate } from '@monitoring/fixtures';
+import { nowMs, downloadCsv, fmtDateTime, humanizeShort, toCsv, toWallClockDate } from '@monitoring/fixtures';
+import { employeeById } from '../../state/lookups';
+import { bySensor, useReadingSeries } from '../../state/readings';
 import { outletById } from '../../state/lookups';
 import { useScoped } from '../../state/app-state';
 import { AlertStatusBadge, CategoryBadge } from '../../components/badges';
@@ -13,24 +15,30 @@ import { AlertStatusBadge, CategoryBadge } from '../../components/badges';
 const dayStr = (ms: number) => format(toWallClockDate(ms), 'yyyy-MM-dd');
 
 export function ReportPage() {
-  const { alerts, outlets } = useScoped();
+  const { alerts, outlets, sensorsByOutlet } = useScoped();
   const [params, setParams] = useSearchParams();
   const tab: 'alerts' | 'readings' = params.get('tab') === 'readings' ? 'readings' : 'alerts';
-  const from = params.get('from') ?? dayStr(FIXTURE_NOW_MS - 29 * 86_400_000);
-  const to = params.get('to') ?? dayStr(FIXTURE_NOW_MS);
+  const from = params.get('from') ?? dayStr(nowMs() - 29 * 86_400_000);
+  const to = params.get('to') ?? dayStr(nowMs());
   const outletFilter = outlets.some((o) => o.id === params.get('outlet')) ? params.get('outlet')! : 'all';
   const status = ['UNACKNOWLEDGED', 'ACKNOWLEDGED', 'RESPONDING', 'RESOLVED', 'VERIFIED'].includes(params.get('status') ?? '') ? params.get('status')! : 'all';
   const category = params.get('category') === 'COMFORT' || params.get('category') === 'SECURITY' ? params.get('category')! : 'all';
-  const defaults = { from: dayStr(FIXTURE_NOW_MS - 29 * 86_400_000), to: dayStr(FIXTURE_NOW_MS) };
+  const defaults = { from: dayStr(nowMs() - 29 * 86_400_000), to: dayStr(nowMs()) };
   const update = (patch: Record<string, string | null>) => { const next = new URLSearchParams(params); for (const [key, value] of Object.entries(patch)) value == null ? next.delete(key) : next.set(key, value); setParams(next, { replace: true }); };
 
   const inRange = (iso: string) => { const d = format(toWallClockDate(iso), 'yyyy-MM-dd'); return d >= from && d <= to; };
   const rows = React.useMemo(() => alerts.filter((a) => inRange(a.triggerTime) && (outletFilter === 'all' || a.outletId === outletFilter) && (status === 'all' || a.status === status) && (category === 'all' || a.category === category)), [alerts, from, to, outletFilter, status, category]);
 
+  // The temperature log covers a date range, so it comes from the API rather than from the
+  // tenant snapshot the other tabs read.
+  const { readings, loading: readingsLoading } = useReadingSeries(
+    tab === 'readings' ? { outletId: outletFilter === 'all' ? undefined : outletFilter, from: `${from}T00:00:00Z`, to: `${to}T23:59:59Z`, bucket: 'hour' } : null,
+  );
   const readingRows = React.useMemo(() => {
-    const ids = outlets.filter((o) => outletFilter === 'all' || o.id === outletFilter).flatMap((o) => (sensorsByOutlet.get(o.id) ?? []).filter((s) => s.type === 'TEMPERATURE_HUMIDITY'));
-    return ids.flatMap((s) => (readingsBySensor.get(s.id) ?? []).filter((r) => inRange(r.at)).map((r) => ({ key: `${s.id}-${r.at}`, outlet: outletById.get(s.outletId)?.name ?? '', sensor: s.name, at: r.at, temp: r.temperatureC, hum: r.humidityPct, over: r.temperatureC > (s.thresholds?.max ?? 99) || r.humidityPct > (s.thresholds?.humidityMax ?? 100) }))).sort((a, b) => (a.at < b.at ? 1 : -1));
-  }, [outlets, outletFilter, from, to]);
+    const sensors = outlets.filter((o) => outletFilter === 'all' || o.id === outletFilter).flatMap((o) => (sensorsByOutlet.get(o.id) ?? []).filter((s) => s.type === 'TEMPERATURE_HUMIDITY'));
+    const series = bySensor(readings);
+    return sensors.flatMap((s) => (series.get(s.id) ?? []).map((r) => ({ key: `${s.id}-${r.at}`, outlet: outletById.get(s.outletId)?.name ?? '', sensor: s.name, at: r.at, temp: r.temperatureC, hum: r.humidityPct, over: r.temperatureC > (s.thresholds?.max ?? 99) || r.humidityPct > (s.thresholds?.humidityMax ?? 100) }))).sort((a, b) => (a.at < b.at ? 1 : -1));
+  }, [outlets, outletFilter, readings, sensorsByOutlet]);
 
   const exportAlerts = () => downloadCsv(`alert-history_${from}_${to}.csv`, toCsv(
     ['Alert ID', 'Triggered at', 'Cleared at', 'Outlet', 'Outlet code', 'Sensor', 'Category', 'Status', 'Trigger value', 'Clear value', 'Responded by', 'Response time (min)', 'Notes'],
@@ -75,7 +83,7 @@ export function ReportPage() {
         <TabsList variant="pill"><TabsTrigger value="alerts">Alert history</TabsTrigger><TabsTrigger value="readings">Temperature log</TabsTrigger></TabsList>
       </Tabs>
       <Card>
-        {tab === 'alerts' ? <DataTable columns={alertColumns} rows={rows} rowKey={(a) => a.id} pageSize={15} initialSort={{ key: 'time', dir: 'desc' }} emptyTitle="No alerts in range" /> : <DataTable columns={readingColumns} rows={readingRows} rowKey={(r) => r.key} pageSize={15} emptyTitle="No readings in range" />}
+        {tab === 'alerts' ? <DataTable columns={alertColumns} rows={rows} rowKey={(a) => a.id} pageSize={15} initialSort={{ key: 'time', dir: 'desc' }} emptyTitle="No alerts in range" /> : <DataTable columns={readingColumns} rows={readingRows} rowKey={(r) => r.key} pageSize={15} emptyTitle={readingsLoading ? 'Loading readings…' : 'No readings in range'} />}
       </Card>
     </div>
   );

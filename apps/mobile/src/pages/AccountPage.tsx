@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router';
 import { Download, LogOut, MapPin, Phone, ShieldCheck, Smartphone } from 'lucide-react';
 import { EMPLOYEE_ROLE_LABEL } from '@monitoring/types';
 import { Avatar, Badge, Button } from '@monitoring/ui';
-import { fmtDate, outletById } from '@monitoring/fixtures';
+import { fmtDate } from '@monitoring/fixtures';
+import { outletById } from '../state/lookups';
 import { useAuth } from '../auth/auth';
 import { Wrench } from 'lucide-react';
 

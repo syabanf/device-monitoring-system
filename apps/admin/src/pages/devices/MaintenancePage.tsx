@@ -5,7 +5,7 @@ import type { Technician } from '@monitoring/types';
 import type { Device, MaintenanceTicket, TicketStatus } from '@monitoring/types';
 import { MAINTENANCE_TYPE_LABEL } from '@monitoring/types';
 import { Avatar, Badge, Button, Card, CardContent, CardHeader, CardTitle, DataTable, EmptyState, PageHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, StatCard, Tabs, TabsList, TabsTrigger, cn, type Column, SplitStats } from '@monitoring/ui';
-import { FIXTURE_NOW_MS, deviceHealth, fmtDate, fmtDateTime, fmtRelativeDay, isTicketOpen, isTicketOverdue, ticketCounts } from '@monitoring/fixtures';
+import { nowMs, deviceHealth, fmtDate, fmtDateTime, fmtRelativeDay, isTicketOpen, isTicketOverdue, ticketCounts } from '@monitoring/fixtures';
 import { outletById, technicianById, deviceTypeById } from '../../state/lookups';
 import { useScoped } from '../../state/app-state';
 import { DeviceStatusBadge, HealthBadge, PriorityBadge, TicketStatusBadge } from '../../components/badges';
@@ -33,7 +33,7 @@ export function MaintenancePage() {
   const attention = health.filter((h) => h.status === 'attention').length;
   const counts = ticketCounts(tickets);
   const openTickets = tickets.filter(isTicketOpen);
-  const warrantySoon = devices.filter((d) => Date.parse(d.warrantyUntil) < FIXTURE_NOW_MS + 90 * 86_400_000).length;
+  const warrantySoon = devices.filter((d) => Date.parse(d.warrantyUntil) < nowMs() + 90 * 86_400_000).length;
 
   const healthColumns: Column<(typeof health)[number]>[] = [
     { key: 'device', header: 'Device', cell: (h) => <div><p className="font-mono text-xs font-semibold">{h.device.serial}</p><p className="text-xs text-muted">{outletById.get(h.device.outletId)?.name}</p></div>, sortValue: (h) => h.device.serial },
@@ -42,7 +42,7 @@ export function MaintenancePage() {
     { key: 'status', header: 'Connection', cell: (h) => <DeviceStatusBadge status={h.device.status} /> },
     { key: 'uptime', header: 'Uptime 30d', cell: (h) => <span className={cn('tabular-nums', h.device.uptimePct < 95 && 'text-brand-600')}>{h.device.uptimePct.toFixed(1)}%</span>, sortValue: (h) => h.device.uptimePct },
     { key: 'fw', header: 'Firmware', cell: (h) => { const latest = deviceTypeById.get(h.device.deviceTypeId)?.latestFirmware; return <span className={cn('font-mono text-xs', h.device.firmware !== latest && 'text-amber-600')}>{h.device.firmware}{h.device.firmware !== latest ? ` → ${latest}` : ''}</span>; } },
-    { key: 'next', header: 'Next check', cell: (h) => <span className={cn(Date.parse(h.device.nextMaintenanceAt) < FIXTURE_NOW_MS && 'font-semibold text-brand-600')}>{fmtDate(h.device.nextMaintenanceAt)}</span>, sortValue: (h) => h.device.nextMaintenanceAt },
+    { key: 'next', header: 'Next check', cell: (h) => <span className={cn(Date.parse(h.device.nextMaintenanceAt) < nowMs() && 'font-semibold text-brand-600')}>{fmtDate(h.device.nextMaintenanceAt)}</span>, sortValue: (h) => h.device.nextMaintenanceAt },
     { key: 'warranty', header: 'Warranty', cell: (h) => fmtDate(h.device.warrantyUntil), sortValue: (h) => h.device.warrantyUntil },
   ];
 

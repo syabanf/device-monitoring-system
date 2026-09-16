@@ -3,8 +3,10 @@ import { Check, ExternalLink, ImageOff, ShieldCheck } from 'lucide-react';
 import type { Alert } from '@monitoring/types';
 import { SENSOR_TYPE_LABEL } from '@monitoring/types';
 import { Avatar, Badge, Button, KeyValue, Sheet, SheetBody, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@monitoring/ui';
-import { deviceById, fmtDateTimeLong, fmtTempCF, humanizeDuration, latestReadingBySensor, ongoingSeconds, sensorById } from '@monitoring/fixtures';
-import { outletById } from '../../state/lookups';
+import { fmtDateTimeLong, fmtTempCF, humanizeDuration, ongoingSeconds } from '@monitoring/fixtures';
+import { deviceById, outletById, sensorById } from '../../state/lookups';
+import { latestReadingBySensor } from '../../state/readings';
+import { apiClient } from '../../state/client';
 import { useScoped } from '../../state/app-state';
 import { AlertStatusBadge, CategoryBadge, SensorIcon } from '../../components/badges';
 
@@ -78,7 +80,7 @@ export function AlertDetailDrawer({ alert, onClose }: { alert: Alert | null; onC
                     <p className="mt-3 text-sm">{alert.response.notes}</p>
                     {alert.response.photoUrls.length ? (
                       <div className="mt-3 grid grid-cols-2 gap-2">
-                        {alert.response.photoUrls.map((u) => <img key={u} src={u.startsWith('blob:') || u.startsWith('data:') ? u : `/${u}`} alt="Proof" className="aspect-[4/3] w-full rounded-xl object-cover" />)}
+                        {alert.response.photoUrls.map((u) => <img key={u} src={apiClient.url(u)} alt="Proof" className="aspect-[4/3] w-full rounded-xl object-cover" />)}
                       </div>
                     ) : (
                       <p className="mt-3 flex items-center gap-1.5 text-xs text-muted"><ImageOff className="size-3.5" />No photo proof attached</p>

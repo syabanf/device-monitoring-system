@@ -3,12 +3,15 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { AlertTriangle, ArrowLeft, CheckCircle2, Eye, ExternalLink, MapPin, Navigation, Phone, Play, Timer, UserRound } from 'lucide-react';
 import { SENSOR_TYPE_LABEL } from '@monitoring/types';
 import { Avatar, Badge, Button, FormField, Textarea, cn } from '@monitoring/ui';
-import { alertById, fmtDateTimeLong, fmtRelativeDay, fmtTempCF, humanizeDuration, latestReadingBySensor, ongoingSeconds } from '@monitoring/fixtures';
+import { fmtDateTimeLong, fmtRelativeDay, fmtTempCF, humanizeDuration, ongoingSeconds } from '@monitoring/fixtures';
+import { latestReadingBySensor } from '../state/readings';
+import { alertById } from '../state/lookups';
 import { useAuth } from '../auth/auth';
 import { useAppState, useReadAlerts } from '../state/app-state';
 import { SensorIcon } from '../components/SensorIcon';
 import { statusLabel } from '../components/AlertCard';
 import { PhotoDropzone } from '../components/PhotoDropzone';
+import { apiClient } from '../state/client';
 
 export function AlertDetailPage() {
   const { id = '' } = useParams();
@@ -22,6 +25,7 @@ export function AlertDetailPage() {
   const [photos, setPhotos] = React.useState<string[]>([]);
   const [saved, setSaved] = React.useState(false);
   const [photosBusy, setPhotosBusy] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
   React.useEffect(() => { if (alert) markRead(alert.id); }, [alert, markRead]);
 
   if (!alert || !employee || !employee.outletIds.includes(alert.outletId)) {
@@ -43,10 +47,13 @@ export function AlertDetailPage() {
   const overdue = active && elapsedSeconds > targetSeconds;
   const action = alert.sensorType === 'DOOR' ? 'Check the entrance and confirm it is secure.' : alert.sensorType === 'MOTION' ? 'Inspect the detected area before acknowledging.' : alert.sensorType === 'POWER' ? 'Check mains power and the Room Alert unit.' : alert.sensorType === 'PANIC_BUTTON' ? 'Contact the store manager and verify staff safety.' : 'Inspect the sensor area and verify the current conditions.';
 
-  const save = (e: React.FormEvent) => {
+  const save = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch({ type: 'alerts/respond', alertId: alert.id, employeeId: employee.id, notes: notes.trim(), photoUrls: photos });
-    setSaved(true);
+    setSubmitting(true);
+    const [applied] = await dispatch({ type: 'alerts/respond', alertId: alert.id, employeeId: employee.id, notes: notes.trim(), photoUrls: photos });
+    setSubmitting(false);
+    // A refused claim leaves the alert as it is, and the layout shows why.
+    if (applied?.type === 'alerts/replace') setSaved(true);
   };
 
   if (saved) return (
@@ -123,13 +130,13 @@ export function AlertDetailPage() {
             </div>
           </div>
           {alert.response.notes ? <p className="mt-3 text-sm text-body">{alert.response.notes}</p> : null}
-          {alert.response.photoUrls.length ? <div className="mt-3 grid grid-cols-3 gap-2">{alert.response.photoUrls.map((u) => <img key={u} src={u.startsWith('blob:') || u.startsWith('data:') ? u : `/${u}`} alt="Proof" className="aspect-square w-full rounded-2xl object-cover" />)}</div> : null}
+          {alert.response.photoUrls.length ? <div className="mt-3 grid grid-cols-3 gap-2">{alert.response.photoUrls.map((u) => <img key={u} src={apiClient.url(u)} alt="Proof" className="aspect-square w-full rounded-2xl object-cover" />)}</div> : null}
           {responder.id !== employee.id ? <p className="mt-3 text-xs text-body/70">Another employee at this outlet already responded, so no second response is needed.</p> : null}
         </section>
       ) : null}
 
       {canRespond ? (
-        <form onSubmit={save} className="space-y-5 pb-28">
+        <form onSubmit={(e) => void save(e)} className="space-y-5 pb-28">
           <div className="rounded-[24px] bg-white p-5 shadow-card">
             <h2 className="text-base font-bold">Your response</h2>
             <p className="mt-0.5 text-xs text-muted">Check the sensor location, then report what you found.</p>
@@ -140,7 +147,7 @@ export function AlertDetailPage() {
           <div className="safe-b fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-md px-5 pb-5">
             <div className="flex gap-3 rounded-full bg-white/90 p-2 shadow-float backdrop-blur">
               <Button type="button" variant="ghost" size="lg" className="flex-1 text-brand-600" onClick={() => navigate('/alerts')}>Cancel</Button>
-              <Button type="submit" size="lg" className="flex-[1.6]" disabled={photosBusy}>{photosBusy ? 'Preparing photos…' : 'Submit response'}</Button>
+              <Button type="submit" size="lg" className="flex-[1.6]" disabled={photosBusy} loading={submitting}>{photosBusy ? 'Uploading photos…' : 'Submit response'}</Button>
             </div>
           </div>
         </form>

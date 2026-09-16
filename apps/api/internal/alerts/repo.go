@@ -93,10 +93,13 @@ func (r Repo) Find(ctx context.Context, id int64) (domain.Alert, error) {
 
 // Claim is how the first responder wins: the update only matches while nobody holds the alert,
 // so a second employee tapping at the same moment changes no rows.
+// Claim takes the alert for one employee. It succeeds when nobody holds it, and again for the
+// employee who already acknowledged it, so the same person can finish what they started.
 func (r Repo) Claim(ctx context.Context, id int64, employeeID string, at time.Time) (bool, error) {
 	tag, err := r.db.Exec(ctx, `
-		UPDATE alert SET assignee_employee_id = $3, responding_at = $4, status = 'RESPONDING'
-		WHERE id = $1 AND distributor_id = $2 AND assignee_employee_id IS NULL`, id, r.tenant, employeeID, at)
+		UPDATE alert SET assignee_employee_id = $3, responding_at = COALESCE(responding_at, $4), status = 'RESPONDING'
+		WHERE id = $1 AND distributor_id = $2 AND (assignee_employee_id IS NULL OR assignee_employee_id = $3)`,
+		id, r.tenant, employeeID, at)
 	if err != nil {
 		return false, err
 	}
@@ -110,7 +113,10 @@ func (r Repo) SaveResponse(ctx context.Context, id int64, employeeID, notes stri
 	return err
 }
 
-func (r Repo) SetStatus(ctx context.Context, id int64, status domain.AlertStatus, at time.Time, clearValue *string) error {
+// SetStatus moves the alert and stamps the matching timestamp. An employee who acknowledges or
+// starts an inspection also takes responsibility, which is what stops a second employee from
+// working the same alert.
+func (r Repo) SetStatus(ctx context.Context, id int64, status domain.AlertStatus, at time.Time, clearValue *string, assignee *string) error {
 	// $3 is both compared as text and stored as the enum, so each use is cast explicitly.
 	// Postgres cannot deduce one type for a bare parameter used in both positions.
 	_, err := r.db.Exec(ctx, `
@@ -120,8 +126,9 @@ func (r Repo) SetStatus(ctx context.Context, id int64, status domain.AlertStatus
 			resolved_at     = CASE WHEN $3::text = 'RESOLVED'     THEN $4 ELSE resolved_at END,
 			verified_at     = CASE WHEN $3::text = 'VERIFIED'     THEN $4 ELSE verified_at END,
 			clear_time      = CASE WHEN $3::text = 'RESOLVED'     THEN $4 ELSE clear_time END,
-			clear_value     = CASE WHEN $3::text = 'RESOLVED'     THEN $5 ELSE clear_value END
-		WHERE id = $1 AND distributor_id = $2`, id, r.tenant, string(status), at, clearValue)
+			clear_value     = CASE WHEN $3::text = 'RESOLVED'     THEN $5 ELSE clear_value END,
+			assignee_employee_id = COALESCE(assignee_employee_id, $6)
+		WHERE id = $1 AND distributor_id = $2`, id, r.tenant, string(status), at, clearValue, assignee)
 	return err
 }
 

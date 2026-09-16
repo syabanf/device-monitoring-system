@@ -19,15 +19,16 @@ func main() {
 	dataDir := flag.String("data", "../../packages/fixtures/data", "directory holding the generated fixture JSON")
 	password := flag.String("password", "admin123", "password given to every seeded admin")
 	maxReadings := flag.Int("readings", 200, "how many recent readings to load per sensor")
+	live := flag.Bool("live", true, "shift every fixture timestamp so the newest data lands at the current time")
 	flag.Parse()
 
-	if err := run(*dataDir, *password, *maxReadings); err != nil {
+	if err := run(*dataDir, *password, *maxReadings, *live); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func run(dataDir, password string, maxReadings int) error {
+func run(dataDir, password string, maxReadings int, live bool) error {
 	url := os.Getenv("DATABASE_URL")
 	if url == "" {
 		return fmt.Errorf("DATABASE_URL is required")
@@ -73,6 +74,28 @@ func run(dataDir, password string, maxReadings int) error {
 		if err := readJSON(filepath.Join(dataDir, load.file+".json"), load.dst); err != nil {
 			return err
 		}
+	}
+
+	shift := time.Duration(0)
+	if live {
+		var meta struct {
+			FixtureNow time.Time `json:"fixtureNow"`
+		}
+		if err := readJSON(filepath.Join(dataDir, "meta.json"), &meta); err != nil {
+			return err
+		}
+		// The generator froze the world at meta.fixtureNow. Moving every timestamp by the same
+		// delta keeps the story intact while the dashboard's "today" means today.
+		shift = time.Since(meta.FixtureNow).Truncate(time.Minute)
+		fmt.Printf("shifting fixture timestamps by %s so the newest data lands now\n", shift.Round(time.Hour))
+	}
+	at := func(t time.Time) time.Time { return t.Add(shift) }
+	atp := func(t *time.Time) *time.Time {
+		if t == nil {
+			return nil
+		}
+		moved := t.Add(shift)
+		return &moved
 	}
 
 	tenantOf := map[string]string{}
@@ -125,8 +148,8 @@ func run(dataDir, password string, maxReadings int) error {
 			last_maintenance_at, next_maintenance_at, uptime_pct, sensor_faults, floor_x, floor_y)
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)`,
 			d.ID, tenantOf[d.OutletID], d.OutletID, d.DeviceTypeID, d.Model, d.Serial, d.MAC, d.IP, d.Firmware, d.Status,
-			d.LastPushAt, d.InstalledAt, d.PushIntervalSec, ports, d.Channels, d.WarrantyUntil, d.LastMaintenanceAt,
-			d.NextMaintenanceAt, d.UptimePct, d.SensorFaults, d.Floor.X, d.Floor.Y); err != nil {
+			at(d.LastPushAt), at(d.InstalledAt), d.PushIntervalSec, ports, d.Channels, at(d.WarrantyUntil),
+			atp(d.LastMaintenanceAt), at(d.NextMaintenanceAt), d.UptimePct, d.SensorFaults, d.Floor.X, d.Floor.Y); err != nil {
 			return err
 		}
 	}
@@ -154,7 +177,7 @@ func run(dataDir, password string, maxReadings int) error {
 			registration_token, registration_status, registered_at, approved_at, avatar_color)
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
 			e.ID, e.DistributorID, e.PrimaryOutletID, e.Name, e.Phone, e.Email, e.Role, e.RegistrationToken,
-			e.RegistrationStatus, e.RegisteredAt, e.ApprovedAt, e.AvatarColor); err != nil {
+			e.RegistrationStatus, atp(e.RegisteredAt), atp(e.ApprovedAt), e.AvatarColor); err != nil {
 			return err
 		}
 		for _, outletID := range e.OutletIDs {
@@ -181,14 +204,14 @@ func run(dataDir, password string, maxReadings int) error {
 			assignee_employee_id, acknowledged_at, responding_at, resolved_at, verified_at)
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)`,
 			a.ID, a.DistributorID, a.OutletID, a.DeviceID, a.SensorID, a.SensorName, a.SensorType, a.Category, a.Status,
-			a.TriggerValue, a.TriggerTime, a.ClearValue, a.ClearTime, a.Message, a.Channels, a.AssigneeEmployeeID,
-			a.AcknowledgedAt, a.RespondingAt, a.ResolvedAt, a.VerifiedAt); err != nil {
+			a.TriggerValue, at(a.TriggerTime), a.ClearValue, atp(a.ClearTime), a.Message, a.Channels, a.AssigneeEmployeeID,
+			atp(a.AcknowledgedAt), atp(a.RespondingAt), atp(a.ResolvedAt), atp(a.VerifiedAt)); err != nil {
 			return err
 		}
 		if a.Response != nil {
 			if _, err := db.Exec(ctx, `INSERT INTO alert_response (alert_id, employee_id, notes, photo_urls, responded_at,
 				response_duration_sec) VALUES ($1,$2,$3,$4,$5,$6)`,
-				a.ID, a.Response.EmployeeID, a.Response.Notes, a.Response.PhotoURLs, a.Response.RespondedAt,
+				a.ID, a.Response.EmployeeID, a.Response.Notes, a.Response.PhotoURLs, at(a.Response.RespondedAt),
 				a.Response.ResponseDurationSec); err != nil {
 				return err
 			}
@@ -204,7 +227,7 @@ func run(dataDir, password string, maxReadings int) error {
 			status, title, description, technician_id, created_at, scheduled_at, completed_at, parts_used, notes, photo_urls)
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
 			t.ID, t.DistributorID, t.OutletID, t.DeviceID, t.SensorID, t.Type, t.Priority, t.Status, t.Title, t.Description,
-			t.TechnicianID, t.CreatedAt, t.ScheduledAt, t.CompletedAt, t.PartsUsed, t.Notes, t.PhotoURLs); err != nil {
+			t.TechnicianID, at(t.CreatedAt), atp(t.ScheduledAt), atp(t.CompletedAt), t.PartsUsed, t.Notes, t.PhotoURLs); err != nil {
 			return err
 		}
 	}
@@ -228,7 +251,7 @@ func run(dataDir, password string, maxReadings int) error {
 
 	for _, r := range recent {
 		if _, err := db.Exec(ctx, `INSERT INTO reading (sensor_id, at, temperature_c, humidity_pct)
-			VALUES ($1,$2,$3,$4) ON CONFLICT DO NOTHING`, r.SensorID, r.At, r.TemperatureC, r.HumidityPct); err != nil {
+			VALUES ($1,$2,$3,$4) ON CONFLICT DO NOTHING`, r.SensorID, at(r.At), r.TemperatureC, r.HumidityPct); err != nil {
 			return err
 		}
 	}

@@ -119,6 +119,10 @@ func (s Service) Respond(ctx context.Context, id int64, in RespondInput) (domain
 	if err := s.repo.SaveResponse(ctx, id, s.ctx.UserID, in.Notes, photos, s.ctx.Now, duration); err != nil {
 		return domain.Alert{}, err
 	}
+	// A field report closes the condition. An admin verifies it afterwards.
+	if err := s.repo.SetStatus(ctx, id, domain.AlertResolved, s.ctx.Now, nil, nil); err != nil {
+		return domain.Alert{}, err
+	}
 	if err := jobs.Emit(ctx, s.db, s.queue, jobs.AlertResponded, jobs.Payload{"alertId": id, "outletId": alert.OutletID, "employeeId": s.ctx.UserID}); err != nil {
 		return domain.Alert{}, err
 	}
@@ -140,7 +144,11 @@ func (s Service) SetStatus(ctx context.Context, id int64, in StatusInput) (domai
 	if in.Status == domain.AlertVerified && s.ctx.Kind != auth.KindAdmin {
 		return domain.Alert{}, httpx.Forbidden("Only an admin verifies a resolved alert")
 	}
-	if err := s.repo.SetStatus(ctx, id, in.Status, s.ctx.Now, in.ClearValue); err != nil {
+	var assignee *string
+	if s.ctx.Kind == auth.KindEmployee && (in.Status == domain.AlertAcknowledged || in.Status == domain.AlertResponding) {
+		assignee = &s.ctx.UserID
+	}
+	if err := s.repo.SetStatus(ctx, id, in.Status, s.ctx.Now, in.ClearValue, assignee); err != nil {
 		return domain.Alert{}, err
 	}
 	if in.Status == domain.AlertResolved {

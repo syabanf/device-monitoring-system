@@ -192,11 +192,18 @@ func (s Service) Patch(ctx context.Context, id string, in PatchInput) (domain.Ti
 		completedAt = &s.ctx.Now
 	}
 
+	// An empty technicianId means "unassign"; leaving the field out means "leave it alone".
+	technician := in.TechnicianID
+	unassign := technician != nil && *technician == ""
+	if unassign {
+		technician = nil
+	}
+
 	updated, err := scan(s.db.QueryRow(ctx, `
 		UPDATE ticket SET
 			status        = COALESCE($3, status),
 			priority      = COALESCE($4, priority),
-			technician_id = COALESCE($5, technician_id),
+			technician_id = CASE WHEN $11 THEN NULL ELSE COALESCE($5, technician_id) END,
 			scheduled_at  = COALESCE($6, scheduled_at),
 			notes         = COALESCE($7, notes),
 			parts_used    = COALESCE($8, parts_used),
@@ -204,8 +211,8 @@ func (s Service) Patch(ctx context.Context, id string, in PatchInput) (domain.Ti
 			completed_at  = $10
 		WHERE id = $1 AND distributor_id = $2
 		RETURNING `+columns,
-		id, s.tenant, statusText(in.Status), priorityText(in.Priority), in.TechnicianID, in.ScheduledAt,
-		in.Notes, in.PartsUsed, in.PhotoURLs, completedAt))
+		id, s.tenant, statusText(in.Status), priorityText(in.Priority), technician, in.ScheduledAt,
+		in.Notes, in.PartsUsed, in.PhotoURLs, completedAt, unassign))
 	if err != nil {
 		return domain.Ticket{}, err
 	}

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link } from 'react-router';
 import { ArrowUpRight, CalendarClock, Cpu, Wrench } from 'lucide-react';
 import { Avatar, Button, Card, CardContent, cn } from '@monitoring/ui';
-import { FIXTURE_NOW_MS, deviceHealth, fmtDate, isTicketOpen, isTicketOverdue } from '@monitoring/fixtures';
+import { nowMs, deviceHealth, fmtDate, isTicketOpen, isTicketOverdue } from '@monitoring/fixtures';
 import { outletById, technicianById } from '../../state/lookups';
 import { useScoped } from '../../state/app-state';
 
@@ -15,7 +15,7 @@ export function MaintenanceSummary() {
   const critical = health.filter((h) => h.status === 'critical').length;
   const open = tickets.filter(isTicketOpen);
   const overdue = open.filter(isTicketOverdue).length;
-  const next = open.filter((t) => t.scheduledAt && Date.parse(t.scheduledAt) >= FIXTURE_NOW_MS).sort((a, b) => a.scheduledAt!.localeCompare(b.scheduledAt!))[0];
+  const next = open.filter((t) => t.scheduledAt && Date.parse(t.scheduledAt) >= nowMs()).sort((a, b) => a.scheduledAt!.localeCompare(b.scheduledAt!))[0];
   const tech = next?.technicianId ? technicianById.get(next.technicianId) : undefined;
   return (
     <Card>

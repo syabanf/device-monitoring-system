@@ -3,10 +3,12 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { ArrowLeft, Check, ExternalLink, MapPin, Phone, Play, Wrench } from 'lucide-react';
 import { MAINTENANCE_TYPE_LABEL, TICKET_STATUS_LABEL } from '@monitoring/types';
 import { Avatar, Badge, Button, FormField, Textarea, cn } from '@monitoring/ui';
-import { fmtDateTimeLong, isTicketOverdue, outletById, technicianById } from '@monitoring/fixtures';
+import { fmtDateTimeLong, isTicketOverdue } from '@monitoring/fixtures';
+import { outletById, technicianById } from '../state/lookups';
 import { useAuth } from '../auth/auth';
 import { useAppState } from '../state/app-state';
 import { PhotoDropzone } from '../components/PhotoDropzone';
+import { apiClient } from '../state/client';
 
 export function TicketDetailPage() {
   const { id = '' } = useParams();
@@ -17,6 +19,7 @@ export function TicketDetailPage() {
   const [notes, setNotes] = React.useState('');
   const [photos, setPhotos] = React.useState<string[]>([]);
   const [completing, setCompleting] = React.useState(false);
+  const [saving, setSaving] = React.useState(false);
   if (!ticket || !user || !user.outletIds.includes(ticket.outletId)) {
     return <div className="pt-6"><Button asChild variant="ghost"><Link to="/maintenance"><ArrowLeft />Back</Link></Button><p className="mt-6 text-sm text-muted">Ticket not found.</p></div>;
   }
@@ -27,10 +30,12 @@ export function TicketDetailPage() {
   const mine = isTech && ticket.technicianId === user.id;
   const overdue = isTicketOverdue(ticket);
 
-  const complete = (e: React.FormEvent) => {
+  const complete = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch({ type: 'tickets/setStatus', ticketId: ticket.id, status: 'DONE', notes, photoUrls: photos });
-    setCompleting(false);
+    setSaving(true);
+    const [applied] = await dispatch({ type: 'tickets/setStatus', ticketId: ticket.id, status: 'DONE', notes, photoUrls: photos });
+    setSaving(false);
+    if (applied?.type === 'tickets/replace') setCompleting(false);
   };
 
   return (
@@ -63,7 +68,7 @@ export function TicketDetailPage() {
         <section className="rounded-[24px] bg-sky-100 p-5">
           <p className="text-sm font-semibold">Work notes</p>
           {ticket.notes ? <p className="mt-2 text-sm text-body">{ticket.notes}</p> : null}
-          {ticket.photoUrls.length ? <div className="mt-3 grid grid-cols-3 gap-2">{ticket.photoUrls.map((u) => <img key={u} src={u.startsWith('blob:') || u.startsWith('data:') ? u : `/${u}`} alt="Work proof" className="aspect-square w-full rounded-2xl object-cover" />)}</div> : null}
+          {ticket.photoUrls.length ? <div className="mt-3 grid grid-cols-3 gap-2">{ticket.photoUrls.map((u) => <img key={u} src={apiClient.url(u)} alt="Work proof" className="aspect-square w-full rounded-2xl object-cover" />)}</div> : null}
         </section>
       ) : null}
 
@@ -72,11 +77,11 @@ export function TicketDetailPage() {
           {!mine ? <Button size="lg" variant="outline" className="w-full border-0 bg-white shadow-card" onClick={() => dispatch({ type: 'tickets/assign', ticketId: ticket.id, technicianId: user.id })}>Assign to me</Button> : null}
           {ticket.status !== 'IN_PROGRESS' ? <Button size="lg" variant="secondary" className="w-full" onClick={() => dispatch({ type: 'tickets/setStatus', ticketId: ticket.id, status: 'IN_PROGRESS' })}><Play />Start work</Button> : null}
           {!completing ? <Button size="lg" className="w-full" onClick={() => setCompleting(true)}><Check />Complete ticket</Button> : (
-            <form onSubmit={complete} className="space-y-4 rounded-[24px] bg-white p-5 shadow-card">
+            <form onSubmit={(e) => void complete(e)} className="space-y-4 rounded-[24px] bg-white p-5 shadow-card">
               <h2 className="text-base font-bold">Completion report</h2>
               <FormField label="Work notes" htmlFor="tnotes"><Textarea id="tnotes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="What was done, parts replaced, readings verified…" className="min-h-28 border-0 bg-surface" required /></FormField>
               <div><p className="mb-2 text-sm font-medium">Photos</p><PhotoDropzone urls={photos} onChange={setPhotos} /></div>
-              <div className="flex gap-3"><Button type="button" variant="ghost" size="lg" className="flex-1" onClick={() => setCompleting(false)}>Cancel</Button><Button type="submit" size="lg" className="flex-[1.6]"><Check />Mark done</Button></div>
+              <div className="flex gap-3"><Button type="button" variant="ghost" size="lg" className="flex-1" onClick={() => setCompleting(false)}>Cancel</Button><Button type="submit" size="lg" className="flex-[1.6]" loading={saving}><Check />Mark done</Button></div>
             </form>
           )}
         </div>

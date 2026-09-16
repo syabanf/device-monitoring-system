@@ -13,21 +13,29 @@ export function LoginPage() {
   const [token, setToken] = React.useState('');
   const [show, setShow] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [busy, setBusy] = React.useState(false);
   const [params] = useSearchParams();
-  // magic-link login: /login?email=…&token=…&next=/path (admin invite links, demos)
+  // magic-link login: /login?email=…&password=…&next=/path (admin invite links, demos)
   React.useEffect(() => {
-    const e = params.get('email'); const t = params.get('token');
-    if (e && t) { const r = login(e, t); if (r.ok) navigate(params.get('next') ?? '/', { replace: true }); else setError(r.error); }
+    const e = params.get('email'); const t = params.get('password') ?? params.get('token');
+    if (e && t) void signIn(e, t, params.get('next') ?? '/');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  async function signIn(mail: string, secret: string, next: string) {
+    setBusy(true);
+    const r = await login(mail, secret);
+    setBusy(false);
+    if (r.ok) navigate(next, { replace: true });
+    else setError(r.error);
+  }
 
   if (session) return <Navigate to={params.get('next') ?? '/'} replace />;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    const r = login(email, token);
-    if (r.ok) navigate((location.state as { from?: string } | null)?.from ?? '/', { replace: true });
-    else setError(r.error);
+    setError(null);
+    void signIn(email, token, (location.state as { from?: string } | null)?.from ?? '/');
   };
 
   return (
@@ -58,13 +66,13 @@ export function LoginPage() {
             <FormField label="Email" htmlFor="email">
               <Input id="email" type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </FormField>
-            <FormField label="Token" htmlFor="token" error={error ?? undefined} hint={`Demo token: ${DEMO_ACCOUNTS.admin.token}`}>
+            <FormField label="Password" htmlFor="token" error={error ?? undefined} hint={`Demo password: ${DEMO_ACCOUNTS.admin.token}`}>
               <Input
                 id="token" type={show ? 'text' : 'password'} autoComplete="current-password" value={token} onChange={(e) => setToken(e.target.value)} error={!!error} required
-                rightSlot={<button type="button" onClick={() => setShow((s) => !s)} className="rounded-full p-1.5 text-muted hover:text-foreground" aria-label={show ? 'Hide token' : 'Show token'}>{show ? <EyeOff className="size-5" /> : <Eye className="size-5" />}</button>}
+                rightSlot={<button type="button" onClick={() => setShow((s) => !s)} className="rounded-full p-1.5 text-muted hover:text-foreground" aria-label={show ? 'Hide password' : 'Show password'}>{show ? <EyeOff className="size-5" /> : <Eye className="size-5" />}</button>}
               />
             </FormField>
-            <Button type="submit" className="w-full" size="lg">Sign In</Button>
+            <Button type="submit" className="w-full" size="lg" disabled={busy}>{busy ? 'Signing in…' : 'Sign In'}</Button>
           </form>
         </div>
       </div>

@@ -4,15 +4,16 @@ import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieCh
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, PageHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, StatCard } from '@monitoring/ui';
 import { Clock, Percent, Radio, TrendingUp } from 'lucide-react';
-import { alertsPerDay, avgResponseByOutlet, avgResponseSec, humanizeShort, inPeriod, openVsSolved, readingsBySensor, responseRate, sensorsByOutlet, toWallClockDate, type Period } from '@monitoring/fixtures';
+import { alertsPerDay, avgResponseByOutlet, avgResponseSec, humanizeShort, inPeriod, openVsSolved, responseRate, toWallClockDate, type Period } from '@monitoring/fixtures';
 import { outletById } from '../../state/lookups';
 import { useScoped } from '../../state/app-state';
+import { useReadingSeries } from '../../state/readings';
 
 const PERIODS: { value: Period; label: string }[] = [{ value: '7d', label: 'Last 7 days' }, { value: '30d', label: 'Last 30 days' }, { value: 'all', label: 'All time' }];
 const tooltipStyle = { borderRadius: 16, border: '1px solid #e6e5e7', boxShadow: '0 12px 40px -12px rgb(16 17 18 / 0.25)', fontSize: 12 };
 
 export function AnalysisPage() {
-  const { alerts, outlets } = useScoped();
+  const { alerts, outlets, sensorsByOutlet } = useScoped();
   const [params, setParams] = useSearchParams();
   const period = (PERIODS.some((p) => p.value === params.get('period')) ? params.get('period') : '30d') as Period;
   const update = (patch: Record<string, string | null>) => { const next = new URLSearchParams(params); for (const [key, value] of Object.entries(patch)) value == null ? next.delete(key) : next.set(key, value); setParams(next, { replace: true }); };
@@ -25,7 +26,9 @@ export function AnalysisPage() {
 
   const tempSensors = React.useMemo(() => outlets.flatMap((o) => (sensorsByOutlet.get(o.id) ?? []).filter((s) => s.type === 'TEMPERATURE_HUMIDITY')), [outlets]);
   const sensorId = tempSensors.some((sensor) => sensor.id === params.get('sensor')) ? params.get('sensor')! : tempSensors[0]?.id ?? '';
-  const trend = React.useMemo(() => (readingsBySensor.get(sensorId) ?? []).map((r) => ({ t: format(toWallClockDate(r.at), 'dd MMM HH:mm'), temp: r.temperatureC, hum: r.humidityPct })), [sensorId]);
+  const window = React.useMemo(() => ({ from: new Date(Date.now() - 7 * 86_400_000).toISOString(), to: new Date().toISOString() }), []);
+  const { readings } = useReadingSeries(sensorId ? { sensorId, bucket: 'hour', ...window } : null);
+  const trend = React.useMemo(() => readings.map((r) => ({ t: format(toWallClockDate(r.at), 'dd MMM HH:mm'), temp: r.temperatureC, hum: r.humidityPct })), [readings]);
 
   const donut = [{ name: 'Solved', value: stats.solved, color: '#ED1C24' }, { name: 'Open', value: stats.open, color: '#101112' }];
 

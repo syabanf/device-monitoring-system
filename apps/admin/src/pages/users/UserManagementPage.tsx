@@ -24,6 +24,12 @@ export function UserManagementPage() {
   const update = (patch: Record<string, string | null>) => { const next = new URLSearchParams(params); for (const [key, value] of Object.entries(patch)) value == null ? next.delete(key) : next.set(key, value); setParams(next, { replace: true }); };
   const [tokenFor, setTokenFor] = React.useState<Employee | null>(null);
 
+  // The API issues the token, so the dialog shows what it wrote rather than a local guess.
+  const issueToken = async (employee: Employee) => {
+    const [applied] = await dispatch({ type: 'employees/generateToken', employeeId: employee.id, token: generateToken() });
+    if (applied?.type === 'employees/upsert') setTokenFor(applied.employee);
+  };
+
   const rows = React.useMemo(() => {
     const s = q.trim().toLowerCase();
     return employees.filter((e) => (tab === 'all' || e.registrationStatus === tab) && (outletFilter === 'all' || e.outletIds.includes(outletFilter)) && (!s || e.name.toLowerCase().includes(s) || e.phone.includes(s) || e.email.includes(s)));
@@ -47,7 +53,7 @@ export function UserManagementPage() {
             <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="size-8" aria-label="More"><MoreHorizontal /></Button></DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onSelect={() => setEditing(e)}><Pencil />Edit employee</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => { const token = generateToken(); dispatch({ type: 'employees/generateToken', employeeId: e.id, token }); setTokenFor({ ...e, registrationToken: token }); }}><KeyRound />Generate new token</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void issueToken(e)}><KeyRound />Generate new token</DropdownMenuItem>
               {e.registrationToken ? <DropdownMenuItem onSelect={() => setTokenFor(e)}><Copy />Show token</DropdownMenuItem> : null}
               <DropdownMenuItem destructive onSelect={() => dispatch({ type: 'employees/revoke', employeeId: e.id })}><ShieldOff />Revoke access</DropdownMenuItem>
               <DropdownMenuItem destructive onSelect={() => setRemoving(e)}><Trash2 />Delete employee</DropdownMenuItem>

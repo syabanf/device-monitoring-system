@@ -14,11 +14,21 @@ export function LoginPage() {
   const [token, setToken] = React.useState('');
   const [show, setShow] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [busy, setBusy] = React.useState(false);
   const [params] = useSearchParams();
+
+  async function signIn(mail: string, secret: string, next: string) {
+    setBusy(true);
+    const r = await login(mail, secret);
+    setBusy(false);
+    if (r.ok) navigate(next, { replace: true });
+    else setError(r.error);
+  }
+
   // magic-link login: /login?email=…&token=…&next=/path (admin invite links, demos)
   React.useEffect(() => {
     const e = params.get('email'); const t = params.get('token');
-    if (e && t) { const r = login(e, t); if (r.ok) navigate(params.get('next') ?? '/', { replace: true }); else setError(r.error); }
+    if (e && t) void signIn(e, t, params.get('next') ?? '/');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [forgot, setForgot] = React.useState(false);
@@ -26,9 +36,8 @@ export function LoginPage() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    const r = login(email, token);
-    if (r.ok) navigate((location.state as { from?: string } | null)?.from ?? '/', { replace: true });
-    else setError(r.error);
+    setError(null);
+    void signIn(email, token, (location.state as { from?: string } | null)?.from ?? '/');
   };
 
   return (
@@ -45,7 +54,7 @@ export function LoginPage() {
           <Input id="token" type={show ? 'text' : 'password'} inputMode="numeric" autoComplete="one-time-code" value={token} onChange={(e) => setToken(e.target.value)} error={!!error} required className="[&_input]:h-13 [&_input]:border-0 [&_input]:shadow-card"
             rightSlot={<button type="button" onClick={() => setShow((s) => !s)} className="rounded-full p-1.5 text-muted" aria-label={show ? 'Hide token' : 'Show token'}>{show ? <EyeOff className="size-5" /> : <Eye className="size-5" />}</button>} />
         </FormField>
-        <Button type="submit" size="lg" className="mt-2 w-full">Sign In</Button>
+        <Button type="submit" size="lg" className="mt-2 w-full" loading={busy}>Sign In</Button>
         <button type="button" onClick={() => setForgot(true)} className="mx-auto block text-sm font-medium text-muted underline underline-offset-4">Forgot Password</button>
       </form>
       <p className="mt-auto pt-10 text-center text-[11px] text-muted">WIT.ID · Realtime Environment Monitoring</p>

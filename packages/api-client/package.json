@@ -1,0 +1,10 @@
+{
+  "name": "@monitoring/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": { "typecheck": "tsc --noEmit" },
+  "dependencies": { "@monitoring/types": "workspace:*" },
+  "devDependencies": { "@monitoring/tsconfig": "workspace:*", "typescript": "^5.6.3" }
+}

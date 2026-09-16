@@ -76,13 +76,40 @@ func (r Repo) Find(ctx context.Context, id string) (domain.Device, error) {
 	return d, err
 }
 
+// SensorOpts filters the tenant-wide sensor list the floor plans and shopfloor view load.
+type SensorOpts struct {
+	OutletID string
+	DeviceID string
+	Scope    []string
+}
+
+// ListSensors answers every sensor the session may see in one call, which is what the admin
+// and mobile apps need to draw floor plans without a request per device.
+func (r Repo) ListSensors(ctx context.Context, o SensorOpts) ([]domain.Sensor, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT `+sensorColumns+` FROM sensor
+		WHERE distributor_id = $1
+		  AND ($2 = '' OR outlet_id = $2)
+		  AND ($3 = '' OR device_id = $3)
+		  AND ($4::text[] IS NULL OR outlet_id = ANY($4))
+		ORDER BY outlet_id, device_id, port_kind, port_index`, r.tenant, o.OutletID, o.DeviceID, o.Scope)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return collectSensors(rows)
+}
+
 func (r Repo) SensorsOf(ctx context.Context, deviceID string) ([]domain.Sensor, error) {
 	rows, err := r.db.Query(ctx, `SELECT `+sensorColumns+` FROM sensor WHERE device_id = $1 AND distributor_id = $2 ORDER BY port_kind, port_index`, deviceID, r.tenant)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+	return collectSensors(rows)
+}
 
+func collectSensors(rows pgx.Rows) ([]domain.Sensor, error) {
 	out := []domain.Sensor{}
 	for rows.Next() {
 		s, err := scanSensor(rows)

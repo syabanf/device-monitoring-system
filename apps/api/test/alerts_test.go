@@ -3,6 +3,8 @@ package test
 import (
 	"net/http"
 	"testing"
+
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/auth"
 )
 
 func TestAlertListFilters(t *testing.T) {
@@ -68,8 +70,11 @@ func TestOnlyTheFirstEmployeeClaimsAnAlert(t *testing.T) {
 	if got := responded.str("response.employeeId"); got != f.EmployeeID {
 		t.Errorf("the response names %s, want %s", got, f.EmployeeID)
 	}
-	if got := responded.str("status"); got != "RESPONDING" {
-		t.Errorf("responding should move the alert to RESPONDING, got %s", got)
+	if got := responded.str("status"); got != "RESOLVED" {
+		t.Errorf("a field report should resolve the alert, got %s", got)
+	}
+	if responded.field("resolvedAt") == nil {
+		t.Error("resolvedAt is missing after a response")
 	}
 
 	if code := employee.post("/alerts/9001/respond", map[string]any{"notes": "again"}).
@@ -77,7 +82,39 @@ func TestOnlyTheFirstEmployeeClaimsAnAlert(t *testing.T) {
 		t.Errorf("want ALREADY_RESPONDED, got %s", code)
 	}
 
+	// Another employee at the same outlet cannot take over a claimed alert.
+	other := as(t, token(t, auth.KindEmployee, "emp-2", tenant, []string{f.OutletA, f.OutletB}))
+	other.post("/alerts/9001/respond", map[string]any{"notes": "me too"}).expect(http.StatusConflict)
+
 	employee.post("/alerts/9001/respond", map[string]any{"notes": "  "}).expect(http.StatusBadRequest)
+}
+
+func TestAcknowledgingTakesResponsibility(t *testing.T) {
+	f := reset(t)
+
+	acknowledged := as(t, f.EmployeeToken).post("/alerts/9001/status", map[string]any{"status": "ACKNOWLEDGED"}).
+		expect(http.StatusOK)
+	if got := acknowledged.str("assigneeEmployeeId"); got != f.EmployeeID {
+		t.Errorf("the alert should name %s as responsible, got %q", f.EmployeeID, got)
+	}
+	// An admin moving the alert on does not take it away from the employee.
+	moved := as(t, f.AdminToken).post("/alerts/9001/status", map[string]any{"status": "RESOLVED"}).expect(http.StatusOK)
+	if got := moved.str("assigneeEmployeeId"); got != f.EmployeeID {
+		t.Errorf("responsibility moved to %q", got)
+	}
+}
+
+// Acknowledging takes the alert, and the same employee still finishes the response.
+func TestAcknowledgeThenRespond(t *testing.T) {
+	f := reset(t)
+	employee := as(t, f.EmployeeToken)
+
+	employee.post("/alerts/9001/status", map[string]any{"status": "ACKNOWLEDGED"}).expect(http.StatusOK)
+	responded := employee.post("/alerts/9001/respond", map[string]any{"notes": "Checked the cooler door"}).
+		expect(http.StatusOK)
+	if got := responded.str("response.employeeId"); got != f.EmployeeID {
+		t.Errorf("the response names %q", got)
+	}
 }
 
 func TestAdminsCannotRespondAndEmployeesCannotVerify(t *testing.T) {
