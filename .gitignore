@@ -4,3 +4,4 @@ dev-dist
 .turbo
 *.log
 .DS_Store
+apps/api/bin/

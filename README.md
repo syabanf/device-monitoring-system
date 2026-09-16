@@ -48,43 +48,61 @@ The UI style, clean code structure and backend design of this project are packag
 git clone --depth 1 https://github.com/syabanf/device-monitoring-system.git /tmp/dms && mkdir -p ~/.claude/skills && cp -R /tmp/dms/.claude/skills/wit-ui-style ~/.claude/skills/ && rm -rf /tmp/dms
 ```
 
-## Backend (`apps/api`)
+## Backend (`apps/api`, Go)
 
-A separate service inside the same monorepo, TypeScript end to end: Fastify, Prisma on PostgreSQL,
-zod at every boundary, BullMQ for fan-out, vitest for tests. It implements the contract the
-frontend adapter already talks to, so switching the Integration page from `mock` to `http` is a
-toggle rather than a rewrite.
+A separate service in the same monorepo: Go 1.26, chi, pgx on PostgreSQL, JWT auth, and a
+sequence-backed outbox for fan-out. It owns the wire contract the two frontends read, so the
+Integration page can move from the mock adapter to HTTP without a UI rewrite.
 
 ```
-apps/api/src
-  env.ts                  zod-validated environment, crashes at boot with the missing keys listed
-  app.ts                  buildApp(): plugins, problem+json error handler, routes. No side effects
-  main.ts                 boot: env → db → queue → server → graceful shutdown
-  plugins/auth.ts         JWT verify, Ctx { tenant, userId, kind, outletIds }, tenant and admin guards
-  modules/<feature>/      routes (HTTP only) → service (rules) → repo (Prisma, always tenant-scoped)
-  ingestion/              webhook + email → parse → normalise → alert engine → outbox
-  jobs/                   queue (BullMQ, or inline without Redis), outbox dispatcher
-  notify/                 one Notifier interface for push, Telegram and email
-  db/                     schema.prisma, row → domain mappers, seed from the frontend fixtures
-packages/contracts        zod schemas shared by the API and the frontend HttpApi
+apps/api
+  cmd/api                 boot: config, pool, migrations, router, graceful shutdown
+  cmd/seed                loads the generated fixtures so mock and API show the same data
+  internal/config         environment parsed once, refuses to boot when a value is missing
+  internal/server         every route on one router, built without side effects for tests
+  internal/auth           JWT claims, Ctx{tenant,userId,kind,outletIds}, tenant and admin guards
+  internal/httpx          problem+json, JSON decode with unknown-field rejection, cursors
+  internal/<feature>      handler (HTTP only) -> service (rules) -> repo (SQL, tenant-scoped)
+  internal/ingest         webhook and e-mail parsing, device matching, alert engine
+  internal/jobs           queue and outbox dispatcher; internal/notify hides the channels
+  internal/store          pool plus an embedded migration runner
 ```
 
 Run it locally:
 
 ```bash
-pnpm infra:up                                   # postgres, redis, mailpit
-cp apps/api/.env.example apps/api/.env          # fill DATABASE_URL, JWT_SECRET, WEBHOOK_SECRET
-pnpm --filter @monitoring/api db:push           # create the schema
-pnpm db:seed                                    # load the same demo data the frontend ships
-pnpm dev:api                                    # http://localhost:3000, OpenAPI at /docs
+pnpm infra:up                                  # postgres on 5442, redis on 6382, mailpit on 8025
+cp apps/api/.env.example apps/api/.env         # fill DATABASE_URL, JWT_SECRET, WEBHOOK_SECRET
+set -a && . apps/api/.env && set +a
+pnpm --filter @monitoring/api db:migrate       # embedded migrations, applied once each
+pnpm db:seed                                   # 30 outlets, 36 devices, 643 alerts, 81 tickets
+pnpm dev:api                                   # http://localhost:3000
 ```
 
-Endpoints follow the reducer actions: `GET/POST/PUT/DELETE /distributors/:id/outlets`, `/devices`
-(with nested `/sensors/:sensorId`), `/alerts` plus `/alerts/:id/respond` and `/status`, `/tickets`,
-`POST /webhooks/roomalert` and `/webhooks/email`, and `GET /health`. Admins sign in at
-`/auth/admin/login`; employees and technicians exchange their registration token at
-`/auth/token/login`. Every response that is not 2xx is `application/problem+json`.
+Master data CRUD is complete: outlets, device types, devices with nested sensors, employees
+(plus approve, issue token, revoke), technicians (plus token rotation) and contact persons.
+Alerts carry the full lifecycle with a first-responder claim, tickets follow their own status
+flow, and `POST /webhooks/roomalert` and `/webhooks/email` ingest signed payloads.
 
-Employees, technicians and contact persons still read from fixtures in the UI; copy the outlets
-module to add them. Without `REDIS_URL` the queue runs handlers inline, which keeps local
-development to a single process.
+| Area | Endpoints |
+|---|---|
+| System | `GET /health` |
+| Auth | `POST /auth/admin/login`, `POST /auth/token/login` |
+| Outlets | `GET,POST /distributors/{id}/outlets`, `GET,PUT,DELETE …/outlets/{outletId}` |
+| Device types | `GET,POST /device-types`, `GET,PUT,DELETE /device-types/{deviceTypeId}` |
+| Devices | `GET,POST …/devices`, `GET,DELETE …/devices/{deviceId}`, `PUT …/devices/{deviceId}/sensors/{sensorId}` |
+| Employees | `GET,POST …/employees`, `GET,PUT,DELETE …/employees/{employeeId}`, `POST …/{approve,token,revoke}` |
+| Technicians | `GET,POST …/technicians`, `GET,PUT,DELETE …/technicians/{technicianId}`, `POST …/token` |
+| Contacts | `GET,POST …/contact-persons`, `GET,PUT,DELETE …/contact-persons/{contactId}` |
+| Alerts | `GET …/alerts`, `GET /alerts/{alertId}`, `POST /alerts/{alertId}/respond`, `POST /alerts/{alertId}/status` |
+| Tickets | `GET,POST …/tickets`, `PATCH …/tickets/{ticketId}` |
+| Ingestion | `POST /webhooks/roomalert`, `POST /webhooks/email` |
+
+Conventions: JSON with camelCase keys, ISO-8601 timestamps, prefixed string ids, cursor
+pagination as `{items, nextCursor}`, and `application/problem+json` for every non-2xx answer.
+Admins sign in with a password; employees and technicians exchange the registration token their
+admin issued. Every repo query filters by the tenant in the token, and a URL naming another
+distribution center answers 403.
+
+Still open: an OpenAPI document at `/docs`, a Redis-backed queue (the outbox dispatcher runs
+inline today), the IMAP poller, and real FCM and Telegram notifiers in place of the logging stub.

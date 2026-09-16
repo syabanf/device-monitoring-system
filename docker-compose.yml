@@ -7,7 +7,8 @@ services:
       POSTGRES_USER: monitoring
       POSTGRES_PASSWORD: monitoring
       POSTGRES_DB: monitoring
-    ports: ['5432:5432']
+    # 5442 on the host: 5432 and 5433 are often already taken on a developer machine.
+    ports: ['5442:5432']
     volumes: ['monitoring-pg:/var/lib/postgresql/data']
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U monitoring']
@@ -18,7 +19,7 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    ports: ['6379:6379']
+    ports: ['6382:6379']
     command: ['redis-server', '--appendonly', 'yes']
     volumes: ['monitoring-redis:/data']
 
