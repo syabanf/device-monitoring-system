@@ -130,7 +130,41 @@ one while applying the other edits. `POST …/integration/test/{channel}` report
 do today, so `roomalert` answers `ok: true` with its recent call count while `telegram` and `push`
 answer `ok: false` and name the missing client.
 
-Still open: push through FCM with a device-token endpoint, the Telegram bot and its `/register`
-flow, the IMAP poller, a scheduled job that marks a device offline when its push status stops,
-a Redis-backed queue in place of the inline dispatcher, refresh tokens, and an OpenAPI document
-at `/docs`.
+### Tests
+
+`apps/api/internal` holds table-driven unit tests for the rules that need no database: the alert
+and ticket lifecycles, outlet scoping, password hashing, the period window and the two payload
+parsers. `apps/api/test` drives the whole HTTP surface against a real PostgreSQL through
+`httptest`, which is the only place the repo queries, cursors and scope clauses run.
+
+```bash
+pnpm infra:up
+cd apps/api
+DATABASE_URL=postgres://monitoring:monitoring@localhost:5442/monitoring?sslmode=disable go test ./...
+```
+
+The suite skips itself when `DATABASE_URL` is unset, so `go test ./...` stays useful without
+Docker. It owns the schema it runs against: `reset(t)` truncates every table and rebuilds a small
+deterministic world (two distribution centers, three outlets, two devices, one employee covering
+two of the three outlets), so tests never depend on each other's order. Point it at a throwaway
+database.
+
+### Container and CI
+
+`apps/api/Dockerfile` builds a static binary in `golang:1.26-alpine` and copies it onto
+distroless, so the image carries no shell and runs as `nonroot`. The build context is `apps/api`,
+which keeps the frontend workspaces out of it.
+
+```bash
+docker build -t monitoring-api apps/api
+docker run -p 3000:3000 -e DATABASE_URL=… -e JWT_SECRET=… -e WEBHOOK_SECRET=… monitoring-api
+```
+
+`.github/workflows/ci.yml` runs three jobs on every push and pull request: the frontend
+workspaces through `turbo typecheck` and `turbo build`, the API through `gofmt -l`, `go vet` and
+`go test` against a PostgreSQL service container, and a Docker build of the API image.
+
+Still open: photo upload for alert responses and ticket completion, push through FCM with a
+device-token endpoint, the Telegram bot and its `/register` flow, the IMAP poller, a scheduled job
+that marks a device offline when its push status stops, a Redis-backed queue in place of the
+inline dispatcher, refresh tokens, and an OpenAPI document at `/docs`.

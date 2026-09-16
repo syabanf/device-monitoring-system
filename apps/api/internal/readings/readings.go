@@ -36,18 +36,29 @@ type Bucket struct {
 }
 
 type Service struct {
-	db     store.DB
-	tenant string
-	scope  []string
+	db  store.DB
+	ctx auth.Ctx
 }
 
 func NewService(db store.DB, c auth.Ctx) Service {
-	return Service{db: db, tenant: c.Tenant, scope: c.OutletScope()}
+	return Service{db: db, ctx: c}
+}
+
+// guard turns an out-of-scope outlet filter into a refusal, so an employee who asks for another
+// outlet learns the request was out of bounds instead of reading an empty chart.
+func (s Service) guard(outletID string) error {
+	if outletID != "" && !s.ctx.CoversOutlet(outletID) {
+		return httpx.Forbidden("Outlet is outside your registration")
+	}
+	return nil
 }
 
 // Latest returns the newest reading of every sensor the session may see, which is what the
 // dashboard tiles and the floor plan need on load.
 func (s Service) Latest(ctx context.Context, outletID string) ([]Reading, error) {
+	if err := s.guard(outletID); err != nil {
+		return nil, err
+	}
 	rows, err := s.db.Query(ctx, `
 		SELECT DISTINCT ON (r.sensor_id) r.sensor_id, r.at, r.temperature_c, r.humidity_pct
 		FROM reading r
@@ -55,7 +66,7 @@ func (s Service) Latest(ctx context.Context, outletID string) ([]Reading, error)
 		WHERE s.distributor_id = $1
 		  AND ($2 = '' OR s.outlet_id = $2)
 		  AND ($3::text[] IS NULL OR s.outlet_id = ANY($3))
-		ORDER BY r.sensor_id, r.at DESC`, s.tenant, outletID, s.scope)
+		ORDER BY r.sensor_id, r.at DESC`, s.ctx.Tenant, outletID, s.ctx.OutletScope())
 	if err != nil {
 		return nil, err
 	}
@@ -75,6 +86,9 @@ type SeriesOpts struct {
 // Series returns raw rows, or averaged buckets when the caller asks for them. Bucketing keeps
 // a 30 day report from shipping a quarter of a million rows to the browser.
 func (s Service) Series(ctx context.Context, o SeriesOpts) ([]Bucket, error) {
+	if err := s.guard(o.OutletID); err != nil {
+		return nil, err
+	}
 	if o.Bucket <= 0 {
 		rows, err := s.db.Query(ctx, `
 			SELECT r.sensor_id, r.at, r.temperature_c, r.humidity_pct
@@ -85,7 +99,7 @@ func (s Service) Series(ctx context.Context, o SeriesOpts) ([]Bucket, error) {
 			  AND ($4::text[] IS NULL OR s.outlet_id = ANY($4))
 			  AND r.at >= $5 AND r.at < $6
 			ORDER BY r.at
-			LIMIT $7`, s.tenant, o.SensorID, o.OutletID, s.scope, o.From, o.To, o.Limit)
+			LIMIT $7`, s.ctx.Tenant, o.SensorID, o.OutletID, s.ctx.OutletScope(), o.From, o.To, o.Limit)
 		if err != nil {
 			return nil, err
 		}
@@ -112,7 +126,7 @@ func (s Service) Series(ctx context.Context, o SeriesOpts) ([]Bucket, error) {
 		  AND r.at >= $5 AND r.at < $6
 		GROUP BY bucket
 		ORDER BY bucket
-		LIMIT $8`, s.tenant, o.SensorID, o.OutletID, s.scope, o.From, o.To, o.Bucket.Seconds(), o.Limit)
+		LIMIT $8`, s.ctx.Tenant, o.SensorID, o.OutletID, s.ctx.OutletScope(), o.From, o.To, o.Bucket.Seconds(), o.Limit)
 	if err != nil {
 		return nil, err
 	}
