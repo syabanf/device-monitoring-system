@@ -200,6 +200,10 @@ docker run -p 3000:3000 -e DATABASE_URL=… -e JWT_SECRET=… -e WEBHOOK_SECRET=
 workspaces through `turbo typecheck` and `turbo build`, the API through `gofmt -l`, `go vet` and
 `go test` against a PostgreSQL service container, and a Docker build of the API image.
 
+**Sessions.** A sign-in returns one access token, and nothing renews it: at `ACCESS_TOKEN_TTL`
+(8 hours by default, 30 days for a phone) the client drops the session and the app returns to the
+login screen. Refresh tokens are still open.
+
 **Alert lifecycle.** An employee who acknowledges an alert or starts an inspection takes
 responsibility for it, and the alert records them as the assignee. Another employee at the same
 outlet is then refused, which is the no-double-response rule from the deck. Saving the field

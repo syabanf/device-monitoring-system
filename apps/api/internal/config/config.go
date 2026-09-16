@@ -56,8 +56,10 @@ func Load() (Config, error) {
 		}
 	}
 
-	if cfg.AccessTokenTTL, err = time.ParseDuration(def("ACCESS_TOKEN_TTL", "15m")); err != nil {
-		missing = append(missing, "ACCESS_TOKEN_TTL (e.g. 15m)")
+	// A dashboard session lasts a working day. Shorten it once refresh tokens exist, since
+	// nothing renews a token today and the app drops the user at /login when it expires.
+	if cfg.AccessTokenTTL, err = time.ParseDuration(def("ACCESS_TOKEN_TTL", "8h")); err != nil {
+		missing = append(missing, "ACCESS_TOKEN_TTL (e.g. 8h)")
 	}
 	if cfg.DeviceTokenTTL, err = time.ParseDuration(def("DEVICE_TOKEN_TTL", "720h")); err != nil {
 		missing = append(missing, "DEVICE_TOKEN_TTL (e.g. 720h)")
