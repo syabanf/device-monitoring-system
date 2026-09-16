@@ -235,6 +235,12 @@ PostgreSQL service container, and a Docker build of all four images.
 (8 hours by default, 30 days for a phone) the client drops the session and the app returns to the
 login screen. Refresh tokens are still open.
 
+**Rollout scope.** This deployment installs temperature and temperature-humidity sensors only.
+The pickers grey out door, motion, power and panic, and the API refuses a create or a type change
+naming one. Sensors installed before the scope narrowed keep reporting and stay editable, so an
+admin can still rename one or move it on the floor plan. `ENABLED_SENSOR_TYPES` in
+`packages/types` and `domain.EnabledSensorTypes` in the API are the two places to widen it.
+
 **Sensor limits.** Every sensor carries its own band: a lower and an upper limit for temperature
 and for humidity, edited in the sensor dialog and stored with the sensor. The API judges each
 pushed reading against that band. A sample outside it opens one alert naming the limit that was

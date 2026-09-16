@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link, useNavigate } from 'react-router';
 import { ArrowLeft, ArrowRight, Building2, Check, Cpu, MapPin, Plug, Plus, Sparkles, Trash2, Users } from 'lucide-react';
 import type { Employee, EmployeeRole, SensorType } from '@monitoring/types';
-import { EMPLOYEE_ROLE_LABEL, SENSOR_TYPE_LABEL } from '@monitoring/types';
+import { EMPLOYEE_ROLE_LABEL, SENSOR_TYPE_LABEL, isSensorTypeEnabled } from '@monitoring/types';
 import { Badge, Button, Card, CardContent, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Toggle, WitMark, cn } from '@monitoring/ui';
 import { nowIso, generateToken, newId } from '@monitoring/fixtures';
 import { useAuth } from '../../auth/auth';
@@ -34,7 +34,7 @@ export function SetupWizardPage() {
   const distributor = state.distributors.find((d) => d.id === distributorId);
   const [step, setStep] = React.useState(0);
   const [org, setOrg] = React.useState({ name: distributor?.name ?? '', code: distributor?.code ?? '', city: distributor?.city ?? '', region: distributor?.region ?? '', address: distributor?.address ?? '' });
-  const [outlets, setOutlets] = React.useState<OutletDraft[]>([{ key: newId('o'), code: 'IDM-SBY-0021', name: 'Indomaret ', address: '', city: 'Surabaya', model: deviceTypes[0]?.model ?? 'RA3S', sensors: ['TEMPERATURE_HUMIDITY', 'DOOR'] }]);
+  const [outlets, setOutlets] = React.useState<OutletDraft[]>([{ key: newId('o'), code: 'IDM-SBY-0021', name: 'Indomaret ', address: '', city: 'Surabaya', model: deviceTypes[0]?.model ?? 'RA3S', sensors: ['TEMPERATURE_HUMIDITY'] }]);
   const [people, setPeople] = React.useState<EmployeeDraft[]>([]);
   const [integ, setInteg] = React.useState({ apiBaseUrl: '', telegram: false, imap: false });
   React.useEffect(() => {
@@ -113,7 +113,7 @@ export function SetupWizardPage() {
 
           {step === 1 ? (
             <div className="space-y-4">
-              <div className="flex items-center justify-between"><h2 className="text-lg font-bold">Add the outlets to monitor</h2><Button size="sm" variant="outline" onClick={() => setOutlets([...outlets, { key: newId('o'), code: `IDM-SBY-${String(21 + outlets.length).padStart(4, '0')}`, name: 'Indomaret ', address: '', city: 'Surabaya', model: deviceTypes[0]?.model ?? 'RA3S', sensors: ['TEMPERATURE_HUMIDITY', 'DOOR'] }])}><Plus />Add row</Button></div>
+              <div className="flex items-center justify-between"><h2 className="text-lg font-bold">Add the outlets to monitor</h2><Button size="sm" variant="outline" onClick={() => setOutlets([...outlets, { key: newId('o'), code: `IDM-SBY-${String(21 + outlets.length).padStart(4, '0')}`, name: 'Indomaret ', address: '', city: 'Surabaya', model: deviceTypes[0]?.model ?? 'RA3S', sensors: ['TEMPERATURE_HUMIDITY'] }])}><Plus />Add row</Button></div>
               <div className="space-y-2">
                 {outlets.map((o, i) => (
                   <div key={o.key} className="grid grid-cols-1 gap-2 rounded-2xl bg-surface p-3 sm:grid-cols-[8rem_1fr_1fr_8rem_auto]">
@@ -141,12 +141,12 @@ export function SetupWizardPage() {
                       <Badge variant={used.digital > cap.digital || used.switch > cap.switch ? 'brand' : 'outline'}>{used.digital}/{cap.digital} digital · {used.switch}/{cap.switch} switch</Badge>
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {DEFAULT_SENSORS.map((s) => { const on = o.sensors.includes(s.type); return <button key={s.type} type="button" onClick={() => setOutlets(outlets.map((x) => (x.key === o.key ? { ...x, sensors: on ? x.sensors.filter((t) => t !== s.type) : [...x.sensors, s.type] } : x)))} className={cn('h-9 rounded-full px-3.5 text-xs font-semibold', on ? 'bg-ink text-white' : 'bg-white text-body shadow-card')}>{SENSOR_TYPE_LABEL[s.type]}</button>; })}
+                      {DEFAULT_SENSORS.map((s) => { const available = isSensorTypeEnabled(s.type); const on = available && o.sensors.includes(s.type); return <button key={s.type} type="button" disabled={!available} title={available ? undefined : 'Not part of this rollout yet'} onClick={() => setOutlets(outlets.map((x) => (x.key === o.key ? { ...x, sensors: on ? x.sensors.filter((t) => t !== s.type) : [...x.sensors, s.type] } : x)))} className={cn('h-9 rounded-full px-3.5 text-xs font-semibold', on ? 'bg-ink text-white' : 'bg-white text-body shadow-card', !available && 'opacity-40')}>{SENSOR_TYPE_LABEL[s.type]}</button>; })}
                     </div>
                   </div>
                 ); })}
               </div>
-              <p className="text-xs text-muted">Sensors beyond the unit's port capacity are skipped. Existing Paradox door and motion contacts can be reused as switch sensors.</p>
+              <p className="text-xs text-muted">Sensors beyond the unit's port capacity are skipped. This rollout installs temperature and humidity only; door, motion, power and panic sensors come later.</p>
             </div>
           ) : null}
 

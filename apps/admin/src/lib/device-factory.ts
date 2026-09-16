@@ -3,6 +3,7 @@ import { nowIso, newId } from '@monitoring/fixtures';
 
 export const DEFAULT_SENSORS: { type: SensorType; name: string; portKind: 'digital' | 'switch'; x: number; y: number }[] = [
   { type: 'TEMPERATURE_HUMIDITY', name: 'Sales Area Temp & RH', portKind: 'digital', x: 50, y: 52 },
+  { type: 'TEMPERATURE', name: 'Cooler Temp', portKind: 'digital', x: 12, y: 52 },
   { type: 'DOOR', name: 'Front Door', portKind: 'switch', x: 50, y: 91 },
   { type: 'MOTION', name: 'Sales Area Motion', portKind: 'switch', x: 52, y: 36 },
   { type: 'POWER', name: 'Main Power', portKind: 'switch', x: 92, y: 40 },
@@ -24,7 +25,7 @@ export function buildDevice(opts: { outletId: string; type: DeviceType; serial?:
     const sid = newId('sen');
     const port = ports.find((p) => p.kind === s.portKind && p.index === counters[s.portKind]);
     if (port) port.sensorId = sid;
-    sensors.push({ id: sid, deviceId: id, outletId, name: s.name, type: s.type, portKind: s.portKind, portIndex: counters[s.portKind], unit: s.type === 'TEMPERATURE_HUMIDITY' ? '°C' : 'state', thresholds: s.type === 'TEMPERATURE_HUMIDITY' ? { min: 18, max: 28, humidityMin: 30, humidityMax: 60 } : undefined, enabled: true, floor: { x: s.x, y: s.y } });
+    sensors.push({ id: sid, deviceId: id, outletId, name: s.name, type: s.type, portKind: s.portKind, portIndex: counters[s.portKind], unit: s.portKind === 'digital' ? '°C' : 'state', thresholds: s.portKind === 'digital' ? { min: 18, max: 28, humidityMin: 30, humidityMax: 60 } : undefined, enabled: true, floor: { x: s.x, y: s.y } });
   }
   const device: Device = {
     id, outletId, deviceTypeId: type.id, model: type.model, serial: opts.serial?.trim() || `${type.model.replace(/[SEW]$/, '')}-F${Math.floor(60000 + Math.random() * 39999)}-${type.model}`, mac: `00:80:A3:${hex()}:${hex()}:${hex()}`, ip: opts.ip?.trim() || `192.168.${10 + Math.floor(Math.random() * 50)}.${20 + Math.floor(Math.random() * 230)}`, firmware: type.latestFirmware, status: 'online', lastPushAt: nowIso(), installedAt: nowIso(), pushIntervalSec: 300, ports, channels: ['app'],

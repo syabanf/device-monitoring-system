@@ -128,6 +128,20 @@ type SensorThresholds struct {
 	HumidityMax *float64 `json:"humidityMax,omitempty"`
 }
 
+// EnabledSensorTypes is what this deployment installs today. Door, motion, power and panic
+// sensors stay in the model so existing installations keep reporting, and a create or an update
+// naming one is refused until the rollout covers them. packages/types carries the same list.
+var EnabledSensorTypes = []SensorType{SensorTemperature, SensorTempHumidity}
+
+func SensorTypeEnabled(t SensorType) bool {
+	for _, enabled := range EnabledSensorTypes {
+		if enabled == t {
+			return true
+		}
+	}
+	return false
+}
+
 // Breach is a reading outside the band an admin set for the sensor.
 type Breach struct {
 	// Metric is "temperature" or "humidity"; Above tells which limit the reading crossed.

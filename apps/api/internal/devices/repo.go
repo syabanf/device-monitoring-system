@@ -207,6 +207,16 @@ func (r Repo) PortTaken(ctx context.Context, deviceID string, kind domain.PortKi
 	return name, err
 }
 
+// SensorType reports what the stored sensor measures today, or an empty type when it is new.
+func (r Repo) SensorType(ctx context.Context, sensorID string) (domain.SensorType, error) {
+	var kind domain.SensorType
+	err := r.db.QueryRow(ctx, `SELECT type FROM sensor WHERE id = $1 AND distributor_id = $2`, sensorID, r.tenant).Scan(&kind)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", nil
+	}
+	return kind, err
+}
+
 func (r Repo) UpsertSensor(ctx context.Context, s domain.Sensor) (domain.Sensor, error) {
 	thresholds, err := json.Marshal(s.Thresholds)
 	if err != nil {

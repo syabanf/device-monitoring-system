@@ -24,6 +24,15 @@ export const SENSOR_TYPE_LABEL: Record<SensorType, string> = {
   PANIC_BUTTON: 'Panic Button',
 };
 
+/**
+ * The sensor types this deployment installs today. Door, motion, power and panic sensors stay in
+ * the model so existing installations keep reading and reporting, and the pickers refuse to add
+ * new ones until the rollout covers them.
+ */
+export const ENABLED_SENSOR_TYPES: SensorType[] = ['TEMPERATURE', 'TEMPERATURE_HUMIDITY'];
+
+export const isSensorTypeEnabled = (type: SensorType): boolean => ENABLED_SENSOR_TYPES.includes(type);
+
 /** What a state sensor reports when it is quiet and when it fires. */
 export const SENSOR_STATE_LABEL: Partial<Record<SensorType, { normal: string; alarm: string }>> = {
   DOOR: { normal: 'Closed', alarm: 'Open' },

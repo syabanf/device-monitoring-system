@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { DeviceType, SensorType } from '@monitoring/types';
-import { SENSOR_TYPE_LABEL } from '@monitoring/types';
+import { SENSOR_TYPE_LABEL, isSensorTypeEnabled } from '@monitoring/types';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, FormField, Input, Textarea, Toggle } from '@monitoring/ui';
 import { newId } from '@monitoring/fixtures';
 import { useScoped } from '../../state/app-state';
@@ -32,7 +32,7 @@ export function DeviceTypeDialog({ deviceType, onClose }: { deviceType: DeviceTy
           </div>
           <div>
             <p className="mb-2 text-sm font-medium">Built-in sensors</p>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{(Object.keys(SENSOR_TYPE_LABEL) as SensorType[]).map((t) => <label key={t} className="flex items-center justify-between rounded-2xl bg-surface px-3 py-2"><span className="text-sm">{SENSOR_TYPE_LABEL[t]}</span><Toggle checked={d.builtInSensors.includes(t)} onCheckedChange={(v) => toggleSensor(t, v)} label={SENSOR_TYPE_LABEL[t]} /></label>)}</div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{(Object.keys(SENSOR_TYPE_LABEL) as SensorType[]).map((t) => { const available = isSensorTypeEnabled(t); return <label key={t} className={`flex items-center justify-between rounded-2xl bg-surface px-3 py-2${available ? '' : ' opacity-50'}`}><span className="text-sm">{SENSOR_TYPE_LABEL[t]}</span><Toggle checked={d.builtInSensors.includes(t)} disabled={!available} onCheckedChange={(v) => toggleSensor(t, v)} label={SENSOR_TYPE_LABEL[t]} /></label>; })}</div>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
             <FormField label="Vendor" htmlFor="dt-vendor"><Input id="dt-vendor" value={d.vendor} onChange={(e) => set({ vendor: e.target.value })} /></FormField>

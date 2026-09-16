@@ -24,6 +24,7 @@ type sensorSpec struct {
 
 var defaultSensors = []sensorSpec{
 	{domain.SensorTempHumidity, "Sales Area Temp & RH", domain.PortDigital, 50, 52},
+	{domain.SensorTemperature, "Cooler Temp", domain.PortDigital, 12, 52},
 	{domain.SensorDoor, "Front Door", domain.PortSwitch, 50, 91},
 	{domain.SensorMotion, "Sales Area Motion", domain.PortSwitch, 52, 36},
 	{domain.SensorPower, "Main Power", domain.PortSwitch, 92, 40},
@@ -41,6 +42,18 @@ type CreateInput struct {
 func (i CreateInput) Validate() error {
 	if i.OutletID == "" || i.DeviceTypeID == "" {
 		return fmt.Errorf("outletId and deviceTypeId are required")
+	}
+	for _, t := range i.SensorTypes {
+		if err := enabledType(t); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func enabledType(t domain.SensorType) error {
+	if !domain.SensorTypeEnabled(t) {
+		return fmt.Errorf("sensor type %s is not part of this rollout yet", t)
 	}
 	return nil
 }
@@ -195,9 +208,13 @@ func (s Service) Create(ctx context.Context, in CreateInput) (WithSensors, error
 			PortKind: spec.PortKind, PortIndex: used[spec.PortKind], Unit: "state", Enabled: true,
 			Floor: domain.FloorPoint{X: spec.X, Y: spec.Y},
 		}
-		if spec.Type == domain.SensorTempHumidity {
+		// A measured point starts inside a sensible band; an admin narrows it per outlet.
+		if spec.Type == domain.SensorTempHumidity || spec.Type == domain.SensorTemperature {
 			sensor.Unit = "°C"
-			sensor.Thresholds = &domain.SensorThresholds{Min: f(18), Max: f(28), HumidityMin: f(30), HumidityMax: f(60)}
+			sensor.Thresholds = &domain.SensorThresholds{Min: f(18), Max: f(28)}
+			if spec.Type == domain.SensorTempHumidity {
+				sensor.Thresholds.HumidityMin, sensor.Thresholds.HumidityMax = f(30), f(60)
+			}
 		}
 		sensors = append(sensors, sensor)
 	}
@@ -291,6 +308,17 @@ func (s Service) UpsertSensor(ctx context.Context, deviceID, sensorID string, in
 	if occupant != "" {
 		return domain.Sensor{}, httpx.Conflict("PORT_ALREADY_USED",
 			fmt.Sprintf("%s port %d already holds %s", in.PortKind, in.PortIndex, occupant))
+	}
+	// An installed door or motion sensor stays editable; only adding one, or switching a sensor
+	// onto a type outside the rollout, is refused.
+	current, err := s.repo.SensorType(ctx, sensorID)
+	if err != nil {
+		return domain.Sensor{}, err
+	}
+	if in.Type != current {
+		if err := enabledType(in.Type); err != nil {
+			return domain.Sensor{}, httpx.BadRequest("VALIDATION_FAILED", err.Error())
+		}
 	}
 	return s.repo.UpsertSensor(ctx, domain.Sensor{
 		ID: sensorID, DeviceID: deviceID, OutletID: device.OutletID, Name: in.Name, Type: in.Type,

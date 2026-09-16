@@ -85,7 +85,7 @@ func TestDeviceCreateLaysOutPortsAndSensors(t *testing.T) {
 
 	created := admin.post(f.path("/devices"), map[string]any{
 		"outletId": f.OutletB, "deviceTypeId": f.DeviceTypeID,
-		"sensorTypes": []string{"TEMPERATURE_HUMIDITY", "DOOR"},
+		"sensorTypes": []string{"TEMPERATURE_HUMIDITY"},
 	}).expect(http.StatusCreated)
 
 	var payload struct {
@@ -105,8 +105,11 @@ func TestDeviceCreateLaysOutPortsAndSensors(t *testing.T) {
 	}
 	created.into(&payload)
 
-	if len(payload.Sensors) != 2 {
-		t.Fatalf("want 2 sensors, got %d", len(payload.Sensors))
+	if len(payload.Sensors) != 1 {
+		t.Fatalf("want 1 sensor, got %d", len(payload.Sensors))
+	}
+	if payload.Sensors[0].Unit != "°C" {
+		t.Errorf("a temperature point reads in °C, got %q", payload.Sensors[0].Unit)
 	}
 	filled := 0
 	for _, p := range payload.Device.Ports {
@@ -114,17 +117,46 @@ func TestDeviceCreateLaysOutPortsAndSensors(t *testing.T) {
 			filled++
 		}
 	}
-	if filled != 2 {
-		t.Errorf("the port map should point at both sensors, %d filled", filled)
+	if filled != 1 {
+		t.Errorf("the port map should point at the sensor, %d filled", filled)
 	}
 
-	// A 3S has one digital and one switch port, so a full loadout cannot fit.
+	// A 3S has one digital port, so two measured points cannot fit.
 	if code := admin.post(f.path("/devices"), map[string]any{
 		"outletId": f.OutletB, "deviceTypeId": f.DeviceTypeID,
-		"sensorTypes": []string{"TEMPERATURE_HUMIDITY", "DOOR", "MOTION", "POWER", "PANIC_BUTTON"},
+		"sensorTypes": []string{"TEMPERATURE_HUMIDITY", "TEMPERATURE"},
 	}).expect(http.StatusBadRequest).code(); code != "PORT_CAPACITY_EXCEEDED" {
 		t.Errorf("want PORT_CAPACITY_EXCEEDED, got %s", code)
 	}
+}
+
+// This rollout installs temperature and humidity only.
+func TestSensorTypesOutsideTheRolloutAreRefused(t *testing.T) {
+	f := reset(t)
+	admin := as(t, f.AdminToken)
+
+	admin.post(f.path("/devices"), map[string]any{
+		"outletId": f.OutletB, "deviceTypeId": f.DeviceTypeID, "sensorTypes": []string{"DOOR"},
+	}).expect(http.StatusBadRequest)
+
+	// Adding a door sensor is refused.
+	admin.put(f.path("/devices/"+f.DeviceA+"/sensors/sen-door"), map[string]any{
+		"name": "Front Door", "type": "DOOR", "portKind": "switch", "portIndex": 1,
+		"unit": "state", "enabled": true, "floor": map[string]any{"x": 50, "y": 91},
+	}).expect(http.StatusBadRequest)
+
+	// Switching an installed temperature sensor onto a retired type is refused too.
+	admin.put(f.path("/devices/"+f.DeviceA+"/sensors/"+f.SensorA), map[string]any{
+		"name": "Sales Area Temp & RH", "type": "MOTION", "portKind": "digital", "portIndex": 1,
+		"unit": "state", "enabled": true, "floor": map[string]any{"x": 50, "y": 52},
+	}).expect(http.StatusBadRequest)
+
+	// The seeded temperature sensor still saves.
+	admin.put(f.path("/devices/"+f.DeviceA+"/sensors/"+f.SensorA), map[string]any{
+		"name": "Sales Area Temp & RH", "type": "TEMPERATURE_HUMIDITY", "portKind": "digital", "portIndex": 1,
+		"unit": "°C", "enabled": true, "floor": map[string]any{"x": 50, "y": 52},
+		"thresholds": map[string]any{"min": 18, "max": 28},
+	}).expect(http.StatusOK)
 }
 
 func TestDeviceUpdateMovesSensorsWithIt(t *testing.T) {
@@ -189,8 +221,8 @@ func TestSensorDeleteFreesThePort(t *testing.T) {
 	admin := as(t, f.AdminToken)
 
 	sensor := map[string]any{
-		"name": "Replacement", "type": "DOOR", "portKind": "digital", "portIndex": 1,
-		"unit": "state", "enabled": true, "floor": map[string]any{"x": 10, "y": 10},
+		"name": "Replacement", "type": "TEMPERATURE", "portKind": "digital", "portIndex": 1,
+		"unit": "°C", "enabled": true, "floor": map[string]any{"x": 10, "y": 10},
 	}
 	// The port is taken while the seeded sensor holds it.
 	if code := admin.put(f.path("/devices/"+f.DeviceA+"/sensors/sen-new"), sensor).expect(http.StatusConflict).code(); code != "PORT_ALREADY_USED" {
@@ -282,5 +314,27 @@ func TestDistributorReadAndUpdate(t *testing.T) {
 	}).expect(http.StatusOK)
 	if got := renamed.str("name"); got != "Renamed Center" {
 		t.Errorf("rename did not stick, got %s", got)
+	}
+}
+
+// A door sensor installed before the rollout narrowed stays editable, so an admin can still
+// rename it or move it on the floor plan.
+func TestInstalledSensorOutsideTheRolloutStaysEditable(t *testing.T) {
+	f := reset(t)
+	admin := as(t, f.AdminToken)
+
+	if _, err := db.Exec(t.Context(), `INSERT INTO sensor (id, distributor_id, device_id, outlet_id, name, type,
+		port_kind, port_index, unit, enabled, floor_x, floor_y)
+		VALUES ('sen-legacy',$1,$2,$3,'Front Door','DOOR','switch',1,'state',true,50,91)`,
+		tenant, f.DeviceA, f.OutletA); err != nil {
+		t.Fatal(err)
+	}
+
+	renamed := admin.put(f.path("/devices/"+f.DeviceA+"/sensors/sen-legacy"), map[string]any{
+		"name": "Front Door (west)", "type": "DOOR", "portKind": "switch", "portIndex": 1,
+		"unit": "state", "enabled": true, "floor": map[string]any{"x": 44, "y": 88},
+	}).expect(http.StatusOK)
+	if got := renamed.str("name"); got != "Front Door (west)" {
+		t.Errorf("the rename did not stick, got %q", got)
 	}
 }
