@@ -108,8 +108,27 @@ Admins sign in with a password; employees and technicians exchange the registrat
 admin issued. Every repo query filters by the tenant in the token, and a URL naming another
 distribution center answers 403.
 
-Employee sessions are narrowed to their own outlets on every list, not only alerts. Admins and
-technicians see the whole distribution center.
+### Behaviour the frontend should rely on
+
+**Outlet scoping.** An employee token narrows every list to the outlets that employee is
+registered at: devices, tickets, contact persons, employees, alerts and readings. Admin and
+technician tokens reach the whole distribution center. `auth.Ctx.OutletScope()` decides this once
+and each repo applies it in SQL, so a new list inherits the rule by passing the scope through.
+
+**Stats payload.** `GET /distributors/{id}/stats?period=today|7d|30d|all` answers with
+`period`, `from`, `alertsByStatus`, `open`, `solved`, `total`, `avgResponseSec`, `responseRate`,
+`perDay` (one bucket per day, split into `COMFORT` and `SECURITY`), `byOutlet` (average response
+seconds and count per outlet), `devices` (total, online, offline), `tickets` (open, overdue, done)
+and `pendingAccounts`. That covers what `packages/fixtures/src/kpi.ts` computes in the browser
+today, so the dashboard and analysis pages can stop loading every alert. The summary respects
+outlet scoping, so an employee sees their own numbers.
+
+**Integration secrets.** Settings live in `integration_config`, one row per distribution center,
+rather than in a single browser's localStorage. The Telegram bot token is write-only: a read
+returns an empty string plus `telegramTokenSet: true`, and saving an empty token keeps the stored
+one while applying the other edits. `POST …/integration/test/{channel}` reports what a channel can
+do today, so `roomalert` answers `ok: true` with its recent call count while `telegram` and `push`
+answer `ok: false` and name the missing client.
 
 Still open: push through FCM with a device-token endpoint, the Telegram bot and its `/register`
 flow, the IMAP poller, a scheduled job that marks a device offline when its push status stops,
