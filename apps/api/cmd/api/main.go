@@ -23,12 +23,38 @@ import (
 
 func main() {
 	migrateOnly := flag.Bool("migrate", false, "apply migrations and exit")
+	health := flag.Bool("health", false, "ask the running server for /health and exit 0 when it answers")
 	flag.Parse()
 
+	if *health {
+		if err := probe(); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		return
+	}
 	if err := run(*migrateOnly); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+}
+
+// probe backs the container health check. The image carries no shell, so the binary asks itself.
+func probe() error {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+	client := http.Client{Timeout: 3 * time.Second}
+	res, err := client.Get("http://127.0.0.1:" + port + "/health")
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("health answered %d", res.StatusCode)
+	}
+	return nil
 }
 
 func run(migrateOnly bool) error {

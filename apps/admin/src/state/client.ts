@@ -2,7 +2,7 @@ import { ApiClient, endpoints, type Endpoints } from '@monitoring/api-client';
 import type { Session } from '@monitoring/types';
 
 /** The API the app talks to. Vite reads VITE_API_URL from apps/admin/.env. */
-export const API_URL: string = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+export const API_URL: string = window.__API_URL__ || import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const STORAGE_KEY = 'ms.admin.session';
 

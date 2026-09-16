@@ -1,7 +1,35 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "admin", "runtimeExecutable": "pnpm", "runtimeArgs": ["--filter", "@monitoring/admin", "dev"], "port": 5173 },
-    { "name": "mobile", "runtimeExecutable": "pnpm", "runtimeArgs": ["--filter", "@monitoring/mobile", "dev"], "port": 5174 }
+    {
+      "name": "admin",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@monitoring/admin",
+        "dev"
+      ],
+      "port": 5173
+    },
+    {
+      "name": "mobile",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@monitoring/mobile",
+        "dev"
+      ],
+      "port": 5174
+    },
+    {
+      "name": "mobile-preview",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@monitoring/mobile",
+        "preview"
+      ],
+      "port": 4174
+    }
   ]
 }

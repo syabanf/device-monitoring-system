@@ -28,6 +28,8 @@ export default defineConfig({
       workbox: {
         navigateFallback: '/index.html',
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // env.js carries the API URL the container injects, so it must never be precached.
+        globIgnores: ['**/env.js'],
       },
       devOptions: { enabled: false },
     }),

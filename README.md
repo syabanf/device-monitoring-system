@@ -38,7 +38,11 @@ Mobile screens: Login (employee or technician), Alerts (outlet filter, needs-res
 
 ```bash
 pnpm install
-pnpm infra:up         # postgres on :5442, redis on :6382, mailpit on :8025
+pnpm stack:up         # everything in containers: admin :8080, mobile :8081, API :3300
+pnpm stack:seed       # load the demo data into the containerised database
+pnpm stack:down
+
+pnpm infra:up         # or run the apps from source: postgres :5442, redis :6382, mailpit :8025
 pnpm db:migrate       # apply the embedded migrations
 pnpm db:seed          # load the fixtures, shifted so the newest row lands now
 pnpm dev:api          # API on :3000
@@ -185,20 +189,42 @@ deterministic world (two distribution centers, three outlets, two devices, one e
 two of the three outlets), so tests never depend on each other's order. Point it at a throwaway
 database.
 
-### Container and CI
+### Containers
 
-`apps/api/Dockerfile` builds a static binary in `golang:1.26-alpine` and copies it onto
-distroless, so the image carries no shell and runs as `nonroot`. The build context is `apps/api`,
-which keeps the frontend workspaces out of it.
+`docker-compose.yml` runs the whole system: PostgreSQL, Redis, Mailpit, the API, the admin
+dashboard and the mobile PWA.
 
 ```bash
-docker build -t monitoring-api apps/api
-docker run -p 3000:3000 -e DATABASE_URL=… -e JWT_SECRET=… -e WEBHOOK_SECRET=… monitoring-api
+docker compose up -d --build     # or: pnpm stack:up
+docker compose run --rm seed     # or: pnpm stack:seed   (load the demo data once)
 ```
 
-`.github/workflows/ci.yml` runs three jobs on every push and pull request: the frontend
-workspaces through `turbo typecheck` and `turbo build`, the API through `gofmt -l`, `go vet` and
-`go test` against a PostgreSQL service container, and a Docker build of the API image.
+| Service | URL | Image |
+|---|---|---|
+| Admin dashboard | http://localhost:8080 | nginx on the built SPA, 79 MB |
+| Mobile PWA | http://localhost:8081 | nginx on the built PWA, 78 MB |
+| API | http://localhost:3300 | distroless static binary, 22 MB |
+| Mailpit | http://localhost:8025 | |
+
+The API image builds in `golang:1.26-alpine` and runs on distroless as `nonroot`, with no shell
+inside; its health check calls `api -health`, which asks the running server for `/health`. A second
+stage carries the seeder and the generated fixtures, which is the `seed` service. Photos live in
+the `monitoring-uploads` volume.
+
+The two frontend images build the workspace with pnpm and serve the output with nginx: SPA
+fallback, immutable caching for the fingerprinted assets, and no caching for `/env.js`. That file
+is how one image serves any environment: the container writes `window.__API_URL__` from `API_URL`
+at startup, so the browser learns where the API is without a rebuild.
+
+Host ports come from environment variables, so a busy port never blocks the stack:
+`API_PORT` (3300 by default, since `pnpm dev:api` uses 3000) and `API_URL`, which is what the
+browser calls and therefore a host address rather than the compose network name.
+
+### CI
+
+`.github/workflows/ci.yml` runs on every push and pull request: the frontend workspaces through
+`turbo typecheck` and `turbo build`, the API through `gofmt -l`, `go vet` and `go test` against a
+PostgreSQL service container, and a Docker build of all four images.
 
 **Sessions.** A sign-in returns one access token, and nothing renews it: at `ACCESS_TOKEN_TTL`
 (8 hours by default, 30 days for a phone) the client drops the session and the app returns to the

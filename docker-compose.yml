@@ -1,4 +1,8 @@
-# Local infrastructure for apps/api. Start with: pnpm infra:up
+# The whole system in containers: database, API, admin dashboard and mobile PWA.
+#
+#   docker compose up -d --build     everything
+#   docker compose run --rm seed     load the demo data once the database is up
+#   docker compose up -d postgres redis mailpit    infrastructure only, for `pnpm dev:*`
 services:
   postgres:
     image: postgres:16-alpine
@@ -29,6 +33,63 @@ services:
     restart: unless-stopped
     ports: ['1025:1025', '8025:8025']
 
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: api
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      DATABASE_URL: postgres://monitoring:monitoring@postgres:5432/monitoring?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET:-change-me-at-least-32-characters-long-secret}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:-local-webhook-secret}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080,http://localhost:8081,http://localhost:5173,http://localhost:5174}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    # 3300 on the host: 3000 is what `pnpm dev:api` uses, and an ssh tunnel often holds it.
+    ports: ['${API_PORT:-3300}:3000']
+    volumes: ['monitoring-uploads:/app/data/uploads']
+
+  admin:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+      args: { APP: admin }
+    restart: unless-stopped
+    depends_on:
+      api: { condition: service_healthy }
+    # Where the browser reaches the API, which is the host port, not the compose network.
+    environment:
+      API_URL: ${API_URL:-http://localhost:3300}
+    ports: ['8080:8080']
+
+  mobile:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+      args: { APP: mobile }
+    restart: unless-stopped
+    depends_on:
+      api: { condition: service_healthy }
+    environment:
+      API_URL: ${API_URL:-http://localhost:3300}
+    ports: ['8081:8080']
+
+  # One-shot: loads the generated fixtures, shifted so the newest row lands now.
+  seed:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: seed
+    profiles: ['tools']
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      DATABASE_URL: postgres://monitoring:monitoring@postgres:5432/monitoring?sslmode=disable
+
 volumes:
   monitoring-pg:
   monitoring-redis:
+  monitoring-uploads:

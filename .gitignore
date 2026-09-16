@@ -9,3 +9,4 @@ apps/api/bin/
 # Photos the API stores on disk
 apps/api/data/
 .env
+!.env.example

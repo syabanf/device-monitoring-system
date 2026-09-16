@@ -1,0 +1,15 @@
+# Everything a build should never carry: local installs, build output, git history and secrets.
+**/node_modules
+**/dist
+**/dev-dist
+**/.turbo
+**/bin
+.git
+.github
+.claude
+apps/api/data
+docs
+*.md
+**/.env
+**/.env.*
+!**/.env.example
