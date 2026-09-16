@@ -21,6 +21,7 @@ type Config struct {
 	AccessTokenTTL time.Duration
 	DeviceTokenTTL time.Duration
 	RedisURL       string
+	UploadDir      string
 }
 
 func Load() (Config, error) {
@@ -39,6 +40,7 @@ func Load() (Config, error) {
 		DatabaseURL:   required("DATABASE_URL", 1),
 		WebhookSecret: required("WEBHOOK_SECRET", 8),
 		RedisURL:      os.Getenv("REDIS_URL"),
+		UploadDir:     def("UPLOAD_DIR", "./data/uploads"),
 	}
 	cfg.JWTSecret = []byte(required("JWT_SECRET", 32))
 

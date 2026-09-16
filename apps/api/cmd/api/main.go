@@ -18,6 +18,7 @@ import (
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/notify"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/server"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/store"
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/uploads"
 )
 
 func main() {
@@ -55,13 +56,18 @@ func run(migrateOnly bool) error {
 		return nil
 	}
 
+	photos, err := uploads.NewDisk(cfg.UploadDir)
+	if err != nil {
+		return err
+	}
+
 	queue := jobs.NewInlineQueue()
 	queue.SetHandler(jobs.Dispatcher(db, notify.Noop{Log: log}, log))
 	defer func() { _ = queue.Close() }()
 
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", cfg.Port),
-		Handler:           server.New(server.Deps{Cfg: cfg, DB: db, Queue: queue, Log: log}),
+		Handler:           server.New(server.Deps{Cfg: cfg, DB: db, Queue: queue, Photos: photos, Log: log}),
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 

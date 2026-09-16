@@ -29,13 +29,15 @@ import (
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/store"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/technicians"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/tickets"
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/uploads"
 )
 
 type Deps struct {
-	Cfg   config.Config
-	DB    store.DB
-	Queue jobs.Queue
-	Log   *slog.Logger
+	Cfg    config.Config
+	DB     store.DB
+	Queue  jobs.Queue
+	Photos uploads.Store
+	Log    *slog.Logger
 }
 
 const version = "0.1.0"
@@ -66,11 +68,14 @@ func New(d Deps) http.Handler {
 	})
 
 	r.Mount("/auth", auth.Routes(d.DB, signer, d.Cfg.AccessTokenTTL, d.Cfg.DeviceTokenTTL))
+	// A photo is fetched by an <img> tag, which cannot carry a token; the random name is the secret.
+	r.Get("/uploads/{name}", uploads.Download(d.Photos))
 	r.Mount("/webhooks", ingest.Routes(d.DB, d.Queue, d.Cfg.WebhookSecret, d.Cfg.Env == "production", d.Log))
 
 	r.Group(func(private chi.Router) {
 		private.Use(signer.Middleware)
 
+		private.Post("/uploads", uploads.Upload(d.Photos))
 		private.Mount("/device-types", devicetypes.Routes(d.DB))
 		private.Mount("/alerts", alerts.ItemRoutes(d.DB, d.Queue))
 

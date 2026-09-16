@@ -100,6 +100,7 @@ flow, and `POST /webhooks/roomalert` and `/webhooks/email` ingest signed payload
 | Readings | `GET …/readings/latest`, `GET …/readings?sensorId&outletId&from&to&bucket=hour` |
 | Stats | `GET …/stats?period=today\|7d\|30d\|all` |
 | Integration | `GET,PUT …/integration`, `GET …/integration/request-log`, `GET …/integration/unmatched`, `POST …/integration/test/{channel}` |
+| Photos | `POST /uploads` (multipart `file`), `GET /uploads/{name}` |
 | Ingestion | `POST /webhooks/roomalert`, `POST /webhooks/email`, `POST /webhooks/readings` |
 
 Conventions: JSON with camelCase keys, ISO-8601 timestamps, prefixed string ids, cursor
@@ -122,6 +123,15 @@ seconds and count per outlet), `devices` (total, online, offline), `tickets` (op
 and `pendingAccounts`. That covers what `packages/fixtures/src/kpi.ts` computes in the browser
 today, so the dashboard and analysis pages can stop loading every alert. The summary respects
 outlet scoping, so an employee sees their own numbers.
+
+**Photo upload.** `POST /uploads` takes one multipart field named `file` and answers
+`{url, contentType, bytes}`. The url is a path such as `/uploads/pho-m1abc123.jpg`, which is what
+an alert response and a finished ticket store in `photoUrls`. Both reject a list that points
+anywhere else, so a saved record cannot embed a link to another host. Uploads are capped at 5 MB
+and six photos per record, and the type comes from sniffing the bytes rather than from the
+browser. `GET /uploads/{name}` needs no token because an `<img>` tag cannot send one; the random
+file name is what keeps a photo private. The disk driver writes to `UPLOAD_DIR`, and
+`uploads.Store` is the seam where a deployment swaps in object storage.
 
 **Integration secrets.** Settings live in `integration_config`, one row per distribution center,
 rather than in a single browser's localStorage. The Telegram bot token is write-only: a read
@@ -164,7 +174,6 @@ docker run -p 3000:3000 -e DATABASE_URL=… -e JWT_SECRET=… -e WEBHOOK_SECRET=
 workspaces through `turbo typecheck` and `turbo build`, the API through `gofmt -l`, `go vet` and
 `go test` against a PostgreSQL service container, and a Docker build of the API image.
 
-Still open: photo upload for alert responses and ticket completion, push through FCM with a
-device-token endpoint, the Telegram bot and its `/register` flow, the IMAP poller, a scheduled job
+Still open: push through FCM with a device-token endpoint, the Telegram bot and its `/register` flow, the IMAP poller, a scheduled job
 that marks a device offline when its push status stops, a Redis-backed queue in place of the
 inline dispatcher, refresh tokens, and an OpenAPI document at `/docs`.

@@ -63,7 +63,7 @@ func TestOnlyTheFirstEmployeeClaimsAnAlert(t *testing.T) {
 	employee := as(t, f.EmployeeToken)
 
 	responded := employee.post("/alerts/9001/respond", map[string]any{
-		"notes": "Pintu chiller ditutup kembali", "photoUrls": []string{"https://cdn.test/a.jpg"},
+		"notes": "Pintu chiller ditutup kembali", "photoUrls": []string{photo(t, f.EmployeeToken)},
 	}).expect(http.StatusOK)
 	if got := responded.str("response.employeeId"); got != f.EmployeeID {
 		t.Errorf("the response names %s, want %s", got, f.EmployeeID)

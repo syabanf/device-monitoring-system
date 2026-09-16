@@ -28,6 +28,7 @@ import (
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/jobs"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/server"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/store"
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/uploads"
 )
 
 const (
@@ -71,13 +72,25 @@ func TestMain(m *testing.M) {
 		Env: "test", LogLevel: "error", JWTSecret: []byte(strings.Repeat("k", 40)), WebhookSecret: hookSecret,
 		CORSOrigins: []string{"http://localhost:5173"}, AccessTokenTTL: time.Hour, DeviceTokenTTL: time.Hour,
 	}
+	uploadDir, err := os.MkdirTemp("", "monitoring-uploads")
+	if err != nil {
+		fmt.Println("upload directory:", err)
+		os.Exit(1)
+	}
+	photos, err := uploads.NewDisk(uploadDir)
+	if err != nil {
+		fmt.Println("upload store:", err)
+		os.Exit(1)
+	}
+
 	signer = auth.NewSigner(cfg.JWTSecret)
 	handler = server.New(server.Deps{
-		Cfg: cfg, DB: db, Queue: jobs.NewInlineQueue(),
+		Cfg: cfg, DB: db, Queue: jobs.NewInlineQueue(), Photos: photos,
 		Log: slog.New(slog.NewTextHandler(io.Discard, nil)),
 	})
 
 	code := m.Run()
+	os.RemoveAll(uploadDir)
 	db.Close()
 	os.Exit(code)
 }

@@ -17,6 +17,7 @@ import (
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/httpx"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/jobs"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/store"
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/uploads"
 )
 
 var next = map[domain.TicketStatus][]domain.TicketStatus{
@@ -77,7 +78,7 @@ func (i PatchInput) Validate() error {
 			return fmt.Errorf("status must be one of OPEN, SCHEDULED, IN_PROGRESS, DONE")
 		}
 	}
-	return nil
+	return uploads.Validate(i.PhotoURLs)
 }
 
 type Service struct {

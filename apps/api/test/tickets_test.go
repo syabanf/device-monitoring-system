@@ -35,7 +35,7 @@ func TestTicketCreateAssignAndComplete(t *testing.T) {
 	tech.patch(f.path("/tickets/"+id), map[string]any{"status": "IN_PROGRESS"}).expect(http.StatusOK)
 	done := tech.patch(f.path("/tickets/"+id), map[string]any{
 		"status": "DONE", "notes": "Kabel diganti", "partsUsed": []string{"Kabel RJ45"},
-		"photoUrls": []string{"https://cdn.test/fix.jpg"},
+		"photoUrls": []string{photo(t, f.TechToken)},
 	}).expect(http.StatusOK)
 	if done.field("completedAt") == nil {
 		t.Error("completing a ticket must stamp completedAt")

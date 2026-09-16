@@ -10,6 +10,7 @@ import (
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/httpx"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/jobs"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/store"
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/uploads"
 )
 
 // next is the lifecycle the dashboard tabs show.
@@ -41,7 +42,7 @@ func (i RespondInput) Validate() error {
 	if strings.TrimSpace(i.Notes) == "" {
 		return fmt.Errorf("notes is required")
 	}
-	return nil
+	return uploads.Validate(i.PhotoURLs)
 }
 
 type StatusInput struct {
