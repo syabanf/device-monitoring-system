@@ -1,0 +1,10 @@
+{
+  "name": "@monitoring/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": { "typecheck": "tsc --noEmit" },
+  "dependencies": { "@monitoring/types": "workspace:*", "zod": "^3.23.8" },
+  "devDependencies": { "@monitoring/tsconfig": "workspace:*", "typescript": "^5.6.3" }
+}

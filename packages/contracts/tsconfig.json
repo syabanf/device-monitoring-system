@@ -1,0 +1,1 @@
+{ "extends": "@monitoring/tsconfig/library.json", "include": ["src"] }

@@ -11,7 +11,13 @@
     "preview:admin": "pnpm --filter @monitoring/admin preview",
     "typecheck": "turbo typecheck",
     "format": "prettier -w .",
-    "gen:fixtures": "tsx scripts/generate-fixtures.ts"
+    "gen:fixtures": "tsx scripts/generate-fixtures.ts",
+    "dev:api": "turbo dev --filter=@monitoring/api",
+    "test": "turbo test",
+    "db:migrate": "pnpm --filter @monitoring/api db:migrate",
+    "db:seed": "pnpm --filter @monitoring/api db:seed",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down"
   },
   "devDependencies": {
     "prettier": "^3.3.3",

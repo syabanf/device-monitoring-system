@@ -1,0 +1,389 @@
+// Mirrors packages/types. Enum values match the domain unions exactly so the repo layer
+// maps rows to domain objects without translation tables.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SensorType {
+  TEMPERATURE
+  TEMPERATURE_HUMIDITY
+  DOOR
+  MOTION
+  POWER
+  PANIC_BUTTON
+}
+enum PortKind {
+  digital
+  switch
+  analog
+}
+enum DeviceModel {
+  RA3S
+  RA12S
+}
+enum DeviceStatus {
+  online
+  offline
+}
+enum AlertStatus {
+  UNACKNOWLEDGED
+  ACKNOWLEDGED
+  RESPONDING
+  RESOLVED
+  VERIFIED
+}
+enum AlertCategory {
+  COMFORT
+  SECURITY
+}
+enum RegistrationStatus {
+  pending
+  approved
+}
+enum EmployeeRole {
+  store_manager
+  assistant_manager
+  cashier
+  staff
+}
+enum Channel {
+  app
+  telegram
+}
+enum MaintenanceType {
+  PREVENTIVE
+  CORRECTIVE
+  REPLACEMENT
+  INSTALLATION
+  FIRMWARE
+}
+enum TicketStatus {
+  OPEN
+  SCHEDULED
+  IN_PROGRESS
+  DONE
+}
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+enum LogDirection {
+  inbound
+  outbound
+}
+
+model Distributor {
+  id          String   @id
+  code        String   @unique
+  name        String
+  region      String
+  city        String
+  address     String
+  adminUserId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  admins      AdminUser[]
+  outlets     Outlet[]
+  employees   Employee[]
+  technicians Technician[]
+  devices     Device[]
+  sensors     Sensor[]
+  alerts      Alert[]
+  tickets     MaintenanceTicket[]
+}
+
+model AdminUser {
+  id            String      @id
+  distributorId String
+  name          String
+  email         String      @unique
+  passwordHash  String
+  role          String      @default("admin")
+  avatarColor   String
+  createdAt     DateTime    @default(now())
+  distributor   Distributor @relation(fields: [distributorId], references: [id], onDelete: Cascade)
+
+  @@index([distributorId])
+}
+
+model Outlet {
+  id            String      @id
+  distributorId String
+  code          String
+  name          String
+  address       String
+  city          String
+  province      String
+  lat           Float
+  lng           Float
+  mapsUrl       String
+  openTime      String
+  closeTime     String
+  timezone      String
+  phone         String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  distributor   Distributor @relation(fields: [distributorId], references: [id], onDelete: Cascade)
+  devices       Device[]
+  sensors       Sensor[]
+  alerts        Alert[]
+  tickets       MaintenanceTicket[]
+  contacts      ContactPerson[]
+  employees     Employee[]  @relation("EmployeeOutlets")
+
+  @@unique([distributorId, code])
+  @@index([distributorId])
+}
+
+model DeviceType {
+  id                      String        @id
+  model                   DeviceModel   @unique
+  name                    String
+  vendor                  String
+  ports                   Json
+  builtInSensors          SensorType[]
+  description             String
+  priceIdr                Int
+  latestFirmware          String
+  maintenanceIntervalDays Int
+  devices                 Device[]
+}
+
+model Device {
+  id                String       @id
+  distributorId     String
+  outletId          String
+  deviceTypeId      String
+  model             DeviceModel
+  serial            String       @unique
+  mac               String       @unique
+  ip                String
+  firmware          String
+  status            DeviceStatus @default(online)
+  lastPushAt        DateTime
+  installedAt       DateTime
+  pushIntervalSec   Int          @default(300)
+  ports             Json
+  channels          Channel[]
+  warrantyUntil     DateTime
+  lastMaintenanceAt DateTime?
+  nextMaintenanceAt DateTime
+  uptimePct         Float        @default(100)
+  sensorFaults      Int          @default(0)
+  floorX            Float        @default(50)
+  floorY            Float        @default(50)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  distributor       Distributor  @relation(fields: [distributorId], references: [id], onDelete: Cascade)
+  outlet            Outlet       @relation(fields: [outletId], references: [id], onDelete: Cascade)
+  deviceType        DeviceType   @relation(fields: [deviceTypeId], references: [id])
+  sensors           Sensor[]
+  alerts            Alert[]
+  tickets           MaintenanceTicket[]
+
+  @@index([distributorId, status])
+  @@index([outletId])
+}
+
+model Sensor {
+  id            String      @id
+  distributorId String
+  deviceId      String
+  outletId      String
+  name          String
+  type          SensorType
+  portKind      PortKind
+  portIndex     Int
+  unit          String
+  thresholds    Json?
+  enabled       Boolean     @default(true)
+  floorX        Float       @default(50)
+  floorY        Float       @default(50)
+
+  distributor   Distributor @relation(fields: [distributorId], references: [id], onDelete: Cascade)
+  device        Device      @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  outlet        Outlet      @relation(fields: [outletId], references: [id], onDelete: Cascade)
+  alerts        Alert[]
+  readings      Reading[]
+
+  @@unique([deviceId, portKind, portIndex])
+  @@index([outletId])
+}
+
+model Reading {
+  sensorId      String
+  at            DateTime
+  temperatureC  Float
+  humidityPct   Float
+  sensor        Sensor   @relation(fields: [sensorId], references: [id], onDelete: Cascade)
+
+  @@id([sensorId, at])
+  @@index([at])
+}
+
+model Employee {
+  id                 String             @id
+  distributorId      String
+  primaryOutletId    String
+  name               String
+  phone              String
+  email              String             @unique
+  role               EmployeeRole
+  registrationToken  String?
+  registrationStatus RegistrationStatus @default(pending)
+  registeredAt       DateTime?
+  approvedAt         DateTime?
+  avatarColor        String
+
+  distributor        Distributor        @relation(fields: [distributorId], references: [id], onDelete: Cascade)
+  outlets            Outlet[]           @relation("EmployeeOutlets")
+
+  @@index([distributorId])
+}
+
+model Technician {
+  id                String              @id
+  distributorId     String
+  name              String
+  phone             String
+  specialty         String
+  avatarColor       String
+  email             String              @unique
+  registrationToken String
+  distributor       Distributor         @relation(fields: [distributorId], references: [id], onDelete: Cascade)
+  tickets           MaintenanceTicket[]
+
+  @@index([distributorId])
+}
+
+model ContactPerson {
+  id        String    @id
+  outletId  String
+  name      String
+  phone     String
+  email     String?
+  role      String
+  isPrimary Boolean   @default(false)
+  channels  Channel[]
+  outlet    Outlet    @relation(fields: [outletId], references: [id], onDelete: Cascade)
+
+  @@index([outletId])
+}
+
+model Alert {
+  id                 Int            @id @default(autoincrement())
+  externalAlertId    String?        @unique
+  distributorId      String
+  outletId           String
+  deviceId           String
+  sensorId           String
+  sensorName         String
+  sensorType         SensorType
+  category           AlertCategory
+  status             AlertStatus    @default(UNACKNOWLEDGED)
+  triggerValue       String
+  triggerTime        DateTime
+  clearValue         String?
+  clearTime          DateTime?
+  message            String
+  channels           Channel[]
+  assigneeEmployeeId String?
+  acknowledgedAt     DateTime?
+  respondingAt       DateTime?
+  resolvedAt         DateTime?
+  verifiedAt         DateTime?
+  createdAt          DateTime       @default(now())
+
+  distributor        Distributor    @relation(fields: [distributorId], references: [id], onDelete: Cascade)
+  outlet             Outlet         @relation(fields: [outletId], references: [id], onDelete: Cascade)
+  device             Device         @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  sensor             Sensor         @relation(fields: [sensorId], references: [id], onDelete: Cascade)
+  response           AlertResponse?
+
+  @@index([distributorId, status, triggerTime])
+  @@index([sensorId, status])
+}
+
+model AlertResponse {
+  alertId             Int      @id
+  employeeId          String
+  notes               String
+  photoUrls           String[]
+  respondedAt         DateTime
+  responseDurationSec Int
+  alert               Alert    @relation(fields: [alertId], references: [id], onDelete: Cascade)
+}
+
+model MaintenanceTicket {
+  id            String          @id
+  distributorId String
+  outletId      String
+  deviceId      String
+  sensorId      String?
+  type          MaintenanceType
+  priority      TicketPriority
+  status        TicketStatus    @default(OPEN)
+  title         String
+  description   String
+  technicianId  String?
+  createdAt     DateTime        @default(now())
+  scheduledAt   DateTime?
+  completedAt   DateTime?
+  partsUsed     String[]
+  notes         String?
+  photoUrls     String[]
+
+  distributor   Distributor     @relation(fields: [distributorId], references: [id], onDelete: Cascade)
+  outlet        Outlet          @relation(fields: [outletId], references: [id], onDelete: Cascade)
+  device        Device          @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  technician    Technician?     @relation(fields: [technicianId], references: [id], onDelete: SetNull)
+
+  @@index([distributorId, status])
+}
+
+/// Feeds the Request log tab on the Integration page.
+model RequestLog {
+  id            String       @id
+  distributorId String?
+  at            DateTime     @default(now())
+  direction     LogDirection
+  channel       String
+  method        String
+  path          String
+  status        Int
+  ms            Int
+  summary       String
+
+  @@index([at])
+}
+
+/// Services write here; workers fan out. Nothing calls push or Telegram inside a request.
+model OutboxEvent {
+  id          String    @id
+  name        String
+  payload     Json
+  at          DateTime  @default(now())
+  processedAt DateTime?
+  attempts    Int       @default(0)
+
+  @@index([processedAt, at])
+}
+
+/// Inbound events that matched no device, listed on the Integration page for triage.
+model UnmatchedEvent {
+  id     String   @id
+  at     DateTime @default(now())
+  source String
+  reason String
+  raw    String
+}

@@ -1,0 +1,33 @@
+# Local infrastructure for apps/api. Start with: pnpm infra:up
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: monitoring
+      POSTGRES_PASSWORD: monitoring
+      POSTGRES_DB: monitoring
+    ports: ['5432:5432']
+    volumes: ['monitoring-pg:/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U monitoring']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports: ['6379:6379']
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes: ['monitoring-redis:/data']
+
+  # Catches the Room Alert alert mails the IMAP poller will read. UI on http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports: ['1025:1025', '8025:8025']
+
+volumes:
+  monitoring-pg:
+  monitoring-redis:
