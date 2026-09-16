@@ -8,6 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/alerts"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/domain"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/httpx"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/jobs"
@@ -57,36 +58,33 @@ func Ingest(ctx context.Context, db store.DB, q jobs.Queue, e Event) (Result, er
 	}
 
 	if e.Kind == "CLEARED" {
-		var id int64
-		err := db.QueryRow(ctx, `SELECT id FROM alert WHERE sensor_id = $1 AND status NOT IN ('RESOLVED','VERIFIED')
-			ORDER BY trigger_time DESC LIMIT 1`, r.sensorID).Scan(&id)
-		if errors.Is(err, pgx.ErrNoRows) {
-			return Result{Reason: "No open alert on this sensor to clear"}, nil
-		}
+		id, open, err := alerts.OpenOn(ctx, db, r.sensorID)
 		if err != nil {
 			return Result{}, err
 		}
-		if _, err := db.Exec(ctx, `UPDATE alert SET status='RESOLVED', clear_value=$2, clear_time=$3, resolved_at=$3 WHERE id=$1`,
-			id, nullIfEmpty(e.Value), e.At); err != nil {
-			return Result{}, err
+		if !open {
+			return Result{Reason: "No open alert on this sensor to clear"}, nil
 		}
-		if err := jobs.Emit(ctx, db, q, jobs.AlertCleared, jobs.Payload{"alertId": id, "outletId": r.outletID}); err != nil {
+		if err := alerts.Close(ctx, db, q, id, r.outletID, e.Value, e.At); err != nil {
 			return Result{}, err
 		}
 		return Result{Accepted: true, AlertID: &id}, nil
 	}
 
-	var id int64
-	if err := db.QueryRow(ctx, `
-		INSERT INTO alert (external_alert_id, distributor_id, outlet_id, device_id, sensor_id, sensor_name, sensor_type,
-			category, status, trigger_value, trigger_time, message, channels)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'UNACKNOWLEDGED',$9,$10,$11,'{app}')
-		RETURNING id`,
-		nullIfEmpty(e.ExternalID), r.distributorID, r.outletID, r.deviceID, r.sensorID, r.sensorName, r.sensorType,
-		CategoryFor(r.sensorType), orDefault(e.Value, "-"), e.At, MessageFor(r.sensorType, e.Value)).Scan(&id); err != nil {
-		return Result{}, err
-	}
-	if err := jobs.Emit(ctx, db, q, jobs.AlertTriggered, jobs.Payload{"alertId": id, "outletId": r.outletID}); err != nil {
+	id, err := alerts.Raise(ctx, db, q, alerts.Opening{
+		ExternalID:    e.ExternalID,
+		DistributorID: r.distributorID,
+		OutletID:      r.outletID,
+		DeviceID:      r.deviceID,
+		SensorID:      r.sensorID,
+		SensorName:    r.sensorName,
+		SensorType:    r.sensorType,
+		Category:      CategoryFor(r.sensorType),
+		TriggerValue:  orDefault(e.Value, "-"),
+		TriggerTime:   e.At,
+		Message:       MessageFor(r.sensorType, e.Value),
+	})
+	if err != nil {
 		return Result{}, err
 	}
 	return Result{Accepted: true, AlertID: &id}, nil
@@ -169,11 +167,4 @@ func resolveByName(ctx context.Context, db store.DB, deviceName string) (resolve
 		ORDER BY d.installed_at
 		LIMIT 1`, deviceName).Scan(&r.distributorID, &r.outletID, &r.deviceID)
 	return r, err
-}
-
-func nullIfEmpty(v string) *string {
-	if v == "" {
-		return nil
-	}
-	return &v
 }

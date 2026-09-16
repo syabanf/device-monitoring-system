@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import type { Alert } from '@monitoring/types';
 import { ALERT_CATEGORY_LABEL, ALERT_STATUS_LABEL } from '@monitoring/types';
 import { Badge, Button, Card, DataTable, FormField, Input, PageHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Tabs, TabsList, TabsTrigger, type Column } from '@monitoring/ui';
-import { nowMs, downloadCsv, fmtDateTime, humanizeShort, toCsv, toWallClockDate } from '@monitoring/fixtures';
+import { nowMs, downloadCsv, fmtDateTime, humanizeShort, outsideLimits, toCsv, toWallClockDate } from '@monitoring/fixtures';
 import { employeeById } from '../../state/lookups';
 import { bySensor, useReadingSeries } from '../../state/readings';
 import { outletById } from '../../state/lookups';
@@ -37,7 +37,7 @@ export function ReportPage() {
   const readingRows = React.useMemo(() => {
     const sensors = outlets.filter((o) => outletFilter === 'all' || o.id === outletFilter).flatMap((o) => (sensorsByOutlet.get(o.id) ?? []).filter((s) => s.type === 'TEMPERATURE_HUMIDITY'));
     const series = bySensor(readings);
-    return sensors.flatMap((s) => (series.get(s.id) ?? []).map((r) => ({ key: `${s.id}-${r.at}`, outlet: outletById.get(s.outletId)?.name ?? '', sensor: s.name, at: r.at, temp: r.temperatureC, hum: r.humidityPct, over: r.temperatureC > (s.thresholds?.max ?? 99) || r.humidityPct > (s.thresholds?.humidityMax ?? 100) }))).sort((a, b) => (a.at < b.at ? 1 : -1));
+    return sensors.flatMap((s) => (series.get(s.id) ?? []).map((r) => ({ key: `${s.id}-${r.at}`, outlet: outletById.get(s.outletId)?.name ?? '', sensor: s.name, at: r.at, temp: r.temperatureC, hum: r.humidityPct, over: outsideLimits(s, r) }))).sort((a, b) => (a.at < b.at ? 1 : -1));
   }, [outlets, outletFilter, readings, sensorsByOutlet]);
 
   const exportAlerts = () => downloadCsv(`alert-history_${from}_${to}.csv`, toCsv(

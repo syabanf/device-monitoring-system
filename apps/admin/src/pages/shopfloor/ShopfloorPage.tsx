@@ -8,8 +8,8 @@ import type { Outlet } from '@monitoring/types';
 import { SENSOR_TYPE_LABEL } from '@monitoring/types';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, EmptyState, FloorLegend, FloorPlan, Input, KeyValue, PageHeader, cn } from '@monitoring/ui';
 import { deviceHealth, fmtAgo, fmtDateTime, isSolved } from '@monitoring/fixtures';
-import { latestReadingBySensor } from '../../state/readings';
 import { useScoped } from '../../state/app-state';
+import { SensorPoint } from '../../components/SensorPoint';
 import { useFloorMarkers } from '../../components/useFloorMarkers';
 import { AlertStatusBadge, DeviceStatusBadge, HealthBadge, SensorIcon } from '../../components/badges';
 import { NewTicketDialog } from '../devices/NewTicketDialog';
@@ -68,7 +68,6 @@ export function ShopfloorPage() {
   const markerDevice = markerId ? deviceById.get(markerId) : undefined;
   const markerSensor = markerId ? sensorById.get(markerId) : undefined;
   const sensorAlerts = markerSensor ? alerts.filter((a) => a.sensorId === markerSensor.id).slice(0, 3) : [];
-  const reading = markerSensor && markerSensor.type === 'TEMPERATURE_HUMIDITY' ? latestReadingBySensor.get(markerSensor.id) : undefined;
 
   return (
     <div className="space-y-4">
@@ -167,10 +166,9 @@ export function ShopfloorPage() {
                   ) : markerSensor ? (
                     <div>
                       <div className="flex flex-wrap items-center gap-2"><span className="flex size-8 items-center justify-center rounded-full bg-surface"><SensorIcon type={markerSensor.type} /></span><span className="text-sm font-semibold">{markerSensor.name}</span><Badge variant="outline">{SENSOR_TYPE_LABEL[markerSensor.type]}</Badge></div>
+                      <SensorPoint sensor={markerSensor} openAlerts={sensorAlerts.filter((a) => !isSolved(a)).length} className="mt-3 bg-surface-2 shadow-none" />
                       <dl className="mt-2 divide-y divide-border">
                         <KeyValue label="Port">{markerSensor.portKind} port {markerSensor.portIndex} on {deviceById.get(markerSensor.deviceId)?.serial}</KeyValue>
-                        {reading ? <KeyValue label="Latest reading">{reading.temperatureC.toFixed(1)} °C · {reading.humidityPct.toFixed(0)} %RH <span className="text-xs text-muted">({fmtAgo(reading.at)})</span></KeyValue> : null}
-                        {markerSensor.thresholds ? <KeyValue label="Thresholds">{markerSensor.thresholds.min}–{markerSensor.thresholds.max} °C · {markerSensor.thresholds.humidityMin}–{markerSensor.thresholds.humidityMax} %RH</KeyValue> : null}
                         <KeyValue label="Position">x {markerSensor.floor.x}% · y {markerSensor.floor.y}% of floor plan</KeyValue>
                       </dl>
                       {sensorAlerts.length ? <div className="mt-3 space-y-1.5">{sensorAlerts.map((a) => <Link key={a.id} to={`/alerts?tab=${a.status.toLowerCase()}&id=${a.id}`} className="flex items-center justify-between rounded-xl bg-surface-2 px-3 py-2 text-xs hover:bg-white hover:shadow-card"><span className="truncate">{a.message} · {fmtAgo(a.triggerTime)}</span><AlertStatusBadge status={a.status} /></Link>)}</div> : <p className="mt-3 text-xs text-muted">No alerts recorded on this sensor.</p>}

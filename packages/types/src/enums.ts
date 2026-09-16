@@ -24,6 +24,14 @@ export const SENSOR_TYPE_LABEL: Record<SensorType, string> = {
   PANIC_BUTTON: 'Panic Button',
 };
 
+/** What a state sensor reports when it is quiet and when it fires. */
+export const SENSOR_STATE_LABEL: Partial<Record<SensorType, { normal: string; alarm: string }>> = {
+  DOOR: { normal: 'Closed', alarm: 'Open' },
+  MOTION: { normal: 'Clear', alarm: 'Motion' },
+  POWER: { normal: 'Power OK', alarm: 'Power lost' },
+  PANIC_BUTTON: { normal: 'Idle', alarm: 'Pressed' },
+};
+
 export const EMPLOYEE_ROLE_LABEL: Record<EmployeeRole, string> = {
   store_manager: 'Store Manager',
   assistant_manager: 'Assistant Manager',

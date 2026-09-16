@@ -5,3 +5,4 @@ export * from './kpi';
 export * from './csv';
 export * from './store';
 export * from './maintenance';
+export * from './points';

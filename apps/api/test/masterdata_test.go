@@ -160,6 +160,30 @@ func TestDeviceUpdateMovesSensorsWithIt(t *testing.T) {
 	}).expect(http.StatusBadRequest)
 }
 
+func TestSensorLimitsMustFormABand(t *testing.T) {
+	f := reset(t)
+	admin := as(t, f.AdminToken)
+
+	sensor := map[string]any{
+		"name": "Chiller", "type": "TEMPERATURE_HUMIDITY", "portKind": "digital", "portIndex": 1,
+		"unit": "°C", "enabled": true, "floor": map[string]any{"x": 10, "y": 10},
+		"thresholds": map[string]any{"min": 28, "max": 18},
+	}
+	admin.put(f.path("/devices/"+f.DeviceA+"/sensors/"+f.SensorA), sensor).expect(http.StatusBadRequest)
+
+	sensor["thresholds"] = map[string]any{"humidityMin": 80, "humidityMax": 40}
+	admin.put(f.path("/devices/"+f.DeviceA+"/sensors/"+f.SensorA), sensor).expect(http.StatusBadRequest)
+
+	sensor["thresholds"] = map[string]any{"min": 2, "max": 8, "humidityMin": 30, "humidityMax": 70}
+	saved := admin.put(f.path("/devices/"+f.DeviceA+"/sensors/"+f.SensorA), sensor).expect(http.StatusOK)
+	if got := saved.num("thresholds.min"); got != 2 {
+		t.Errorf("the lower limit reads %v", got)
+	}
+	if got := saved.num("thresholds.max"); got != 8 {
+		t.Errorf("the upper limit reads %v", got)
+	}
+}
+
 func TestSensorDeleteFreesThePort(t *testing.T) {
 	f := reset(t)
 	admin := as(t, f.AdminToken)

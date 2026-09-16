@@ -2,24 +2,24 @@ import * as React from 'react';
 import { useSearchParams } from 'react-router';
 import { Map as MapIcon, Radio, Wifi, WifiOff } from 'lucide-react';
 import type { Sensor } from '@monitoring/types';
-import { SENSOR_TYPE_LABEL } from '@monitoring/types';
+import { SENSOR_STATE_LABEL, SENSOR_TYPE_LABEL } from '@monitoring/types';
 import { Badge, FloorLegend, FloorPlan, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@monitoring/ui';
-import { deviceHealth, fmtAgo } from '@monitoring/fixtures';
+import { deviceHealth, fmtAgo, outsideLimits } from '@monitoring/fixtures';
 import { latestReadingBySensor } from '../state/readings';
 import { useAuth } from '../auth/auth';
 import { useMobileScope } from '../state/app-state';
 import { SensorIcon } from '../components/SensorIcon';
 import { useFloorMarkers } from '../components/useFloorMarkers';
+import { SensorPointSheet } from '../components/SensorPointSheet';
 
 function reading(s: Sensor) {
   if (s.type === 'TEMPERATURE_HUMIDITY' || s.type === 'TEMPERATURE') {
     const r = latestReadingBySensor.get(s.id);
     if (!r) return { main: '—', sub: '', alarm: false };
-    const alarm = (s.thresholds?.max != null && r.temperatureC > s.thresholds.max) || (s.thresholds?.humidityMax != null && r.humidityPct > s.thresholds.humidityMax);
+    const alarm = outsideLimits(s, r);
     return { main: `${r.temperatureC.toFixed(1)}°`, sub: `${r.humidityPct.toFixed(0)} %RH · ${fmtAgo(r.at)}`, alarm };
   }
-  const map: Record<string, string> = { DOOR: 'Closed', MOTION: 'No motion', POWER: 'Power OK', PANIC_BUTTON: 'Idle' };
-  return { main: map[s.type] ?? 'Normal', sub: SENSOR_TYPE_LABEL[s.type], alarm: false };
+  return { main: SENSOR_STATE_LABEL[s.type]?.normal ?? 'Normal', sub: SENSOR_TYPE_LABEL[s.type], alarm: false };
 }
 
 export function DevicesPage() {
@@ -31,6 +31,7 @@ export function DevicesPage() {
   React.useEffect(() => { const o = params.get('outlet'); if (o) setTab(o); }, [params]);
   const [showPlan, setShowPlan] = React.useState(true);
   const [markerId, setMarkerId] = React.useState<string | null>(null);
+  const [point, setPoint] = React.useState<Sensor | null>(null);
   const markers = useFloorMarkers(outletIds, tab);
   const openBySensor = React.useMemo(() => { const m = new Map<string, number>(); for (const a of alerts) if (a.status !== 'RESOLVED' && a.status !== 'VERIFIED') m.set(a.sensorId, (m.get(a.sensorId) ?? 0) + 1); return m; }, [alerts]);
   if (!outlets.length) return null;
@@ -75,7 +76,7 @@ export function DevicesPage() {
                       const open = openBySensor.get(s.id) ?? 0;
                       const hot = open > 0 || r.alarm;
                       return (
-                        <div key={s.id} className={cn('rounded-[20px] p-4', hot ? 'bg-brand-600 text-white' : 'bg-surface')}>
+                        <button key={s.id} type="button" onClick={() => setPoint(s)} aria-label={`Open ${s.name}`} className={cn('rounded-[20px] p-4 text-left active:scale-[0.99]', hot ? 'bg-brand-600 text-white' : 'bg-surface')}>
                           <div className="flex items-center justify-between">
                             <span className={cn('flex size-9 items-center justify-center rounded-full', hot ? 'bg-white/20' : 'bg-white shadow-card')}><SensorIcon type={s.type} className="size-4" /></span>
                             {open ? <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-brand-600">{open} open</span> : <Radio className={cn('size-3.5', hot ? 'text-white/70' : 'text-silver')} />}
@@ -83,7 +84,7 @@ export function DevicesPage() {
                           <p className="mt-5 text-[26px] font-bold leading-none">{r.main}</p>
                           <p className={cn('mt-2 truncate text-xs font-medium', hot ? 'text-white/90' : 'text-body')}>{s.name}</p>
                           {r.sub ? <p className={cn('truncate text-[10px]', hot ? 'text-white/70' : 'text-muted')}>{r.sub}</p> : null}
-                        </div>
+                        </button>
                       );
                     })}
                   </div>
@@ -93,6 +94,7 @@ export function DevicesPage() {
           </TabsContent>
         ))}
       </Tabs>
+      <SensorPointSheet sensor={point} openAlerts={point ? openBySensor.get(point.id) ?? 0 : 0} onClose={() => setPoint(null)} />
     </div>
   );
 }

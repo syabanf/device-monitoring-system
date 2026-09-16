@@ -2,7 +2,10 @@
 // and the mobile app already read, so they stay camelCase and must not drift.
 package domain
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type (
 	SensorType      string
@@ -123,6 +126,59 @@ type SensorThresholds struct {
 	Max         *float64 `json:"max,omitempty"`
 	HumidityMin *float64 `json:"humidityMin,omitempty"`
 	HumidityMax *float64 `json:"humidityMax,omitempty"`
+}
+
+// Breach is a reading outside the band an admin set for the sensor.
+type Breach struct {
+	// Metric is "temperature" or "humidity"; Above tells which limit the reading crossed.
+	Metric string
+	Above  bool
+	Limit  float64
+	Value  float64
+	Unit   string
+}
+
+// Check compares one sample against the sensor's limits. It reports the first breach it finds,
+// temperature before humidity, so an alert names the reading staff should act on. Humidity is
+// only judged when the sensor measures it.
+func (t *SensorThresholds) Check(temperatureC, humidityPct float64, hasHumidity bool) *Breach {
+	if t == nil {
+		return nil
+	}
+	if t.Max != nil && temperatureC > *t.Max {
+		return &Breach{Metric: "temperature", Above: true, Limit: *t.Max, Value: temperatureC, Unit: "°C"}
+	}
+	if t.Min != nil && temperatureC < *t.Min {
+		return &Breach{Metric: "temperature", Above: false, Limit: *t.Min, Value: temperatureC, Unit: "°C"}
+	}
+	if !hasHumidity {
+		return nil
+	}
+	if t.HumidityMax != nil && humidityPct > *t.HumidityMax {
+		return &Breach{Metric: "humidity", Above: true, Limit: *t.HumidityMax, Value: humidityPct, Unit: "%RH"}
+	}
+	if t.HumidityMin != nil && humidityPct < *t.HumidityMin {
+		return &Breach{Metric: "humidity", Above: false, Limit: *t.HumidityMin, Value: humidityPct, Unit: "%RH"}
+	}
+	return nil
+}
+
+// Message is the wording outlet staff read on their phone, naming the limit that was crossed.
+func (b Breach) Message() string {
+	side := "below"
+	if b.Above {
+		side = "above"
+	}
+	metric := "Temperature"
+	if b.Metric == "humidity" {
+		metric = "Humidity"
+	}
+	return fmt.Sprintf("%s %s the %.1f %s limit", metric, side, b.Limit, b.Unit)
+}
+
+// Reading formats the sample itself, which is what the alert carries as its trigger value.
+func (b Breach) Reading() string {
+	return fmt.Sprintf("%.2f %s", b.Value, b.Unit)
 }
 
 type Sensor struct {

@@ -59,13 +59,16 @@ func Routes(db store.DB, q jobs.Queue, secret string, production bool, log *slog
 			return
 		}
 		started := time.Now()
-		result, err := readings.Store(req.Context(), db, push)
+		result, err := readings.Store(req.Context(), db, q, push)
 		if err != nil {
 			httpx.Fail(w, req, err)
 			return
 		}
 		status := http.StatusAccepted
 		summary := fmt.Sprintf("%d readings stored", result.Accepted)
+		if len(result.Raised) > 0 || len(result.Cleared) > 0 {
+			summary = fmt.Sprintf("%s · %d over limit, %d back in range", summary, len(result.Raised), len(result.Cleared))
+		}
 		if result.Reason != "" {
 			status, summary = http.StatusUnprocessableEntity, result.Reason
 		}

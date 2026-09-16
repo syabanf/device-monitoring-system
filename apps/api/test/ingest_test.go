@@ -5,6 +5,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -129,6 +130,73 @@ func TestReadingPushStoresSamplesAndMarksTheDeviceOnline(t *testing.T) {
 	unknown := `{"deviceSerial":"RA3-NOPE","readings":[{"sensorId":"sen-a","temperatureC":1,"humidityPct":1}]}`
 	hook(t, "/webhooks/readings", unknown, hookSecret).expect(http.StatusUnprocessableEntity)
 	hook(t, "/webhooks/readings", `{"readings":[]}`, hookSecret).expect(http.StatusBadRequest)
+}
+
+// The seeded sensor carries an 18 to 28 °C band, so a push outside it opens an alert and a push
+// back inside closes it.
+func TestReadingsOutsideTheLimitsRaiseAndClearAnAlert(t *testing.T) {
+	f := reset(t)
+	admin := as(t, f.AdminToken)
+
+	hot := `{"deviceSerial":"RA3-AAA-RA3S","readings":[{"sensorId":"sen-a","temperatureC":31.2,"humidityPct":55,"at":"2026-09-16T11:00:00Z"}]}`
+
+	// The fixture leaves an open alert on this sensor, and one open alert per sensor is the rule.
+	if quiet := hook(t, "/webhooks/readings", hot, hookSecret).expect(http.StatusAccepted); quiet.field("raised") != nil {
+		t.Fatalf("a sensor with an open alert got a second one: %s", quiet.Body)
+	}
+	admin.post("/alerts/9001/status", map[string]any{"status": "RESOLVED"}).expect(http.StatusOK)
+	before := len(admin.get(f.path("/alerts?status=UNACKNOWLEDGED")).expect(http.StatusOK).items())
+
+	raised := hook(t, "/webhooks/readings", hot, hookSecret).expect(http.StatusAccepted)
+	ids, ok := raised.field("raised").([]any)
+	if !ok || len(ids) != 1 {
+		t.Fatalf("want 1 alert raised, got %s", raised.Body)
+	}
+	alertID := int(ids[0].(float64))
+
+	alert := admin.get(fmt.Sprintf("/alerts/%d", alertID)).expect(http.StatusOK)
+	if got := alert.str("message"); got != "Temperature above the 28.0 °C limit" {
+		t.Errorf("the alert reads %q", got)
+	}
+	if got := alert.str("triggerValue"); got != "31.20 °C" {
+		t.Errorf("the trigger value reads %q", got)
+	}
+
+	// A second push while the alert is open must not raise another one.
+	again := hook(t, "/webhooks/readings", hot, hookSecret).expect(http.StatusAccepted)
+	if again.field("raised") != nil {
+		t.Errorf("a repeated breach opened a second alert: %s", again.Body)
+	}
+
+	cool := `{"deviceSerial":"RA3-AAA-RA3S","readings":[{"sensorId":"sen-a","temperatureC":24.0,"humidityPct":50,"at":"2026-09-16T11:30:00Z"}]}`
+	cleared := hook(t, "/webhooks/readings", cool, hookSecret).expect(http.StatusAccepted)
+	if got := cleared.field("cleared").([]any); len(got) != 1 || int(got[0].(float64)) != alertID {
+		t.Fatalf("want alert %d cleared, got %v", alertID, got)
+	}
+	if got := admin.get(fmt.Sprintf("/alerts/%d", alertID)).expect(http.StatusOK).str("status"); got != "RESOLVED" {
+		t.Errorf("the alert is %s", got)
+	}
+
+	after := len(admin.get(f.path("/alerts?status=UNACKNOWLEDGED")).expect(http.StatusOK).items())
+	if after != before {
+		t.Errorf("the open list went from %d to %d", before, after)
+	}
+}
+
+func TestReadingBelowTheLowerLimitRaisesAnAlert(t *testing.T) {
+	f := reset(t)
+	as(t, f.AdminToken).post("/alerts/9001/status", map[string]any{"status": "RESOLVED"}).expect(http.StatusOK)
+
+	cold := `{"deviceSerial":"RA3-AAA-RA3S","readings":[{"sensorId":"sen-a","temperatureC":4.5,"humidityPct":45,"at":"2026-09-16T11:00:00Z"}]}`
+	raised := hook(t, "/webhooks/readings", cold, hookSecret).expect(http.StatusAccepted)
+	ids, ok := raised.field("raised").([]any)
+	if !ok || len(ids) != 1 {
+		t.Fatalf("want 1 alert raised, got %s", raised.Body)
+	}
+	alert := as(t, f.AdminToken).get(fmt.Sprintf("/alerts/%d", int(ids[0].(float64)))).expect(http.StatusOK)
+	if got := alert.str("message"); got != "Temperature below the 18.0 °C limit" {
+		t.Errorf("the alert reads %q", got)
+	}
 }
 
 func TestIngestionWritesTheRequestLog(t *testing.T) {

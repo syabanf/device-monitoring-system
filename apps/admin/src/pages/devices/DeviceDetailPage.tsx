@@ -17,6 +17,7 @@ import { SensorDialog, emptySensor } from '../../components/master/SensorDialog'
 import { ConfirmDelete } from '../../components/master/ConfirmDelete';
 import type { Sensor } from '@monitoring/types';
 import { SensorRow } from '../../components/SensorReading';
+import { SensorPoint } from '../../components/SensorPoint';
 import { AlertListItem } from '../../components/AlertListItem';
 import { NotFoundPage } from '../NotFoundPage';
 
@@ -167,13 +168,22 @@ export function DeviceDetailPage() {
               <SensorRow sensor={s} openAlerts={openBySensor.get(s.id) ?? 0} className="pr-20 group-hover:pr-20" />
               {s.thresholds ? (
                 <p className="-mt-1 pb-2 pl-12 text-xs text-muted">
-                  Thresholds: {s.thresholds.min}–{s.thresholds.max} °C · {s.thresholds.humidityMin}–{s.thresholds.humidityMax} %RH · {SENSOR_TYPE_LABEL[s.type]}
+                  Limits: {s.thresholds.min ?? '—'} to {s.thresholds.max ?? '—'} °C · {s.thresholds.humidityMin ?? '—'} to {s.thresholds.humidityMax ?? '—'} %RH · {SENSOR_TYPE_LABEL[s.type]}
                 </p>
               ) : null}
             </div>
           ))}
         </CardContent>
       </Card>
+
+      {sensors.length ? (
+        <Card>
+          <CardHeader><CardTitle>Live points</CardTitle><p className="text-sm text-muted">Each sensor against the limits set for it.</p></CardHeader>
+          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {sensors.map((s) => <SensorPoint key={s.id} sensor={s} openAlerts={openBySensor.get(s.id) ?? 0} />)}
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card>
         <CardHeader><CardTitle>Recent alerts ({deviceAlerts.length})</CardTitle></CardHeader>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { Device, PortKind, Sensor, SensorType } from '@monitoring/types';
 import { SENSOR_TYPE_LABEL } from '@monitoring/types';
-import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@monitoring/ui';
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, cn } from '@monitoring/ui';
 import { newId } from '@monitoring/fixtures';
 import { useScoped } from '../../state/app-state';
 
@@ -18,8 +18,14 @@ export function SensorDialog({ sensor, device, onClose }: { sensor: Sensor | nul
   const set = (patch: Partial<Sensor>) => setS({ ...s, ...patch });
   const isTemp = s.type === 'TEMPERATURE' || s.type === 'TEMPERATURE_HUMIDITY';
   const ports = device.ports.filter((p) => !p.sensorId || p.sensorId === s.id);
+  const limits = s.thresholds;
+  const inverted = isTemp && (
+    (limits?.min != null && limits.max != null && limits.min >= limits.max) ||
+    (limits?.humidityMin != null && limits.humidityMax != null && limits.humidityMin >= limits.humidityMax)
+  );
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (inverted) return;
     dispatch({ type: 'sensors/upsert', sensor: { ...s, id: s.id || newId('sen'), name: s.name.trim(), unit: isTemp ? '°C' : 'state', thresholds: isTemp ? s.thresholds ?? { min: 18, max: 28, humidityMin: 30, humidityMax: 60 } : undefined } });
     onClose();
   };
@@ -39,11 +45,17 @@ export function SensorDialog({ sensor, device, onClose }: { sensor: Sensor | nul
             </FormField>
           </div>
           {isTemp ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
-              <FormField label="Min °C" htmlFor="s-min"><Input id="s-min" type="number" value={s.thresholds?.min ?? 18} onChange={(e) => set({ thresholds: { ...s.thresholds, min: Number(e.target.value) } })} /></FormField>
-              <FormField label="Max °C" htmlFor="s-max"><Input id="s-max" type="number" value={s.thresholds?.max ?? 28} onChange={(e) => set({ thresholds: { ...s.thresholds, max: Number(e.target.value) } })} /></FormField>
-              <FormField label="Min %RH" htmlFor="s-hmin"><Input id="s-hmin" type="number" value={s.thresholds?.humidityMin ?? 30} onChange={(e) => set({ thresholds: { ...s.thresholds, humidityMin: Number(e.target.value) } })} /></FormField>
-              <FormField label="Max %RH" htmlFor="s-hmax"><Input id="s-hmax" type="number" value={s.thresholds?.humidityMax ?? 60} onChange={(e) => set({ thresholds: { ...s.thresholds, humidityMax: Number(e.target.value) } })} /></FormField>
+            <div>
+              <p className="mb-2 text-sm font-medium">Limits for this point</p>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
+                <FormField label="Lower °C" htmlFor="s-min"><Input id="s-min" type="number" step="0.1" value={s.thresholds?.min ?? 18} onChange={(e) => set({ thresholds: { ...s.thresholds, min: Number(e.target.value) } })} /></FormField>
+                <FormField label="Upper °C" htmlFor="s-max"><Input id="s-max" type="number" step="0.1" value={s.thresholds?.max ?? 28} onChange={(e) => set({ thresholds: { ...s.thresholds, max: Number(e.target.value) } })} /></FormField>
+                <FormField label="Lower %RH" htmlFor="s-hmin"><Input id="s-hmin" type="number" value={s.thresholds?.humidityMin ?? 30} onChange={(e) => set({ thresholds: { ...s.thresholds, humidityMin: Number(e.target.value) } })} /></FormField>
+                <FormField label="Upper %RH" htmlFor="s-hmax"><Input id="s-hmax" type="number" value={s.thresholds?.humidityMax ?? 60} onChange={(e) => set({ thresholds: { ...s.thresholds, humidityMax: Number(e.target.value) } })} /></FormField>
+              </div>
+              <p className={cn('mt-2 text-xs', inverted ? 'text-brand-600' : 'text-muted')} role={inverted ? 'alert' : undefined}>
+                {inverted ? 'Each lower limit has to sit below its upper one.' : 'A reading outside this band opens an alert, and a reading back inside closes it.'}
+              </p>
             </div>
           ) : null}
           <div>
@@ -53,7 +65,7 @@ export function SensorDialog({ sensor, device, onClose }: { sensor: Sensor | nul
               <label className="text-xs text-muted">Y · {s.floor.y}%<input type="range" min={3} max={97} value={s.floor.y} onChange={(e) => set({ floor: { ...s.floor, y: Number(e.target.value) } })} className="mt-1 w-full accent-brand-600" /></label>
             </div>
           </div>
-          <DialogFooter><Button type="button" variant="outline" onClick={onClose}>Cancel</Button><Button type="submit" disabled={!ports.length}>{s.id ? 'Save changes' : 'Add sensor'}</Button></DialogFooter>
+          <DialogFooter><Button type="button" variant="outline" onClick={onClose}>Cancel</Button><Button type="submit" disabled={!ports.length || inverted}>{s.id ? 'Save changes' : 'Add sensor'}</Button></DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

@@ -4,6 +4,7 @@ package readings
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -12,8 +13,11 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/alerts"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/auth"
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/domain"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/httpx"
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/jobs"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/store"
 )
 
@@ -173,11 +177,22 @@ type PushResult struct {
 	Accepted int    `json:"accepted"`
 	DeviceID string `json:"deviceId"`
 	Reason   string `json:"reason,omitempty"`
+	// Raised and Cleared are the alerts the limits opened and closed for this push.
+	Raised  []int64 `json:"raised,omitempty"`
+	Cleared []int64 `json:"cleared,omitempty"`
 }
 
-// Store writes the samples the unit pushed. It resolves the sensor by id or by name so an
-// installer never has to copy ids from the dashboard into the device.
-func Store(ctx context.Context, db store.DB, p Push) (PushResult, error) {
+// sensorRow is what the limit check needs about the sensor a sample belongs to.
+type sensorRow struct {
+	id, name, deviceID, outletID, distributorID string
+	kind                                        domain.SensorType
+	thresholds                                  *domain.SensorThresholds
+}
+
+// Store writes the samples the unit pushed, then judges each sensor's newest sample against the
+// limits an admin set for it. It resolves the sensor by id or by name so an installer never has
+// to copy ids from the dashboard into the device.
+func Store(ctx context.Context, db store.DB, q jobs.Queue, p Push) (PushResult, error) {
 	var deviceID string
 	err := db.QueryRow(ctx, `SELECT id FROM device WHERE ($1 <> '' AND serial = $1) OR ($2 <> '' AND mac = $2) LIMIT 1`,
 		p.DeviceSerial, strings.ToUpper(p.MAC)).Scan(&deviceID)
@@ -185,34 +200,21 @@ func Store(ctx context.Context, db store.DB, p Push) (PushResult, error) {
 		return PushResult{Reason: "No device matches serial \"" + p.DeviceSerial + "\" or MAC \"" + p.MAC + "\""}, nil
 	}
 
-	byName := map[string]string{}
-	known := map[string]bool{}
-	rows, err := db.Query(ctx, `SELECT id, name FROM sensor WHERE device_id = $1`, deviceID)
+	sensors, byName, err := sensorsOf(ctx, db, deviceID)
 	if err != nil {
-		return PushResult{}, err
-	}
-	for rows.Next() {
-		var id, name string
-		if err := rows.Scan(&id, &name); err != nil {
-			rows.Close()
-			return PushResult{}, err
-		}
-		byName[strings.ToLower(name)] = id
-		known[id] = true
-	}
-	rows.Close()
-	if err := rows.Err(); err != nil {
 		return PushResult{}, err
 	}
 
 	now := time.Now().UTC()
-	accepted := 0
+	result := PushResult{DeviceID: deviceID}
+	newest := map[string]Reading{}
 	for _, r := range p.Readings {
 		sensorID := r.SensorID
 		if sensorID == "" {
 			sensorID = byName[strings.ToLower(r.SensorName)]
 		}
-		if !known[sensorID] {
+		sensor, ok := sensors[sensorID]
+		if !ok {
 			continue // the unit reported a sensor this device does not have
 		}
 		at := now
@@ -225,13 +227,102 @@ func Store(ctx context.Context, db store.DB, p Push) (PushResult, error) {
 			sensorID, at, r.TemperatureC, r.HumidityPct); err != nil {
 			return PushResult{}, err
 		}
-		accepted++
+		result.Accepted++
+		if held, seen := newest[sensor.id]; !seen || at.After(held.At) {
+			newest[sensor.id] = Reading{SensorID: sensor.id, At: at, TemperatureC: r.TemperatureC, HumidityPct: r.HumidityPct}
+		}
+	}
+
+	for id, sample := range newest {
+		raised, cleared, err := judge(ctx, db, q, sensors[id], sample)
+		if err != nil {
+			return PushResult{}, err
+		}
+		if raised != nil {
+			result.Raised = append(result.Raised, *raised)
+		}
+		if cleared != nil {
+			result.Cleared = append(result.Cleared, *cleared)
+		}
 	}
 
 	if _, err := db.Exec(ctx, `UPDATE device SET last_push_at = $2, status = 'online' WHERE id = $1`, deviceID, now); err != nil {
 		return PushResult{}, err
 	}
-	return PushResult{Accepted: accepted, DeviceID: deviceID}, nil
+	return result, nil
+}
+
+func sensorsOf(ctx context.Context, db store.DB, deviceID string) (map[string]sensorRow, map[string]string, error) {
+	rows, err := db.Query(ctx, `SELECT id, name, device_id, outlet_id, distributor_id, type, thresholds FROM sensor WHERE device_id = $1`, deviceID)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+
+	sensors := map[string]sensorRow{}
+	byName := map[string]string{}
+	for rows.Next() {
+		var s sensorRow
+		var thresholds []byte
+		if err := rows.Scan(&s.id, &s.name, &s.deviceID, &s.outletID, &s.distributorID, &s.kind, &thresholds); err != nil {
+			return nil, nil, err
+		}
+		if len(thresholds) > 0 {
+			if err := json.Unmarshal(thresholds, &s.thresholds); err != nil {
+				return nil, nil, err
+			}
+		}
+		sensors[s.id] = s
+		byName[strings.ToLower(s.name)] = s.id
+	}
+	return sensors, byName, rows.Err()
+}
+
+// judge opens an alert when a sample leaves the sensor's band and resolves the open one when a
+// later sample comes back inside it. One open alert per sensor, so a unit pushing every five
+// minutes never floods the outlet with duplicates.
+func judge(ctx context.Context, db store.DB, q jobs.Queue, s sensorRow, sample Reading) (raised, cleared *int64, err error) {
+	if s.thresholds == nil {
+		return nil, nil, nil
+	}
+	breach := s.thresholds.Check(sample.TemperatureC, sample.HumidityPct, s.kind == domain.SensorTempHumidity)
+	openID, open, err := alerts.OpenOn(ctx, db, s.id)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	switch {
+	case breach != nil && !open:
+		id, err := alerts.Raise(ctx, db, q, alerts.Opening{
+			DistributorID: s.distributorID,
+			OutletID:      s.outletID,
+			DeviceID:      s.deviceID,
+			SensorID:      s.id,
+			SensorName:    s.name,
+			SensorType:    s.kind,
+			Category:      domain.CategoryComfort,
+			TriggerValue:  breach.Reading(),
+			TriggerTime:   sample.At,
+			Message:       breach.Message(),
+		})
+		if err != nil {
+			return nil, nil, err
+		}
+		return &id, nil, nil
+	case breach == nil && open:
+		if err := alerts.Close(ctx, db, q, openID, s.outletID, formatSample(s.kind, sample), sample.At); err != nil {
+			return nil, nil, err
+		}
+		return nil, &openID, nil
+	}
+	return nil, nil, nil
+}
+
+func formatSample(kind domain.SensorType, r Reading) string {
+	if kind == domain.SensorTempHumidity {
+		return fmt.Sprintf("%.2f °C / %.1f %%RH", r.TemperatureC, r.HumidityPct)
+	}
+	return fmt.Sprintf("%.2f °C", r.TemperatureC)
 }
 
 func collect(rows pgx.Rows) ([]Reading, error) {

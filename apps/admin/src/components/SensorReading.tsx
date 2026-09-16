@@ -1,6 +1,6 @@
 import type { Sensor } from '@monitoring/types';
-import { SENSOR_TYPE_LABEL } from '@monitoring/types';
-import { fmtAgo } from '@monitoring/fixtures';
+import { SENSOR_STATE_LABEL, SENSOR_TYPE_LABEL } from '@monitoring/types';
+import { fmtAgo, outsideLimits } from '@monitoring/fixtures';
 import { latestReadingBySensor } from '../state/readings';
 import { Badge, cn } from '@monitoring/ui';
 import { SensorIcon } from './badges';
@@ -9,11 +9,10 @@ export function sensorLatestText(s: Sensor): { value: string; at: string | null;
   if (s.type === 'TEMPERATURE_HUMIDITY' || s.type === 'TEMPERATURE') {
     const r = latestReadingBySensor.get(s.id);
     if (!r) return { value: '—', at: null, alarm: false };
-    const alarm = (s.thresholds?.max != null && r.temperatureC > s.thresholds.max) || (s.thresholds?.humidityMax != null && r.humidityPct > s.thresholds.humidityMax);
+    const alarm = outsideLimits(s, r);
     return { value: `${r.temperatureC.toFixed(1)} °C · ${r.humidityPct.toFixed(0)} %RH`, at: r.at, alarm };
   }
-  const map: Record<string, string> = { DOOR: 'Closed', MOTION: 'No motion', POWER: 'Power OK', PANIC_BUTTON: 'Idle' };
-  return { value: map[s.type] ?? 'Normal', at: null, alarm: false };
+  return { value: SENSOR_STATE_LABEL[s.type]?.normal ?? 'Normal', at: null, alarm: false };
 }
 
 export function SensorRow({ sensor, openAlerts = 0, className }: { sensor: Sensor; openAlerts?: number; className?: string }) {

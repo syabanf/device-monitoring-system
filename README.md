@@ -20,6 +20,11 @@ Master data has full create / edit / delete in the admin, each one a call to the
 Device Type, Device (plus its Sensors and port map), Employee, Contact Person, Technician, and
 Maintenance tickets.
 
+Every installed point shows its own dials: a temperature dial with the band drawn on the scale,
+a humidity column with the same, and a state dial for door, motion, power and panic sensors. The
+admin shows them per device and on the shopfloor marker; the phone opens them in a bottom sheet
+when an employee taps a point.
+
 Admin pages: Setup wizard (`/setup`, distribution center → outlets → units & sensors → employees → integration), API Integration (`/integration`, channel settings, blackbox console to replay webhook / e-mail payloads into the alert engine, request log, endpoint reference), Dashboard (Operations and Maintenance points of view, with a hardware-health strip in both), Outlet (with floor plan tab), Shopfloor (OpenStreetMap of all installation points + in-store floor plan with sensor markers), Contact Person, Device Type, Device Info (table or shopfloor view, add / edit / remove devices and sensors), Device Maintenance (hardware health, tickets, schedule, technicians), User Management, Alerts, Analysis, Report (CSV export). The sidebar rail expands to show labels.
 
 Mobile screens: Login (employee or technician), Alerts (outlet filter, needs-response / responded / cleared), Alert detail with notes + photo proof response, Devices per outlet with floor plan, Maintenance (hardware health, tickets, report an issue; technicians start / complete tickets with notes and photos), Account with install banner.
@@ -229,6 +234,13 @@ PostgreSQL service container, and a Docker build of all four images.
 **Sessions.** A sign-in returns one access token, and nothing renews it: at `ACCESS_TOKEN_TTL`
 (8 hours by default, 30 days for a phone) the client drops the session and the app returns to the
 login screen. Refresh tokens are still open.
+
+**Sensor limits.** Every sensor carries its own band: a lower and an upper limit for temperature
+and for humidity, edited in the sensor dialog and stored with the sensor. The API judges each
+pushed reading against that band. A sample outside it opens one alert naming the limit that was
+crossed ("Temperature above the 28.0 °C limit"), a later sample back inside resolves that alert,
+and a sensor never holds more than one open alert, so a unit pushing every five minutes cannot
+flood an outlet. Saving a band where a lower limit sits above its upper one answers 400.
 
 **Alert lifecycle.** An employee who acknowledges an alert or starts an inspection takes
 responsibility for it, and the alert records them as the assignee. Another employee at the same

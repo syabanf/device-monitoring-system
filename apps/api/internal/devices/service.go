@@ -63,6 +63,21 @@ func (i SensorInput) Validate() error {
 	if i.PortIndex < 1 {
 		return fmt.Errorf("portIndex starts at 1")
 	}
+	return validLimits(i.Thresholds)
+}
+
+// validLimits keeps a band the alert engine can judge: the lower limit has to sit under the
+// upper one, or every reading would breach both at once.
+func validLimits(t *domain.SensorThresholds) error {
+	if t == nil {
+		return nil
+	}
+	if t.Min != nil && t.Max != nil && *t.Min >= *t.Max {
+		return fmt.Errorf("the lower temperature limit must be below the upper one")
+	}
+	if t.HumidityMin != nil && t.HumidityMax != nil && *t.HumidityMin >= *t.HumidityMax {
+		return fmt.Errorf("the lower humidity limit must be below the upper one")
+	}
 	return nil
 }
 
