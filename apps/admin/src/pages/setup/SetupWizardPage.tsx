@@ -83,7 +83,7 @@ export function SetupWizardPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3"><BrandMark className="text-2xl" /><div><h1 className="text-xl font-bold">Initial setup</h1><p className="text-xs text-muted">Get a distribution center monitoring in a few minutes. Everything can be edited later from master data.</p></div></div>
+        <div className="flex items-center gap-3"><BrandMark className="w-28" /><div><h1 className="text-xl font-bold">Initial setup</h1><p className="text-xs text-muted">Get a distribution center monitoring in a few minutes. Everything can be edited later from master data.</p></div></div>
         <Button asChild variant="ghost" size="sm"><Link to="/">Skip for now</Link></Button>
       </div>
       <ol className="grid grid-cols-6 gap-2">

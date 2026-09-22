@@ -1,11 +1,12 @@
 # Monitoring System
 
 Monorepo for an outlet environment & security monitoring system (Room Alert IoT devices), modelled
-on the Indomaret RoomAlert proposal deck, in the Indomaret palette: blue `#004A94` for the dark
-surfaces, red `#E31E24` as the single accent, yellow `#FFD100` for the brand stripe, set in DM Sans
-with the smart-home dashboard layout. The tokens live in `packages/tailwind-config/theme.css`, and
-`BRAND` in `packages/ui` mirrors them for charts, map markers and SVG. The wordmark is a text
-stand-in (`BrandMark`); drop in the official logo file from Indomaret's brand team when it arrives.
+on the Indomaret RoomAlert proposal deck, in the Indomaret palette sampled from the client's
+logo: blue `#006AB3` for the dark surfaces, red `#D61D25` as the single accent, yellow `#FFCF20`
+for the brand stripe, set in DM Sans with the smart-home dashboard layout. The tokens live in
+`packages/tailwind-config/theme.css`, and `BRAND` in `packages/ui` mirrors them for charts, map
+markers and SVG. `BrandMark` draws the supplied logo (`packages/ui/src/assets/indomaret-logo.webp`),
+on a white plate wherever it sits on blue.
 
 Both frontends run against the Go API in `apps/api`. They sign in with a real token, load the
 distribution center from the API, and write every change back to it: master data, the alert

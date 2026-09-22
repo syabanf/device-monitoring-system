@@ -14,7 +14,7 @@ export default defineConfig({
         name: 'Room Alert Monitoring',
         short_name: 'RA Monitor',
         description: 'Outlet environment and security alert response app',
-        theme_color: '#004a94',
+        theme_color: '#006ab3',
         background_color: '#ffffff',
         display: 'standalone',
         start_url: '/',

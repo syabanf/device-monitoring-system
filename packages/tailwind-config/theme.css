@@ -2,37 +2,38 @@
 @import 'tw-animate-css';
 
 /*
- * Indomaret brand tokens. Blue is the dark emphasis surface (rail, hero cards, active pills),
- * red is the single accent (primary action, active nav, alarms), and yellow only draws the brand
- * stripe. The token names stay semantic, so a page never names a brand colour directly.
+ * Indomaret brand tokens, sampled from the logo the client supplied (red D61D25, blue 006AB3,
+ * yellow FFCF20). Blue is the dark emphasis surface (rail, hero cards, active pills), red is the
+ * single accent (primary action, active nav, alarms), and yellow only draws the brand stripe.
+ * The token names stay semantic, so a page never names a brand colour directly.
  */
 @theme {
   --font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 
   /* accent: Indomaret red */
-  --color-brand-50: #fef1f1;
-  --color-brand-100: #fde0e1;
-  --color-brand-200: #fbc6c8;
-  --color-brand-300: #f79da1;
-  --color-brand-400: #ef626a;
-  --color-brand-500: #e83a41;
-  --color-brand-600: #e31e24;
-  --color-brand-700: #bf151b;
-  --color-brand-800: #9e1419;
-  --color-brand-900: #82161a;
+  --color-brand-50: #fdf1f1;
+  --color-brand-100: #fbdfe0;
+  --color-brand-200: #f7c4c6;
+  --color-brand-300: #f09a9e;
+  --color-brand-400: #e5606a;
+  --color-brand-500: #dc3a41;
+  --color-brand-600: #d61d25;
+  --color-brand-700: #b3161d;
+  --color-brand-800: #93151b;
+  --color-brand-900: #7a161a;
 
   /* dark emphasis surface: Indomaret blue */
-  --color-ink: #004a94;
-  --color-ink-2: #0a58a6;
-  --color-ink-3: #1766b4;
-  --color-sidebar: #004a94;
-  --color-sidebar-hover: #1766b4;
+  --color-ink: #006ab3;
+  --color-ink-2: #0b77c0;
+  --color-ink-3: #1a84cc;
+  --color-sidebar: #006ab3;
+  --color-sidebar-hover: #1a84cc;
   --color-sidebar-foreground: #ffffff;
-  --color-sidebar-muted: #a9c6ea;
+  --color-sidebar-muted: #bcd8f2;
 
   /* brand stripe: Indomaret yellow */
-  --color-highlight: #ffd100;
-  --color-highlight-soft: #fff7cc;
+  --color-highlight: #ffcf20;
+  --color-highlight-soft: #fff6d2;
 
   --color-surface: #f2f5f9;
   --color-surface-2: #f6f8fb;
@@ -55,8 +56,8 @@
 
   --radius-card: 1.5rem;
   --radius-pill: 9999px;
-  --shadow-card: 0 1px 2px rgb(0 40 90 / 0.04), 0 8px 24px -12px rgb(0 40 90 / 0.14);
-  --shadow-float: 0 12px 40px -12px rgb(0 40 90 / 0.3);
+  --shadow-card: 0 1px 2px rgb(0 55 110 / 0.04), 0 8px 24px -12px rgb(0 55 110 / 0.14);
+  --shadow-float: 0 12px 40px -12px rgb(0 55 110 / 0.3);
 }
 
 @layer base {

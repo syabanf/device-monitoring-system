@@ -43,7 +43,7 @@ export function LoginPage() {
   return (
     <PhoneFrame>
     <div className="mx-auto flex min-h-dvh w-full max-w-md flex-1 flex-col bg-surface px-6 pb-10 pt-16">
-      <BrandMark className="text-2xl" />
+      <BrandMark className="w-36" />
       <div className="mt-10">
         <h1 className="text-[34px] font-bold leading-tight tracking-tight">Welcome back<span className="text-brand-600">.</span></h1>
         <p className="mt-2 text-sm text-muted">Login below, or contact admin for registration.</p>

@@ -41,7 +41,7 @@ export function LoginPage() {
   return (
     <div className="grid grid-cols-1 min-h-dvh bg-surface p-3 lg:grid-cols-[1.1fr_1fr] lg:p-4">
       <div className="hidden flex-col justify-between rounded-[28px] bg-ink p-10 text-white shadow-float lg:flex">
-        <BrandMark dark className="text-2xl" />
+        <BrandMark plate className="self-start [&_img]:w-40" />
         <div>
           <p className="text-sm font-medium text-sidebar-muted">Realtime environment monitoring</p>
           <h1 className="mt-3 text-5xl font-bold leading-[1.05] tracking-tight">Every outlet,<br />monitored<span className="text-brand-600">.</span></h1>
@@ -59,7 +59,7 @@ export function LoginPage() {
       </div>
       <div className="flex items-center justify-center p-4">
         <div className="w-full max-w-sm">
-          <div className="mb-8 lg:hidden"><BrandMark className="text-2xl" /></div>
+          <div className="mb-8 lg:hidden"><BrandMark className="w-36" /></div>
           <h2 className="text-3xl font-bold tracking-tight">Welcome back<span className="text-brand-600">.</span></h2>
           <p className="mt-2 text-sm text-muted">Sign in to the distributor admin dashboard.</p>
           <form onSubmit={submit} className="mt-8 space-y-4">

@@ -4,12 +4,12 @@
  * changes colour with the rest of the app when the theme does.
  */
 export const BRAND = {
-  ink: '#004a94',
-  accent: '#e31e24',
-  highlight: '#ffd100',
+  ink: '#006ab3',
+  accent: '#d61d25',
+  highlight: '#ffcf20',
   muted: '#8a94a3',
   border: '#e3e8ef',
-  shadow: '0 12px 40px -12px rgb(0 40 90 / 0.3)',
+  shadow: '0 12px 40px -12px rgb(0 55 110 / 0.3)',
 } as const;
 
 /** Colours an admin can give a person's avatar: the two brand colours first, then calm neutrals. */

@@ -9,7 +9,7 @@ import { useScoped } from '../state/app-state';
 import { useAuth } from '../auth/auth';
 
 export function Brand({ dark }: { dark?: boolean }) {
-  return <div className="flex items-center gap-2.5"><BrandMark dark={dark} className="text-lg" /><span className={dark ? 'text-xs font-medium text-sidebar-muted' : 'text-xs font-medium text-muted'}>Monitoring</span></div>;
+  return <div className="flex items-center gap-2.5"><BrandMark plate className="[&_img]:w-24" /><span className={dark ? 'text-xs font-medium text-sidebar-muted' : 'text-xs font-medium text-muted'}>Monitoring</span></div>;
 }
 
 const EXPAND_KEY = 'ms.admin.sidebar';
@@ -28,7 +28,7 @@ export function RailNav({ onAdd }: { onAdd?: () => void }) {
 
   return (
     <Rail expanded={expanded} onToggle={toggle}
-      header={<Link to="/" className={expanded ? 'flex h-11 items-center gap-2.5 rounded-2xl bg-white/5 px-3' : 'flex size-11 items-center justify-center rounded-2xl bg-white/5'}><BrandMark dark compact={!expanded} className={expanded ? 'text-base' : 'text-lg'} />{expanded ? <span className="text-xs font-medium text-sidebar-muted">Monitoring</span> : null}</Link>}
+      header={<Link to="/" aria-label="Indomaret monitoring home" className={expanded ? 'flex h-12 items-center gap-2.5 px-1' : 'flex size-11 items-center justify-center'}><BrandMark plate compact={!expanded} className={expanded ? '[&_img]:w-24' : 'size-11 p-1'} /></Link>}
       action={onAdd ? <RailAction label="Add device" onClick={onAdd}><Plus /></RailAction> : undefined}
       workspace={
         <DropdownMenu>

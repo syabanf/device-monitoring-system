@@ -2,22 +2,26 @@ import * as React from 'react';
 import { Slot, Slottable } from '@radix-ui/react-slot';
 import { cn } from '../lib/cn';
 import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
+import indomaretLogo from '../assets/indomaret-logo.webp';
 
 /**
- * The client wordmark: the name in the brand face with the red and yellow stripe under it.
- * `compact` keeps only the initial, for the collapsed rail. Swap in the official logo file from
- * the client's brand team when it arrives; the call sites stay the same.
+ * The Indomaret logo, as the client supplied it. On a blue surface its own blue bands would
+ * disappear into the background, so `plate` sets it on a white tile; `compact` sizes it for the
+ * collapsed rail.
  */
-export function BrandMark({ className, dark, compact }: { className?: string; dark?: boolean; compact?: boolean }) {
-  return (
-    <span className={cn('inline-flex w-fit shrink-0 flex-col items-stretch self-start text-xl font-extrabold leading-none tracking-tight', dark ? 'text-white' : 'text-ink', className)}>
-      <span>{compact ? 'i' : 'Indomaret'}</span>
-      <span aria-hidden className="mt-1 flex h-[3px] w-full overflow-hidden rounded-full">
-        <span className="flex-1 bg-brand-600" />
-        <span className="flex-1 bg-highlight" />
-      </span>
-    </span>
+export function BrandMark({ className, compact, plate }: { className?: string; compact?: boolean; plate?: boolean }) {
+  const logo = (
+    <img
+      src={indomaretLogo}
+      alt="Indomaret"
+      width={640}
+      height={224}
+      draggable={false}
+      className={cn('block h-auto shrink-0 select-none', compact ? 'w-9' : 'w-36', !plate && className)}
+    />
   );
+  if (!plate) return logo;
+  return <span className={cn('inline-flex shrink-0 items-center justify-center rounded-xl bg-white p-1.5 shadow-card', className)}>{logo}</span>;
 }
 
 const RailCtx = React.createContext<boolean>(false);
