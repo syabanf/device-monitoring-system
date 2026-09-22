@@ -3,8 +3,7 @@ import { useSearchParams } from 'react-router';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import type { ContactPerson } from '@monitoring/types';
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle, Avatar, Badge, Button, Card, DataTable, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, FormField, Input, PageHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Toggle, type Column,
-} from '@monitoring/ui';
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle, Avatar, Badge, Button, Card, DataTable, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, FormField, Input, PageHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Toggle, BRAND, type Column } from '@monitoring/ui';
 import { outletById } from '../../state/lookups';
 import { useScoped } from '../../state/app-state';
 
@@ -20,7 +19,7 @@ export function ContactPersonsPage() {
   const rows = React.useMemo(() => (outletFilter === 'all' ? contacts : contacts.filter((c) => c.outletId === outletFilter)), [contacts, outletFilter]);
 
   const columns: Column<ContactPerson>[] = [
-    { key: 'name', header: 'Name', cell: (c) => <div className="flex items-center gap-3"><Avatar name={c.name} color="#101112" size="sm" /><div><p className="font-medium">{c.name}</p><p className="text-xs text-muted">{c.role}</p></div></div>, sortValue: (c) => c.name },
+    { key: 'name', header: 'Name', cell: (c) => <div className="flex items-center gap-3"><Avatar name={c.name} color={BRAND.ink} size="sm" /><div><p className="font-medium">{c.name}</p><p className="text-xs text-muted">{c.role}</p></div></div>, sortValue: (c) => c.name },
     { key: 'outlet', header: 'Outlet', cell: (c) => outletById.get(c.outletId)?.name ?? '—', sortValue: (c) => outletById.get(c.outletId)?.name ?? '' },
     { key: 'phone', header: 'Phone', cell: (c) => <span className="tabular-nums">{c.phone}</span> },
     { key: 'email', header: 'Email', cell: (c) => c.email ?? <span className="text-muted">—</span> },

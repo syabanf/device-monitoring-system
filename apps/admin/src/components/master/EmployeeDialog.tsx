@@ -1,13 +1,12 @@
 import * as React from 'react';
 import type { Employee, EmployeeRole } from '@monitoring/types';
 import { EMPLOYEE_ROLE_LABEL } from '@monitoring/types';
-import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Toggle } from '@monitoring/ui';
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Toggle, AVATAR_COLORS } from '@monitoring/ui';
 import { nowIso, generateToken, newId } from '@monitoring/fixtures';
 import { useScoped } from '../../state/app-state';
 
-const COLORS = ['#ed1c24', '#101112', '#1d4ed8', '#047857', '#b45309', '#6d28d9', '#0e7490', '#be185d'];
 export function emptyEmployee(distributorId: string, outletId: string): Employee {
-  return { id: '', distributorId, outletIds: outletId ? [outletId] : [], primaryOutletId: outletId, name: '', phone: '', email: '', role: 'staff', registrationToken: generateToken(), registrationStatus: 'pending', registeredAt: nowIso(), approvedAt: null, avatarColor: COLORS[Math.floor(Math.random() * COLORS.length)]! };
+  return { id: '', distributorId, outletIds: outletId ? [outletId] : [], primaryOutletId: outletId, name: '', phone: '', email: '', role: 'staff', registrationToken: generateToken(), registrationStatus: 'pending', registeredAt: nowIso(), approvedAt: null, avatarColor: AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)]! };
 }
 
 export function EmployeeDialog({ employee, onClose }: { employee: Employee | null; onClose: () => void }) {

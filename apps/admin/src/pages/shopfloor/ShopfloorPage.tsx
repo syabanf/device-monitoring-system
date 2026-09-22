@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import { ExternalLink, MapPin, Plus, Router, Search, Wrench } from 'lucide-react';
 import type { Outlet } from '@monitoring/types';
 import { SENSOR_TYPE_LABEL } from '@monitoring/types';
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle, EmptyState, FloorLegend, FloorPlan, Input, KeyValue, PageHeader, cn } from '@monitoring/ui';
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle, EmptyState, FloorLegend, FloorPlan, Input, KeyValue, PageHeader, cn, BRAND } from '@monitoring/ui';
 import { deviceHealth, fmtAgo, fmtDateTime, isSolved } from '@monitoring/fixtures';
 import { useScoped } from '../../state/app-state';
 import { SensorPoint } from '../../components/SensorPoint';
@@ -82,10 +82,10 @@ export function ShopfloorPage() {
                 <FlyTo outlet={selected} />
                 {outlets.map((o) => {
                   const st = stats.get(o.id)!;
-                  const color = st.open ? '#ED1C24' : st.offline ? '#8b8b8b' : '#101112';
+                  const color = st.open ? BRAND.accent : st.offline ? BRAND.muted : BRAND.ink;
                   const isSel = o.id === selectedId;
                   return (
-                    <CircleMarker key={o.id} center={[o.lat, o.lng]} radius={isSel ? 11 : 8} pathOptions={{ color: isSel ? '#ED1C24' : '#ffffff', weight: isSel ? 3 : 2, fillColor: color, fillOpacity: 0.95 }} eventHandlers={{ click: () => select(o.id) }}>
+                    <CircleMarker key={o.id} center={[o.lat, o.lng]} radius={isSel ? 11 : 8} pathOptions={{ color: isSel ? BRAND.highlight : '#ffffff', weight: isSel ? 3 : 2, fillColor: color, fillOpacity: 0.95 }} eventHandlers={{ click: () => select(o.id) }}>
                       <Popup><div className="font-sans text-xs"><p className="font-bold">{o.name}</p><p>{st.devices} device · {st.open} open alert · {st.offline} offline</p></div></Popup>
                     </CircleMarker>
                   );

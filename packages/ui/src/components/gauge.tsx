@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '../lib/cn';
+import { BRAND } from '../lib/brand';
 
 export type LimitStatus = 'normal' | 'high' | 'low' | 'unknown';
 
@@ -35,7 +36,7 @@ const statusPill: Record<LimitStatus, string> = {
   low: 'bg-sky-50 text-sky-700',
   unknown: 'bg-surface text-muted',
 };
-const ZONE = { low: '#0EA5E9', band: '#10B981', high: '#ED1C24', empty: '#E6E5E7' };
+const ZONE = { low: '#2a7bdc', band: '#10b981', high: BRAND.accent, empty: BRAND.border };
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 const polar = (cx: number, cy: number, r: number, deg: number): [number, number] => {
@@ -83,10 +84,10 @@ export function RadialGauge({
 
         {value != null ? (
           <g transform={`rotate(${angleOf(value)} 100 100)`}>
-            <line x1={100} y1={100} x2={166} y2={100} stroke="#101112" strokeWidth={4} strokeLinecap="round" />
+            <line x1={100} y1={100} x2={166} y2={100} stroke={BRAND.ink} strokeWidth={4} strokeLinecap="round" />
           </g>
         ) : null}
-        <circle cx={100} cy={100} r={8} fill="#101112" />
+        <circle cx={100} cy={100} r={8} fill={BRAND.ink} />
         <circle cx={100} cy={100} r={3.5} fill="#fff" />
 
         {limits?.lower != null ? <text x={polar(100, 100, 58, angleOf(lower))[0]} y={polar(100, 100, 58, angleOf(lower))[1]} textAnchor="middle" dominantBaseline="middle" className="fill-muted text-[11px] font-semibold">{limits.lower}</text> : null}

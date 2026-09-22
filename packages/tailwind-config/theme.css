@@ -1,51 +1,62 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&display=swap');
 @import 'tw-animate-css';
 
-/* WIT.ID brand tokens — red ED1C24 is the single accent. */
+/*
+ * Indomaret brand tokens. Blue is the dark emphasis surface (rail, hero cards, active pills),
+ * red is the single accent (primary action, active nav, alarms), and yellow only draws the brand
+ * stripe. The token names stay semantic, so a page never names a brand colour directly.
+ */
 @theme {
   --font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 
-  --color-brand-50: #fff1f1;
-  --color-brand-100: #ffe0e1;
-  --color-brand-200: #ffc5c7;
-  --color-brand-300: #ff9a9e;
-  --color-brand-400: #fb5f66;
-  --color-brand-500: #f43541;
-  --color-brand-600: #ed1c24;
-  --color-brand-700: #c9121a;
-  --color-brand-800: #a51219;
-  --color-brand-900: #88151a;
+  /* accent: Indomaret red */
+  --color-brand-50: #fef1f1;
+  --color-brand-100: #fde0e1;
+  --color-brand-200: #fbc6c8;
+  --color-brand-300: #f79da1;
+  --color-brand-400: #ef626a;
+  --color-brand-500: #e83a41;
+  --color-brand-600: #e31e24;
+  --color-brand-700: #bf151b;
+  --color-brand-800: #9e1419;
+  --color-brand-900: #82161a;
 
-  --color-ink: #101112;
-  --color-ink-2: #1b1c1e;
-  --color-ink-3: #26282b;
-  --color-sidebar: #101112;
-  --color-sidebar-hover: #26282b;
+  /* dark emphasis surface: Indomaret blue */
+  --color-ink: #004a94;
+  --color-ink-2: #0a58a6;
+  --color-ink-3: #1766b4;
+  --color-sidebar: #004a94;
+  --color-sidebar-hover: #1766b4;
   --color-sidebar-foreground: #ffffff;
-  --color-sidebar-muted: #a3a3a3;
+  --color-sidebar-muted: #a9c6ea;
 
-  --color-surface: #f1f0f1;
-  --color-surface-2: #f5f4f6;
+  /* brand stripe: Indomaret yellow */
+  --color-highlight: #ffd100;
+  --color-highlight-soft: #fff7cc;
+
+  --color-surface: #f2f5f9;
+  --color-surface-2: #f6f8fb;
   --color-card: #ffffff;
-  --color-border: #e6e5e7;
-  --color-silver: #c0c0c0;
-  --color-muted: #66676a;
-  --color-body: #333333;
-  --color-foreground: #101112;
+  --color-border: #e3e8ef;
+  --color-silver: #b8c2ce;
+  --color-muted: #5f6b7a;
+  --color-body: #2b3440;
+  --color-foreground: #0e1a2b;
 
-  --color-sky-50: #eef5fd;
-  --color-sky-100: #dbeafa;
-  --color-sky-200: #bcd7f6;
-  --color-sky-300: #83b3ee;
-  --color-sky-400: #5f9de6;
-  --color-sky-500: #3f86dc;
-  --color-sky-600: #256caf;
-  --color-sky-700: #1d568f;
+  /* info: a lighter blue from the same family, for neutral informational states */
+  --color-sky-50: #edf5fe;
+  --color-sky-100: #d9eafd;
+  --color-sky-200: #b8d6fa;
+  --color-sky-300: #83b8f4;
+  --color-sky-400: #4f97ea;
+  --color-sky-500: #2a7bdc;
+  --color-sky-600: #1763bf;
+  --color-sky-700: #134f98;
 
   --radius-card: 1.5rem;
   --radius-pill: 9999px;
-  --shadow-card: 0 1px 2px rgb(16 17 18 / 0.03), 0 8px 24px -12px rgb(16 17 18 / 0.12);
-  --shadow-float: 0 12px 40px -12px rgb(16 17 18 / 0.25);
+  --shadow-card: 0 1px 2px rgb(0 40 90 / 0.04), 0 8px 24px -12px rgb(0 40 90 / 0.14);
+  --shadow-float: 0 12px 40px -12px rgb(0 40 90 / 0.3);
 }
 
 @layer base {

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useSearchParams } from 'react-router';
 import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { format } from 'date-fns';
-import { Card, CardContent, CardHeader, CardTitle, PageHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, StatCard } from '@monitoring/ui';
+import { Card, CardContent, CardHeader, CardTitle, PageHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, StatCard, BRAND } from '@monitoring/ui';
 import { Clock, Percent, Radio, TrendingUp } from 'lucide-react';
 import { alertsPerDay, avgResponseByOutlet, avgResponseSec, humanizeShort, inPeriod, openVsSolved, responseRate, toWallClockDate, type Period } from '@monitoring/fixtures';
 import { outletById } from '../../state/lookups';
@@ -10,7 +10,7 @@ import { useScoped } from '../../state/app-state';
 import { useReadingSeries } from '../../state/readings';
 
 const PERIODS: { value: Period; label: string }[] = [{ value: '7d', label: 'Last 7 days' }, { value: '30d', label: 'Last 30 days' }, { value: 'all', label: 'All time' }];
-const tooltipStyle = { borderRadius: 16, border: '1px solid #e6e5e7', boxShadow: '0 12px 40px -12px rgb(16 17 18 / 0.25)', fontSize: 12 };
+const tooltipStyle = { borderRadius: 16, border: `1px solid ${BRAND.border}`, boxShadow: BRAND.shadow, fontSize: 12 };
 
 export function AnalysisPage() {
   const { alerts, outlets, sensorsByOutlet } = useScoped();
@@ -30,7 +30,7 @@ export function AnalysisPage() {
   const { readings } = useReadingSeries(sensorId ? { sensorId, bucket: 'hour', ...window } : null);
   const trend = React.useMemo(() => readings.map((r) => ({ t: format(toWallClockDate(r.at), 'dd MMM HH:mm'), temp: r.temperatureC, hum: r.humidityPct })), [readings]);
 
-  const donut = [{ name: 'Solved', value: stats.solved, color: '#ED1C24' }, { name: 'Open', value: stats.open, color: '#101112' }];
+  const donut = [{ name: 'Solved', value: stats.solved, color: BRAND.ink }, { name: 'Open', value: stats.open, color: BRAND.accent }];
 
   return (
     <div className="space-y-4">
@@ -56,7 +56,7 @@ export function AnalysisPage() {
                 <Tooltip contentStyle={tooltipStyle} cursor={{ fill: '#f1f0f1' }} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: 12 }} />
                 <Bar dataKey="COMFORT" name="Shopping Comfort" stackId="a" fill="#83B3EE" radius={[0, 0, 6, 6]} />
-                <Bar dataKey="SECURITY" name="Outlet Security" stackId="a" fill="#ED1C24" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="SECURITY" name="Outlet Security" stackId="a" fill={BRAND.accent} radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -86,7 +86,7 @@ export function AnalysisPage() {
                 <XAxis type="number" tickLine={false} axisLine={false} fontSize={11} unit="m" />
                 <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} fontSize={11} width={110} />
                 <Tooltip contentStyle={tooltipStyle} cursor={{ fill: '#f1f0f1' }} formatter={(v: number) => [`${v} min`, 'Avg response']} />
-                <Bar dataKey="min" fill="#101112" radius={[0, 8, 8, 0]} barSize={16} />
+                <Bar dataKey="min" fill={BRAND.ink} radius={[0, 8, 8, 0]} barSize={16} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -108,9 +108,9 @@ export function AnalysisPage() {
                 <YAxis yAxisId="h" orientation="right" tickLine={false} axisLine={false} fontSize={11} width={32} domain={[20, 90]} unit="%" />
                 <Tooltip contentStyle={tooltipStyle} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: 12 }} />
-                <ReferenceLine yAxisId="t" y={28} stroke="#ED1C24" strokeDasharray="4 4" label={{ value: 'max 28°C', fontSize: 10, fill: '#ED1C24', position: 'insideTopRight' }} />
+                <ReferenceLine yAxisId="t" y={28} stroke={BRAND.accent} strokeDasharray="4 4" label={{ value: 'max 28°C', fontSize: 10, fill: BRAND.accent, position: 'insideTopRight' }} />
                 <ReferenceLine yAxisId="h" y={60} stroke="#83B3EE" strokeDasharray="4 4" />
-                <Line yAxisId="t" type="monotone" dataKey="temp" name="Temperature °C" stroke="#ED1C24" strokeWidth={2} dot={false} isAnimationActive={false} />
+                <Line yAxisId="t" type="monotone" dataKey="temp" name="Temperature °C" stroke={BRAND.accent} strokeWidth={2} dot={false} isAnimationActive={false} />
                 <Line yAxisId="h" type="monotone" dataKey="hum" name="Humidity %RH" stroke="#83B3EE" strokeWidth={2} dot={false} isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>

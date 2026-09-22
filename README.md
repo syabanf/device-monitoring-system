@@ -1,8 +1,11 @@
 # Monitoring System
 
 Monorepo for an outlet environment & security monitoring system (Room Alert IoT devices), modelled
-on the Indomaret RoomAlert proposal deck. WIT.ID visual language (WIT Red `#ED1C24`, ink `#101112`,
-DM Sans) in a smart-home dashboard style.
+on the Indomaret RoomAlert proposal deck, in the Indomaret palette: blue `#004A94` for the dark
+surfaces, red `#E31E24` as the single accent, yellow `#FFD100` for the brand stripe, set in DM Sans
+with the smart-home dashboard layout. The tokens live in `packages/tailwind-config/theme.css`, and
+`BRAND` in `packages/ui` mirrors them for charts, map markers and SVG. The wordmark is a text
+stand-in (`BrandMark`); drop in the official logo file from Indomaret's brand team when it arrives.
 
 Both frontends run against the Go API in `apps/api`. They sign in with a real token, load the
 distribution center from the API, and write every change back to it: master data, the alert
@@ -36,7 +39,7 @@ Mobile screens: Login (employee or technician), Alerts (outlet filter, needs-res
 - `packages/fixtures` – generated JSON seed data, formatting/KPI/maintenance helpers, and the reducer that holds the loaded tenant
 - `packages/integration` – Room Alert webhook / e-mail parsers and the endpoint reference the Integration page lists
 - `packages/ui` – shared component kit (Radix + Tailwind v4, shadcn-style)
-- `packages/tailwind-config` – WIT.ID theme tokens (`theme.css`)
+- `packages/tailwind-config` – Indomaret theme tokens (`theme.css`)
 - `packages/tsconfig` – shared TS configs
 
 ## Commands

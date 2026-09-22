@@ -1,11 +1,11 @@
 import * as React from 'react';
 import type { Technician } from '@monitoring/types';
-import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@monitoring/ui';
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, BRAND } from '@monitoring/ui';
 import { generateToken, newId } from '@monitoring/fixtures';
 import { useScoped } from '../../state/app-state';
 
 const SPECIALTIES = ['Room Alert hardware', 'Network & connectivity', 'Sensor calibration', 'Electrical & power'];
-export const emptyTechnician = (distributorId: string): Technician => ({ id: '', distributorId, name: '', phone: '', specialty: SPECIALTIES[0]!, avatarColor: '#101112', email: '', registrationToken: generateToken() });
+export const emptyTechnician = (distributorId: string): Technician => ({ id: '', distributorId, name: '', phone: '', specialty: SPECIALTIES[0]!, avatarColor: BRAND.ink, email: '', registrationToken: generateToken() });
 
 export function TechnicianDialog({ technician, onClose }: { technician: Technician | null; onClose: () => void }) {
   const { dispatch } = useScoped();

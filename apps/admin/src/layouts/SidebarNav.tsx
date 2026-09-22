@@ -3,13 +3,13 @@ import { Link, matchPath, useLocation } from 'react-router';
 import { Building2, LogOut, MapPin, Plug, Plus, Users, Wand2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { distributorById } from '../state/lookups';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Rail, RailAction, RailGroup, RailItem, RailWorkspace, Sidebar, SidebarItem, WitMark } from '@monitoring/ui';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Rail, RailAction, RailGroup, RailItem, RailWorkspace, Sidebar, SidebarItem, BrandMark } from '@monitoring/ui';
 import { NAV_SECTIONS } from './nav-items';
 import { useScoped } from '../state/app-state';
 import { useAuth } from '../auth/auth';
 
 export function Brand({ dark }: { dark?: boolean }) {
-  return <div className="flex items-center gap-2.5"><WitMark dark={dark} /><span className={dark ? 'text-xs font-medium text-sidebar-muted' : 'text-xs font-medium text-muted'}>Monitoring</span></div>;
+  return <div className="flex items-center gap-2.5"><BrandMark dark={dark} className="text-lg" /><span className={dark ? 'text-xs font-medium text-sidebar-muted' : 'text-xs font-medium text-muted'}>Monitoring</span></div>;
 }
 
 const EXPAND_KEY = 'ms.admin.sidebar';
@@ -28,7 +28,7 @@ export function RailNav({ onAdd }: { onAdd?: () => void }) {
 
   return (
     <Rail expanded={expanded} onToggle={toggle}
-      header={<Link to="/" className={expanded ? 'flex h-11 items-center gap-2.5 rounded-2xl bg-white/5 px-3' : 'flex size-11 items-center justify-center rounded-2xl bg-white/5'}><WitMark dark className="text-lg" />{expanded ? <span className="text-xs font-medium text-sidebar-muted">Monitoring</span> : null}</Link>}
+      header={<Link to="/" className={expanded ? 'flex h-11 items-center gap-2.5 rounded-2xl bg-white/5 px-3' : 'flex size-11 items-center justify-center rounded-2xl bg-white/5'}><BrandMark dark compact={!expanded} className={expanded ? 'text-base' : 'text-lg'} />{expanded ? <span className="text-xs font-medium text-sidebar-muted">Monitoring</span> : null}</Link>}
       action={onAdd ? <RailAction label="Add device" onClick={onAdd}><Plus /></RailAction> : undefined}
       workspace={
         <DropdownMenu>

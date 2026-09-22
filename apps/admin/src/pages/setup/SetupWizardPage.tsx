@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { ArrowLeft, ArrowRight, Building2, Check, Cpu, MapPin, Plug, Plus, Sparkles, Trash2, Users } from 'lucide-react';
 import type { Employee, EmployeeRole, SensorType } from '@monitoring/types';
 import { EMPLOYEE_ROLE_LABEL, SENSOR_TYPE_LABEL, isSensorTypeEnabled } from '@monitoring/types';
-import { Badge, Button, Card, CardContent, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Toggle, WitMark, cn } from '@monitoring/ui';
+import { Badge, Button, Card, CardContent, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Toggle, BrandMark, cn, BRAND } from '@monitoring/ui';
 import { nowIso, generateToken, newId } from '@monitoring/fixtures';
 import { useAuth } from '../../auth/auth';
 import { useAppState, useScoped } from '../../state/app-state';
@@ -70,7 +70,7 @@ export function SetupWizardPage() {
     for (const p of people) {
       const oid = keyToId.get(p.outletKey);
       if (!oid || !p.name.trim()) continue;
-      const emp: Employee = { id: newId('emp'), distributorId, outletIds: [oid], primaryOutletId: oid, name: p.name.trim(), phone: p.phone, email: p.email.trim().toLowerCase(), role: p.role, registrationToken: generateToken(), registrationStatus: 'pending', registeredAt: nowIso(), approvedAt: null, avatarColor: '#101112' };
+      const emp: Employee = { id: newId('emp'), distributorId, outletIds: [oid], primaryOutletId: oid, name: p.name.trim(), phone: p.phone, email: p.email.trim().toLowerCase(), role: p.role, registrationToken: generateToken(), registrationStatus: 'pending', registeredAt: nowIso(), approvedAt: null, avatarColor: BRAND.ink };
       await dispatch({ type: 'employees/upsert', employee: emp });
     }
     if (config) await saveConfig({ ...strip(config), apiBaseUrl: integ.apiBaseUrl, telegram: { ...config.telegram, enabled: integ.telegram }, imap: { ...config.imap, enabled: integ.imap } });
@@ -83,7 +83,7 @@ export function SetupWizardPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3"><WitMark className="text-2xl" /><div><h1 className="text-xl font-bold">Initial setup</h1><p className="text-xs text-muted">Get a distribution center monitoring in a few minutes. Everything can be edited later from master data.</p></div></div>
+        <div className="flex items-center gap-3"><BrandMark className="text-2xl" /><div><h1 className="text-xl font-bold">Initial setup</h1><p className="text-xs text-muted">Get a distribution center monitoring in a few minutes. Everything can be edited later from master data.</p></div></div>
         <Button asChild variant="ghost" size="sm"><Link to="/">Skip for now</Link></Button>
       </div>
       <ol className="grid grid-cols-6 gap-2">

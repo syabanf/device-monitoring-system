@@ -4,7 +4,7 @@ import { Area, AreaChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip as C
 import { ArrowUpRight, BellRing, CheckCircle2, Clock, Droplets, ExternalLink, MapPin, Radio, Router, Thermometer, UserPlus, WifiOff, Wrench, LayoutDashboard } from 'lucide-react';
 import type { Alert, Outlet } from '@monitoring/types';
 import {
-  Badge, Button, Card, CardContent, CardHeader, CardTitle, Chip, EmptyState, Readout, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, StatCard, cn,
+  Badge, Button, Card, CardContent, CardHeader, CardTitle, Chip, EmptyState, Readout, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, StatCard, cn, BRAND
 } from '@monitoring/ui';
 import {
   nowMs, avgResponseSec, fmtAgo, humanizeShort, inPeriod, isSolved, isTicketOverdue, openVsSolved, type Period,
@@ -218,8 +218,8 @@ function OperationsDashboard() {
   }, [outlets, sensorsByOutlet, readings]);
 
   const donut = [
-    { name: 'Solved Alert', value: stats.solved, color: '#ED1C24' },
-    { name: 'Open Alert', value: stats.open, color: '#101112' },
+    { name: 'Solved Alert', value: stats.solved, color: BRAND.ink },
+    { name: 'Open Alert', value: stats.open, color: BRAND.accent },
   ];
 
   return (

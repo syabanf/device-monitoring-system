@@ -3,11 +3,19 @@ import { Slot, Slottable } from '@radix-ui/react-slot';
 import { cn } from '../lib/cn';
 import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
 
-/** WIT. wordmark with the red period dot. */
-export function WitMark({ className, dark }: { className?: string; dark?: boolean }) {
+/**
+ * The client wordmark: the name in the brand face with the red and yellow stripe under it.
+ * `compact` keeps only the initial, for the collapsed rail. Swap in the official logo file from
+ * the client's brand team when it arrives; the call sites stay the same.
+ */
+export function BrandMark({ className, dark, compact }: { className?: string; dark?: boolean; compact?: boolean }) {
   return (
-    <span className={cn('inline-flex items-baseline text-xl font-extrabold tracking-tight', dark ? 'text-white' : 'text-ink', className)}>
-      WIT<span className="text-brand-600">.</span>
+    <span className={cn('inline-flex w-fit shrink-0 flex-col items-stretch self-start text-xl font-extrabold leading-none tracking-tight', dark ? 'text-white' : 'text-ink', className)}>
+      <span>{compact ? 'i' : 'Indomaret'}</span>
+      <span aria-hidden className="mt-1 flex h-[3px] w-full overflow-hidden rounded-full">
+        <span className="flex-1 bg-brand-600" />
+        <span className="flex-1 bg-highlight" />
+      </span>
     </span>
   );
 }

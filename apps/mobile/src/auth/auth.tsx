@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Navigate, useLocation } from 'react-router';
 import type { Employee, Session, Technician } from '@monitoring/types';
 import { ApiError, auth as authApi } from '@monitoring/api-client';
+import { BRAND } from '@monitoring/ui';
 import { apiClient, clearSession, onSessionExpired, readSession, writeSession, type StoredSession } from '../state/client';
 import { useAppState } from '../state/app-state';
 
@@ -48,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       name: stored.name,
       email: stored.email,
       phone: '',
-      avatarColor: '#101112',
+      avatarColor: BRAND.ink,
       distributorId: stored.distributorId,
       outletIds: stored.outletIds,
     };

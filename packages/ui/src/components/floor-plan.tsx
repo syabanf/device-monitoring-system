@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '../lib/cn';
+import { BRAND } from '../lib/brand';
 import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
 
 export type FloorMarkerStatus = 'normal' | 'alarm' | 'offline' | 'fault' | 'muted';
@@ -42,7 +43,7 @@ export function FloorPlan({ markers, selectedId, onSelect, className, compact, t
         </defs>
         <rect x="0" y="0" width="100" height="100" fill="url(#fp-grid)" />
         {/* outer wall */}
-        <rect x="1.5" y="1.5" width="97" height="97" rx="1.5" fill="none" stroke="#101112" strokeWidth="1.1" vectorEffect="non-scaling-stroke" />
+        <rect x="1.5" y="1.5" width="97" height="97" rx="1.5" fill="none" stroke={BRAND.ink} strokeWidth="1.1" vectorEffect="non-scaling-stroke" />
         {ZONES.map((z) => (
           <g key={z.id}>
             <rect x={z.x} y={z.y} width={z.w} height={z.h} rx="1" fill={'ghost' in z && z.ghost ? 'transparent' : '#ffffff'} stroke={'ghost' in z && z.ghost ? '#c0c0c0' : '#8b8b8b'} strokeWidth="0.45" strokeDasharray={'ghost' in z && z.ghost ? '1.5 1' : undefined} />
@@ -56,10 +57,10 @@ export function FloorPlan({ markers, selectedId, onSelect, className, compact, t
           </g>
         ))}
         {/* doors */}
-        <path d="M44 91.5 h12" stroke="#101112" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+        <path d="M44 91.5 h12" stroke={BRAND.ink} strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
         <path d="M44 91.5 a12 12 0 0 1 12 -12" fill="none" stroke="#83B3EE" strokeWidth="0.35" strokeDasharray="1 0.8" />
-        <path d="M64 8.5 h8" stroke="#101112" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
-        <path d="M36 20 h8" stroke="#101112" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+        <path d="M64 8.5 h8" stroke={BRAND.ink} strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+        <path d="M36 20 h8" stroke={BRAND.ink} strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
         <text x="50" y="96.6" fontSize="2.2" fill="#8b8b8b" textAnchor="middle" fontFamily="DM Sans, sans-serif">FOLDING DOOR · TERAS LUAR</text>
         {/* counter */}
         <rect x="73" y="74" width="21" height="4" rx="0.8" fill="#f1f0f1" stroke="#8b8b8b" strokeWidth="0.35" />

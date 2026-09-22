@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router';
 import { Eye, EyeOff } from 'lucide-react';
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, FormField, Input, WitMark } from '@monitoring/ui';
+import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, FormField, Input, BrandMark } from '@monitoring/ui';
 import { DEMO_ACCOUNTS } from '@monitoring/fixtures';
 import { useAuth } from '../auth/auth';
 import { PhoneFrame } from '../layouts/MobileLayout';
@@ -43,7 +43,7 @@ export function LoginPage() {
   return (
     <PhoneFrame>
     <div className="mx-auto flex min-h-dvh w-full max-w-md flex-1 flex-col bg-surface px-6 pb-10 pt-16">
-      <WitMark className="text-2xl" />
+      <BrandMark className="text-2xl" />
       <div className="mt-10">
         <h1 className="text-[34px] font-bold leading-tight tracking-tight">Welcome back<span className="text-brand-600">.</span></h1>
         <p className="mt-2 text-sm text-muted">Login below, or contact admin for registration.</p>
@@ -57,7 +57,7 @@ export function LoginPage() {
         <Button type="submit" size="lg" className="mt-2 w-full" loading={busy}>Sign In</Button>
         <button type="button" onClick={() => setForgot(true)} className="mx-auto block text-sm font-medium text-muted underline underline-offset-4">Forgot Password</button>
       </form>
-      <p className="mt-auto pt-10 text-center text-[11px] text-muted">WIT.ID · Realtime Environment Monitoring</p>
+      <p className="mt-auto pt-10 text-center text-[11px] text-muted">Outlet environment monitoring · built by WIT.ID</p>
       <Dialog open={forgot} onOpenChange={setForgot}>
         <DialogContent size="sm">
           <DialogHeader><DialogTitle>Need a new token?</DialogTitle><DialogDescription>Tokens are issued by your distribution center admin. Ask them to generate a new registration token from User Management, then sign in with it here.</DialogDescription></DialogHeader>

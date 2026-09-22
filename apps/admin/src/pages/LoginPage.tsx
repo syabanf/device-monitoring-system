@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router';
 import { Eye, EyeOff, ShieldCheck, Thermometer, Wifi } from 'lucide-react';
-import { Button, FormField, Input, WitMark } from '@monitoring/ui';
+import { BrandMark, Button, FormField, Input } from '@monitoring/ui';
 import { DEMO_ACCOUNTS } from '@monitoring/fixtures';
 import { useAuth } from '../auth/auth';
 
@@ -41,7 +41,7 @@ export function LoginPage() {
   return (
     <div className="grid grid-cols-1 min-h-dvh bg-surface p-3 lg:grid-cols-[1.1fr_1fr] lg:p-4">
       <div className="hidden flex-col justify-between rounded-[28px] bg-ink p-10 text-white shadow-float lg:flex">
-        <WitMark dark className="text-2xl" />
+        <BrandMark dark className="text-2xl" />
         <div>
           <p className="text-sm font-medium text-sidebar-muted">Realtime environment monitoring</p>
           <h1 className="mt-3 text-5xl font-bold leading-[1.05] tracking-tight">Every outlet,<br />monitored<span className="text-brand-600">.</span></h1>
@@ -55,11 +55,11 @@ export function LoginPage() {
             ))}
           </div>
         </div>
-        <p className="text-xs text-sidebar-muted">WIT.ID · 360° Digital Transformation Company</p>
+        <p className="text-xs text-sidebar-muted">Outlet environment monitoring · built by WIT.ID</p>
       </div>
       <div className="flex items-center justify-center p-4">
         <div className="w-full max-w-sm">
-          <div className="mb-8 lg:hidden"><WitMark className="text-2xl" /></div>
+          <div className="mb-8 lg:hidden"><BrandMark className="text-2xl" /></div>
           <h2 className="text-3xl font-bold tracking-tight">Welcome back<span className="text-brand-600">.</span></h2>
           <p className="mt-2 text-sm text-muted">Sign in to the distributor admin dashboard.</p>
           <form onSubmit={submit} className="mt-8 space-y-4">
