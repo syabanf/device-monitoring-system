@@ -49,7 +49,9 @@ func TestStatsSummary(t *testing.T) {
 	f := reset(t)
 	admin := as(t, f.AdminToken)
 
-	summary := admin.get(f.path("/stats?period=30d")).expect(http.StatusOK)
+	// The fixture sits on a fixed date, so the summary reads the whole history rather than a
+	// window the calendar slides past.
+	summary := admin.get(f.path("/stats?period=all")).expect(http.StatusOK)
 	if got := summary.num("total"); got != 3 {
 		t.Errorf("want 3 alerts in the period, got %v", got)
 	}
@@ -75,7 +77,7 @@ func TestStatsSummary(t *testing.T) {
 	}
 
 	// An employee sees only their own outlets in the same aggregate.
-	scoped := as(t, f.EmployeeToken).get(f.path("/stats?period=30d")).expect(http.StatusOK)
+	scoped := as(t, f.EmployeeToken).get(f.path("/stats?period=all")).expect(http.StatusOK)
 	if got := scoped.num("total"); got != 2 {
 		t.Errorf("the employee should count 2 alerts, got %v", got)
 	}
@@ -88,11 +90,25 @@ func TestStatsPeriodNarrowsTheWindow(t *testing.T) {
 	f := reset(t)
 	admin := as(t, f.AdminToken)
 
-	// Every seeded alert is under an hour old, so today and 30 days agree.
+	// One alert raised this minute, so "today" has something to count whatever the date.
+	if _, err := db.Exec(t.Context(), `INSERT INTO alert (id, distributor_id, outlet_id, device_id, sensor_id, sensor_name,
+		sensor_type, category, status, trigger_value, trigger_time, message, channels)
+		VALUES (9050,$1,$2,$3,$4,'Sales Area Temp & RH','TEMPERATURE_HUMIDITY','COMFORT','UNACKNOWLEDGED','30.1 °C',now(),
+		'Temperature above the 28.0 °C limit','{app}')`, tenant, f.OutletA, f.DeviceA, f.SensorA); err != nil {
+		t.Fatal(err)
+	}
+
 	day := admin.get(f.path("/stats?period=today")).expect(http.StatusOK).num("total")
 	month := admin.get(f.path("/stats?period=30d")).expect(http.StatusOK).num("total")
-	if day != month {
-		t.Errorf("today counted %v and 30d counted %v", day, month)
+	all := admin.get(f.path("/stats?period=all")).expect(http.StatusOK).num("total")
+	if day < 1 {
+		t.Errorf("today missed the alert raised this minute, counted %v", day)
+	}
+	if day > month || month > all {
+		t.Errorf("each window should hold the narrower one: today %v, 30d %v, all %v", day, month, all)
+	}
+	if all != 4 {
+		t.Errorf("all should count the 3 seeded alerts plus this one, got %v", all)
 	}
 }
 

@@ -16,6 +16,13 @@ import (
 //go:embed migrations/*.sql
 var migrations embed.FS
 
+// MigrationFile returns one embedded migration, which lets a test check what a fresh install
+// receives without a database.
+func MigrationFile(name string) (string, error) {
+	body, err := migrations.ReadFile("migrations/" + name)
+	return string(body), err
+}
+
 type DB = *pgxpool.Pool
 
 func Open(ctx context.Context, url string) (DB, error) {

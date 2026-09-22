@@ -48,8 +48,8 @@ pnpm stack:seed       # load the demo data into the containerised database
 pnpm stack:down
 
 pnpm infra:up         # or run the apps from source: postgres :5442, redis :6382, mailpit :8025
-pnpm db:migrate       # apply the embedded migrations
-pnpm db:seed          # load the fixtures, shifted so the newest row lands now
+pnpm db:migrate       # apply the embedded migrations, including the three admin accounts
+pnpm db:seed          # optional: load the full demo data, shifted so the newest row lands now
 pnpm dev:api          # API on :3000
 pnpm dev:admin        # admin on :5173
 pnpm dev:mobile       # mobile PWA on :5174
@@ -234,6 +234,12 @@ PostgreSQL service container, and a Docker build of all four images.
 **Sessions.** A sign-in returns one access token, and nothing renews it: at `ACCESS_TOKEN_TTL`
 (8 hours by default, 30 days for a phone) the client drops the session and the app returns to the
 login screen. Refresh tokens are still open.
+
+**First sign-in.** Migration `0003_seed_admin.sql` creates the three distribution centers and one
+admin each (`admin@indomaret.co.id`, `admin.jkt@indomaret.co.id`, `admin.dps@indomaret.co.id`),
+so an empty database can sign in before anyone runs the seeder. Every account starts with the
+password `admin123`, and its hash sits in this repository: change it before the install faces
+real users. The migration skips rows that already exist.
 
 **Rollout scope.** This deployment installs temperature and temperature-humidity sensors only.
 The pickers grey out door, motion, power and panic, and the API refuses a create or a type change
