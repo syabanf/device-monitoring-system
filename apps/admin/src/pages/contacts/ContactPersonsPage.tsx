@@ -40,12 +40,12 @@ export function ContactPersonsPage() {
   return (
     <div>
       <PageHeader
-        title="Contact Person"
-        description="Field coordinators and supervisors who receive alert broadcasts for each outlet"
+        title="Contact Persons"
+        description="People to call and notify when an outlet alert needs escalation"
         actions={
           <>
             <Select value={outletFilter} onValueChange={(v) => { const next = new URLSearchParams(params); v === 'all' ? next.delete('outlet') : next.set('outlet', v); setParams(next, { replace: true }); }}>
-              <SelectTrigger className="w-60"><SelectValue placeholder="All outlets" /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-60"><SelectValue placeholder="All outlets" /></SelectTrigger>
               <SelectContent><SelectItem value="all">All outlets</SelectItem>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent>
             </Select>
             <Button onClick={() => setEditing(EMPTY(outletFilter === 'all' ? (outlets[0]?.id ?? '') : outletFilter))}><Plus />Add contact</Button>

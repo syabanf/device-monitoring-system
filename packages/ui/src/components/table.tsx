@@ -5,7 +5,7 @@ import { Button } from './button';
 import { EmptyState } from './misc';
 
 export const Table = ({ className, ...props }: React.TableHTMLAttributes<HTMLTableElement>) => (
-  <div className="w-full overflow-x-auto">
+  <div className="w-full overflow-x-auto" tabIndex={0} role="region" aria-label="Data table. Scroll horizontally to see more columns.">
     <table className={cn('w-full caption-bottom text-sm', className)} {...props} />
   </div>
 );
@@ -16,7 +16,7 @@ export const TBody = ({ className, ...props }: React.HTMLAttributes<HTMLTableSec
   <tbody className={cn('[&_tr:last-child]:border-0', className)} {...props} />
 );
 export const TR = ({ className, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
-  <tr className={cn('border-b border-border transition-colors data-[clickable=true]:cursor-pointer data-[clickable=true]:hover:bg-surface-2 data-[clickable=true]:focus-visible:bg-brand-50', className)} {...props} />
+  <tr className={cn('border-b border-border transition-colors data-[clickable=true]:cursor-pointer data-[clickable=true]:hover:bg-surface-2 data-[clickable=true]:focus-visible:bg-brand-50 data-[clickable=true]:focus-visible:outline data-[clickable=true]:focus-visible:outline-2 data-[clickable=true]:focus-visible:outline-offset-[-2px] data-[clickable=true]:focus-visible:outline-brand-600', className)} {...props} />
 );
 export const TH = ({ className, ...props }: React.ThHTMLAttributes<HTMLTableCellElement>) => (
   <th className={cn('h-10 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-muted', className)} {...props} />
@@ -76,7 +76,7 @@ export function DataTable<T>({ columns, rows, rowKey, onRowClick, pageSize = 10,
             {columns.map((c) => (
               <TH key={c.key} className={c.headerClassName}>
                 {c.sortValue ? (
-                  <button type="button" onClick={() => toggleSort(c.key)} className="inline-flex items-center gap-1 hover:text-foreground">
+                  <button type="button" onClick={() => toggleSort(c.key)} className="inline-flex items-center gap-1 rounded-md hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40" aria-label={`Sort by ${typeof c.header === 'string' ? c.header : c.key}`}>
                     {c.header}
                     {sort?.key === c.key ? (sort.dir === 'asc' ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />) : <ChevronsUpDown className="size-3 opacity-50" />}
                   </button>

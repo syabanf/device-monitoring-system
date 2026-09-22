@@ -66,7 +66,7 @@ export function OutletsPage() {
 
   return (
     <div>
-      <PageHeader title="Outlets" description={`${outlets.length} outlets under this distribution center`} actions={<><Input placeholder="Search outlet, code, address" leftIcon={<Search />} value={q} onChange={(e) => setQ(e.target.value)} className="w-72" /><Button onClick={() => setEditing(emptyOutlet(distributorId, outlets.length + 1))}><Plus />Add outlet</Button></>} />
+      <PageHeader title="Outlets" description={`${outlets.length} outlets under this distribution center`} actions={<><Input aria-label="Search outlets" placeholder="Search outlet, code, address" leftIcon={<Search />} value={q} onChange={(e) => setQ(e.target.value)} className="min-w-0 flex-1 sm:w-72 sm:flex-none" /><Button onClick={() => setEditing(emptyOutlet(distributorId, outlets.length + 1))}><Plus />Add outlet</Button></>} />
       <Card>
         <DataTable columns={columns} rows={rows} rowKey={(o) => o.id} onRowClick={(o) => navigate(`/outlets/${o.id}`)} pageSize={12} initialSort={{ key: 'code', dir: 'asc' }} emptyTitle="No outlets match" />
       </Card>

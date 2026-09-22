@@ -36,7 +36,7 @@ export function MobileLayout() {
         {/* Screens read their outlets from state, so they wait for the first load. */}
         {loaded ? <Outlet /> : status === 'error' ? (
           <div role="alert" className="mt-10 rounded-[24px] bg-white p-5 text-center shadow-card">
-            <p className="text-sm font-semibold">The API did not answer</p>
+            <p className="text-sm font-semibold">Couldn’t load your data</p>
             <p className="mt-1 text-xs text-muted">{error}</p>
             <button type="button" onClick={() => void reload()} className="mt-4 h-11 w-full rounded-full bg-ink text-sm font-semibold text-white">Try again</button>
           </div>

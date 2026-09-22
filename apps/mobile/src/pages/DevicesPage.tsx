@@ -29,7 +29,7 @@ export function DevicesPage() {
   const [params] = useSearchParams();
   const [tab, setTab] = React.useState(params.get('outlet') ?? outlets[0]?.id ?? '');
   React.useEffect(() => { const o = params.get('outlet'); if (o) setTab(o); }, [params]);
-  const [showPlan, setShowPlan] = React.useState(true);
+  const [showPlan, setShowPlan] = React.useState(false);
   const [markerId, setMarkerId] = React.useState<string | null>(null);
   const [point, setPoint] = React.useState<Sensor | null>(null);
   const markers = useFloorMarkers(outletIds, tab);
@@ -43,13 +43,13 @@ export function DevicesPage() {
         {outlets.map((o) => (
           <TabsContent key={o.id} value={o.id} className="mt-5 space-y-4">
             <section className="rounded-[26px] bg-white p-4 shadow-card">
-              <button type="button" onClick={() => setShowPlan((v) => !v)} className="flex w-full items-center gap-3 text-left">
+              <button type="button" onClick={() => setShowPlan((v) => !v)} className="flex w-full items-center gap-3 rounded-2xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40" aria-expanded={showPlan} aria-controls={`floor-plan-${o.id}`}>
                 <span className="flex size-10 items-center justify-center rounded-full bg-ink text-white"><MapIcon className="size-5" /></span>
                 <span className="min-w-0 flex-1"><span className="block text-[15px] font-bold">Floor plan</span><span className="block text-xs text-muted">{markers.length} installation points at {o.name.replace('Indomaret ', '')}</span></span>
                 <span className="text-xs font-semibold text-brand-600">{showPlan ? 'Hide' : 'Show'}</span>
               </button>
               {showPlan ? (
-                <div className="mt-4">
+                <div id={`floor-plan-${o.id}`} className="mt-4">
                   <FloorPlan markers={markers} selectedId={markerId} onSelect={(id) => setMarkerId((m) => (m === id ? null : id))} compact title="Denah" />
                   <FloorLegend className="mt-3" />
                   {markerId ? (() => { const m = markers.find((x) => x.id === markerId); return m ? <div className="mt-3 flex items-center gap-3 rounded-2xl bg-surface p-3"><span className={cn('flex size-9 items-center justify-center [&_svg]:size-4', m.kind === 'device' ? 'rounded-xl' : 'rounded-full', m.status === 'alarm' ? 'bg-brand-600 text-white' : 'bg-white')}>{m.icon}</span><span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{m.label}</span><span className="block text-xs text-muted">{m.sublabel} · {m.status === 'alarm' ? `${m.badge} open alert` : m.status}</span></span></div> : null; })() : null}

@@ -50,15 +50,15 @@ export function AlertsPage() {
     <div>
       <PageHeader
         title="Alerts"
-        description="Notification list, respond list and history from every Room Alert in this distribution center"
+        description="Track new alerts, active responses, resolved incidents, and verification history"
         actions={
           <>
             <Select value={category} onValueChange={(v) => update({ category: v === 'all' ? null : v })}>
-              <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-44"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value="all">All categories</SelectItem><SelectItem value="COMFORT">Shopping Comfort</SelectItem><SelectItem value="SECURITY">Outlet Security</SelectItem></SelectContent>
             </Select>
             <Select value={outletFilter} onValueChange={(v) => update({ outlet: v === 'all' ? null : v })}>
-              <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-56"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value="all">All outlets</SelectItem>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent>
             </Select>
           </>

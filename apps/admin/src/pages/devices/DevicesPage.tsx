@@ -54,15 +54,15 @@ export function DevicesPage() {
   return (
     <div>
       <PageHeader
-        title="Device Info"
+        title="Devices"
         description={`${all.length} Room Alert units · ${all.filter((d) => d.status === 'offline').length} offline`}
         actions={
           <>
             <Select value={status} onValueChange={(v) => update({ status: v === 'all' ? null : v })}>
-              <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-36"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value="all">All status</SelectItem><SelectItem value="online">Online</SelectItem><SelectItem value="offline">Offline</SelectItem></SelectContent>
             </Select>
-            <Input placeholder="Search serial, MAC, outlet" leftIcon={<Search />} value={q} onChange={(e) => update({ q: e.target.value || null })} className="w-72" />
+            <Input aria-label="Search devices" placeholder="Search serial, MAC, outlet" leftIcon={<Search />} value={q} onChange={(e) => update({ q: e.target.value || null })} className="min-w-0 flex-1 sm:w-72 sm:flex-none" />
             <Button onClick={() => setAdding(true)}><Plus />Add device</Button>
           </>
         }

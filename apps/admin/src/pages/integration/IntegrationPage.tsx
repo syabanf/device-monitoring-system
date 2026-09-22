@@ -94,15 +94,15 @@ export function IntegrationPage() {
   const set = (patch: Partial<IntegrationConfig>) => setDraft((d) => (d ? { ...d, ...patch } : d));
 
   if (!draft || !config) {
-    return <div className="space-y-4"><PageHeader title="API Integration" description="Loading the channel settings from the API…" /><Card><CardContent className="p-10 text-sm text-muted">Reading /integration…</CardContent></Card></div>;
+    return <div className="space-y-4"><PageHeader title="API Integration" description="Loading integration settings…" /><Card><CardContent className="p-10 text-sm text-muted">Loading channels and connection status…</CardContent></Card></div>;
   }
 
   return (
     <div className="space-y-4">
-      <PageHeader title="API Integration" description="How Room Alert, the mobile app, Telegram and this dashboard reach each other. Settings live on the API, one row per distribution center." actions={
+      <PageHeader title="API Integration" description="Manage how Room Alert, the mobile app, Telegram, and this dashboard exchange data." actions={
         <>
           <Button asChild variant="outline"><Link to="/setup"><Wand2 />Setup wizard</Link></Button>
-          <Button variant="outline" onClick={checkApi} loading={busy === 'health'}><Activity />Check backend</Button>
+          <Button variant="outline" onClick={checkApi} loading={busy === 'health'}><Activity />Check connection</Button>
           <Button onClick={save} disabled={!dirty} loading={busy === 'save'}><Check />Save settings</Button>
         </>
       } />

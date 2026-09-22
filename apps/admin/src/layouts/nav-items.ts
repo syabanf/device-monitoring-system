@@ -8,7 +8,7 @@ export const NAV_SECTIONS = [
   ] },
   { label: 'Assets', icon: ShieldCheck, items: [
     { to: '/outlets', label: 'Outlets', icon: MapPin },
-    { to: '/devices', label: 'Device Info', icon: ShieldCheck, end: true },
+    { to: '/devices', label: 'Devices', icon: ShieldCheck, end: true },
     { to: '/devices/types', label: 'Device Types', icon: ShieldCheck },
     { to: '/devices/maintenance', label: 'Maintenance', icon: Wrench },
   ] },
@@ -33,7 +33,7 @@ export function pageTitle(pathname: string): string {
   if (pathname.startsWith('/contact-persons')) return 'Contact Persons';
   if (pathname.startsWith('/devices/types')) return 'Device Types';
   if (pathname.startsWith('/devices/maintenance')) return 'Device Maintenance';
-  if (pathname.startsWith('/devices')) return 'Device Info';
+  if (pathname.startsWith('/devices')) return 'Devices';
   if (pathname.startsWith('/users')) return 'User Management';
   if (pathname.startsWith('/alerts')) return 'Alerts';
   if (pathname.startsWith('/analysis')) return 'Analysis';

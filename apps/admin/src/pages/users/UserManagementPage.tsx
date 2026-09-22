@@ -68,14 +68,14 @@ export function UserManagementPage() {
     <div>
       <PageHeader
         title="User Management"
-        description="Outlet employees registered to receive and respond to alerts on the mobile app"
+        description="Employees who receive alerts and respond from the mobile app"
         actions={
           <>
             <Select value={outletFilter} onValueChange={(v) => update({ outlet: v === 'all' ? null : v })}>
-              <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-56"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value="all">All outlets</SelectItem>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent>
             </Select>
-            <Input placeholder="Search name, phone, email" leftIcon={<Search />} value={q} onChange={(e) => update({ q: e.target.value || null })} className="w-64" />
+            <Input aria-label="Search employees" placeholder="Search name, phone, email" leftIcon={<Search />} value={q} onChange={(e) => update({ q: e.target.value || null })} className="min-w-0 flex-1 sm:w-64 sm:flex-none" />
             <Button onClick={() => setEditing(emptyEmployee(distributorId, outletFilter === 'all' ? (outlets[0]?.id ?? '') : outletFilter))}><Plus />Add employee</Button>
           </>
         }

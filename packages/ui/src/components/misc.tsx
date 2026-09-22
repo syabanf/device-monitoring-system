@@ -59,12 +59,12 @@ export function SplitStats({ items, className }: { items: { label: string; value
 
 export function PageHeader({ title, description, actions, className }: { title: string; description?: string; actions?: React.ReactNode; className?: string }) {
   return (
-    <div className={cn('mb-6 flex flex-wrap items-start justify-between gap-3', className)}>
-      <div>
+    <div className={cn('mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between', className)}>
+      <div className="min-w-0">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
-        {description ? <p className="mt-1 text-sm text-muted">{description}</p> : null}
+        {description ? <p className="mt-1 max-w-3xl text-sm text-muted">{description}</p> : null}
       </div>
-      {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
+      {actions ? <div className="flex w-full flex-wrap items-center gap-2 lg:w-auto lg:shrink-0 lg:justify-end">{actions}</div> : null}
     </div>
   );
 }

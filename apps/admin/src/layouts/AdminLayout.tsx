@@ -24,6 +24,7 @@ export function AdminLayout() {
   const [searchFocused, setSearchFocused] = React.useState(false);
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [adding, setAdding] = React.useState(false);
+  const searchInput = React.useRef<HTMLInputElement>(null);
   const distributor = session ? distributorById.get(session.distributorId) : undefined;
   const openCount = alerts.filter((a) => a.status !== 'RESOLVED' && a.status !== 'VERIFIED').length;
   const previousOpenCount = React.useRef(openCount);
@@ -32,6 +33,17 @@ export function AdminLayout() {
     if (openCount > previousOpenCount.current) setAnnouncement(`${openCount - previousOpenCount.current} new alert${openCount - previousOpenCount.current > 1 ? 's' : ''} received.`);
     previousOpenCount.current = openCount;
   }, [openCount]);
+  React.useEffect(() => {
+    const onShortcut = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        if (window.matchMedia('(max-width: 767px)').matches) setSearchOpen(true);
+        window.setTimeout(() => searchInput.current?.focus(), 0);
+      }
+    };
+    window.addEventListener('keydown', onShortcut);
+    return () => window.removeEventListener('keydown', onShortcut);
+  }, []);
 
   const searchResults = React.useMemo(() => {
     const needle = q.trim().toLowerCase();
@@ -53,8 +65,8 @@ export function AdminLayout() {
   };
 
   const searchForm = (
-          <form onSubmit={submitSearch} className="relative w-full md:max-w-sm" onFocus={() => setSearchFocused(true)} onBlur={() => window.setTimeout(() => setSearchFocused(false), 120)}>
-            <Input aria-label="Global search" aria-expanded={searchFocused && q.trim().length >= 2} aria-controls="global-search-results" placeholder="Search outlets, devices, sensors, alerts, tickets…" leftIcon={<Search />} value={q} onChange={(e) => setQ(e.target.value)} className="[&_input]:h-11 [&_input]:rounded-full [&_input]:border-0 [&_input]:bg-white [&_input]:shadow-card" />
+          <form onSubmit={submitSearch} className="relative w-full md:max-w-md" onFocus={() => setSearchFocused(true)} onBlur={() => window.setTimeout(() => setSearchFocused(false), 120)}>
+            <Input ref={searchInput} aria-label="Global search" aria-expanded={searchFocused && q.trim().length >= 2} aria-controls="global-search-results" placeholder="Search outlets, devices, sensors, alerts, tickets…" leftIcon={<Search />} rightSlot={<kbd className="hidden rounded-md border border-border bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-muted sm:inline">⌘K</kbd>} value={q} onChange={(e) => setQ(e.target.value)} className="[&_input]:h-11 [&_input]:rounded-full [&_input]:border-0 [&_input]:bg-white [&_input]:shadow-card" />
             {searchFocused && q.trim().length >= 2 ? <div id="global-search-results" aria-label="Search results" className="absolute inset-x-0 top-12 z-50 overflow-hidden rounded-2xl border border-border bg-white p-2 shadow-float">
               {searchResults.length ? <>{searchResults.map((result) => <button key={result.key} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => goToResult(result.href)} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-surface">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface text-muted [&_svg]:size-4">{result.icon}</span><span className="min-w-0"><span className="block truncate text-sm font-semibold">{result.title}</span><span className="block truncate text-xs text-muted">{result.detail}</span></span>
@@ -112,14 +124,14 @@ export function AdminLayout() {
           <PageNavigation />
           {status === 'error' ? (
             <div role="alert" className="mb-3 flex items-center justify-between gap-3 rounded-2xl bg-brand-50 p-4 text-sm text-brand-700">
-              <span>{error ?? 'The API did not answer.'}</span>
+              <span>{error ?? 'Couldn’t load the latest data.'}</span>
               <Button size="sm" variant="outline" onClick={() => void reload()}>Try again</Button>
             </div>
           ) : null}
           {/* Pages read the tenant straight from state, so they wait for the first load. */}
           {loaded ? <Outlet /> : status === 'error' ? null : (
             <div className="space-y-3" role="status" aria-live="polite">
-              <p className="text-sm text-muted">Loading the distribution center from the API…</p>
+              <p className="text-sm text-muted">Loading distribution center…</p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">{[0, 1, 2, 3].map((i) => <div key={i} className="h-28 animate-pulse rounded-[22px] bg-surface-2" />)}</div>
               <div className="h-72 animate-pulse rounded-[22px] bg-surface-2" />
             </div>
