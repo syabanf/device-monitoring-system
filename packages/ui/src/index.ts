@@ -15,3 +15,4 @@ export * from './components/sidebar';
 export * from './components/toggle';
 export * from './components/floor-plan';
 export * from './components/gauge';
+export * from './components/error-boundary';

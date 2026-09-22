@@ -17,10 +17,22 @@ export interface StoredSession extends Session {
 export function readSession(): StoredSession | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as StoredSession) : null;
+    if (!raw) return null;
+    const parsed: unknown = JSON.parse(raw);
+    if (isStoredSession(parsed)) return parsed;
+    // The frontend-only build saved a session with no token under the same key. Drop it, so the
+    // browser lands on the login form instead of crashing on the fields it lacks.
+    localStorage.removeItem(STORAGE_KEY);
+    return null;
   } catch {
     return null;
   }
+}
+
+function isStoredSession(value: unknown): value is StoredSession {
+  const s = value as Partial<StoredSession> | null;
+  return !!s && typeof s.accessToken === 'string' && typeof s.distributorId === 'string'
+    && typeof s.email === 'string' && typeof s.name === 'string';
 }
 
 export function writeSession(session: StoredSession) {
