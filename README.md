@@ -239,11 +239,21 @@ PostgreSQL service container, and a Docker build of all four images.
 (8 hours by default, 30 days for a phone) the client drops the session and the app returns to the
 login screen. Refresh tokens are still open.
 
-**First sign-in.** Migration `0003_seed_admin.sql` creates the three distribution centers and one
-admin each (`admin@indomaret.co.id`, `admin.jkt@indomaret.co.id`, `admin.dps@indomaret.co.id`),
-so an empty database can sign in before anyone runs the seeder. Every account starts with the
-password `admin123`, and its hash sits in this repository: change it before the install faces
-real users. The migration skips rows that already exist.
+**First sign-in.** Two migrations give an empty database accounts to sign in with before anyone
+runs the demo seeder. `0003_seed_admin.sql` creates the three distribution centers and one admin
+each (`admin@indomaret.co.id`, `admin.jkt@indomaret.co.id`, `admin.dps@indomaret.co.id`), all with
+the password `admin123`. `0004_seed_mobile_users.sql` adds one approved outlet employee and one
+technician per distribution center for the mobile app, plus the outlets those employees work at:
+
+| Distribution center | Employee (email / token) | Technician (email / token) |
+|---|---|---|
+| Surabaya | `user123@indomaret.co.id` / `9634871231` | `tech@wit.id` / `2468013579` |
+| Jakarta Utara | `dewi.kusuma101@indomaret.co.id` / `5519965858` | `eko.purnama@wit.id` / `6893220859` |
+| Denpasar | `dian.gunawan136@indomaret.co.id` / `3553120696` | `intan.pratama@wit.id` / `4589475365` |
+
+Every one of these credentials sits in this repository: change the admin passwords and issue new
+mobile tokens in User Management before the install faces real users. Both migrations skip rows
+that already exist, and the ids match the fixtures, so `pnpm db:seed` loads over them cleanly.
 
 **Rollout scope.** This deployment installs temperature and temperature-humidity sensors only.
 The pickers grey out door, motion, power and panic, and the API refuses a create or a type change
