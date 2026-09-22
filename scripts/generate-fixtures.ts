@@ -19,6 +19,7 @@ const rint = (min: number, max: number) => Math.floor(rnd() * (max - min + 1)) +
 const pick = <T>(arr: readonly T[]): T => arr[Math.floor(rnd() * arr.length)]!;
 const chance = (p: number) => rnd() < p;
 const round2 = (n: number) => Math.round(n * 100) / 100;
+const round5 = (n: number) => Math.round(n * 1e5) / 1e5;
 
 // ---------- time ----------
 const TZ_OFFSET_MS = 7 * 3600 * 1000;
@@ -47,8 +48,8 @@ const AVATAR = ['#9b1c1c','#1d4ed8','#047857','#b45309','#6d28d9','#0e7490','#be
 
 interface CityDef { city: string; province: string; lat: number; lng: number; streets: string[]; areaCode: string; }
 const CITIES: Record<string, CityDef> = {
-  SBY: { city: 'Surabaya', province: 'Jawa Timur', lat: -7.2756, lng: 112.7422, areaCode: '031', streets: ['Margorejo','Rungkut','Ketintang','Wiyung','Gubeng','Ngagel','Kertajaya','Mulyosari','Tenggilis','Dukuh Kupang','Manukan','Kenjeran','Sukolilo','Darmo','Jemursari','Kupang Jaya','Semolowaru','Wonokromo','Bratang','Menanggal'] },
-  JKT: { city: 'Jakarta Utara', province: 'DKI Jakarta', lat: -6.1385, lng: 106.8630, areaCode: '021', streets: ['Permata Intan','Tugu Selatan','Kelapa Gading','Sunter','Tanjung Priok'] },
+  SBY: { city: 'Surabaya', province: 'Jawa Timur', lat: -7.2575, lng: 112.7521, areaCode: '031', streets: ['Margorejo','Rungkut','Ketintang','Wiyung','Gubeng','Ngagel','Kertajaya','Mulyosari','Tenggilis','Dukuh Kupang','Manukan','Kenjeran','Sukolilo','Darmo','Jemursari','Kupang Jaya','Semolowaru','Wonokromo','Bratang','Menanggal'] },
+  JKT: { city: 'Jakarta Utara', province: 'DKI Jakarta', lat: -6.1214, lng: 106.8766, areaCode: '021', streets: ['Permata Intan','Tugu Selatan','Kelapa Gading','Sunter','Tanjung Priok'] },
   DPS: { city: 'Denpasar', province: 'Bali', lat: -8.6705, lng: 115.2126, areaCode: '0361', streets: ['Gatot Subroto','Teuku Umar','Sesetan','Renon','Sanur'] },
 };
 
@@ -100,8 +101,8 @@ for (const plan of OUTLET_PLAN) {
     outletN++;
     const street = c.streets[i % c.streets.length]!;
     const suffix = Math.floor(i / c.streets.length) + 1;
-    const lat = round2(c.lat + (rnd() - 0.5) * 0.12 * 1000) / 1000;
-    const lng = round2(c.lng + (rnd() - 0.5) * 0.12 * 1000) / 1000;
+    const lat = round5(c.lat + (rnd() - 0.5) * 0.12);
+    const lng = round5(c.lng + (rnd() - 0.5) * 0.12);
     outlets.push({
       id: `out-${pad(outletN)}`,
       distributorId: plan.dist,
