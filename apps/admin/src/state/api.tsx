@@ -4,7 +4,7 @@ import { ApiError } from '@monitoring/api-client';
 import { API_URL } from './client';
 import { useAppState } from './app-state';
 
-export type IntegrationConfig = Omit<IntegrationConfigView, 'telegramTokenSet' | 'updatedAt'>;
+export type IntegrationConfig = Omit<IntegrationConfigView, 'telegramTokenSet' | 'mqtt' | 'updatedAt'>;
 
 export interface IngestResult {
   accepted: boolean;

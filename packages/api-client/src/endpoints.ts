@@ -90,6 +90,22 @@ export interface TicketPatchInput {
   photoUrls?: string[];
 }
 
+/** What the AKCP subscriber in the API reports about its broker connection. Read only: the
+ *  broker lives in the API environment, so the page shows the connection instead of a form. */
+export interface MqttStatus {
+  enabled: boolean;
+  connected: boolean;
+  brokerUrl: string;
+  clientId: string;
+  topicFilter: string;
+  received: number;
+  stored: number;
+  unmatched: number;
+  dropped: number;
+  lastMessageAt: string | null;
+  lastError?: string;
+}
+
 export interface IntegrationConfigView {
   apiBaseUrl: string;
   webhookPath: string;
@@ -98,6 +114,7 @@ export interface IntegrationConfigView {
   telegram: { botToken: string; chatId: string; enabled: boolean };
   push: { provider: 'fcm' | 'webpush'; enabled: boolean };
   telegramTokenSet: boolean;
+  mqtt: MqttStatus;
   updatedAt: string;
 }
 
@@ -105,7 +122,7 @@ export interface RequestLogEntry {
   id: string;
   at: string;
   direction: 'inbound' | 'outbound';
-  channel: 'roomalert' | 'email' | 'telegram' | 'push' | 'api';
+  channel: 'roomalert' | 'akcp' | 'email' | 'telegram' | 'push' | 'api';
   method: string;
   path: string;
   status: number;
@@ -235,7 +252,7 @@ export function endpoints(api: ApiClient, distributorId: string) {
     },
     integration: {
       get: () => api.request<IntegrationConfigView>('GET', `${tenant}/integration`),
-      save: (config: Omit<IntegrationConfigView, 'telegramTokenSet' | 'updatedAt'>) =>
+      save: (config: Omit<IntegrationConfigView, 'telegramTokenSet' | 'mqtt' | 'updatedAt'>) =>
         api.request<IntegrationConfigView>('PUT', `${tenant}/integration`, config),
       log: (channel?: string) =>
         api.request<{ items: RequestLogEntry[] }>('GET', `${tenant}/integration/request-log`, undefined, { channel, limit: 200 }).then((p) => p.items),

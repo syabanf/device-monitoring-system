@@ -102,6 +102,8 @@ apps/api
   internal/httpx          problem+json, JSON decode with unknown-field rejection, cursors
   internal/<feature>      handler (HTTP only) -> service (rules) -> repo (SQL, tenant-scoped)
   internal/ingest         webhook and e-mail parsing, device matching, alert engine
+  internal/akcp           MQTT subscriber for AKCP sensorProbe+ units: topic and payload
+                          parsing, sensor matching, readings and status-driven alerts
   internal/jobs           queue and outbox dispatcher; internal/notify hides the channels
   internal/store          pool plus an embedded migration runner
 ```
@@ -140,7 +142,7 @@ flow, and `POST /webhooks/roomalert` and `/webhooks/email` ingest signed payload
 | Stats | `GET …/stats?period=today\|7d\|30d\|all` |
 | Integration | `GET,PUT …/integration`, `GET …/integration/request-log`, `GET …/integration/unmatched`, `POST …/integration/test/{channel}` |
 | Photos | `POST /uploads` (multipart `file`), `GET /uploads/{name}` |
-| Ingestion | `POST /webhooks/roomalert`, `POST /webhooks/email`, `POST /webhooks/readings` |
+| Ingestion | `POST /webhooks/roomalert`, `POST /webhooks/email`, `POST /webhooks/readings`, MQTT `spp/+/sensor/+/+` |
 
 Conventions: JSON with camelCase keys, ISO-8601 timestamps, prefixed string ids, cursor
 pagination as `{items, nextCursor}`, and `application/problem+json` for every non-2xx answer.
@@ -171,6 +173,20 @@ and six photos per record, and the type comes from sniffing the bytes rather tha
 browser. `GET /uploads/{name}` needs no token because an `<img>` tag cannot send one; the random
 file name is what keeps a photo private. The disk driver writes to `UPLOAD_DIR`, and
 `uploads.Store` is the seam where a deployment swaps in object storage.
+
+**AKCP hardware over MQTT.** The AVTECH units call a webhook, while AKCP sensorProbe+ units
+publish instead: one message per event on `spp/<mac>/sensor/<status_change|value_change>/<compound
+id>`, carrying `{timestamp, value, status}`. Set `MQTT_BROKER_URL` and the API holds one QoS 1
+subscription for the whole fleet; leave it empty and the subscriber stays off. A message matches a
+sensor by the unit's MAC and then by `sensor.external_key`, falling back to the compound ids the
+probe ships with (`0.1.0.5.0` temperature, `0.1.0.5.1` humidity); anything else is parked in
+`unmatched_event` where the Integration page shows it. A value is stored as a reading, and because
+a reading row holds a temperature and a humidity while the unit sends one at a time, the
+counterpart keeps the value it last had. When the unit states a verdict, that verdict decides the
+alert: codes 3-7, 14 and 15 open one, `SENSORNORMAL` closes it, and a bare value is judged against
+the limits an admin set, the way the Room Alert push is. Code 17 appears on real units and the
+manual does not define it, so it keeps its number and opens nothing. Without hardware on the
+bench, `docker compose run --rm akcp-sim -mac 0080A3000001` publishes what a unit would.
 
 **Integration secrets.** Settings live in `integration_config`, one row per distribution center,
 rather than in a single browser's localStorage. The Telegram bot token is write-only: a read

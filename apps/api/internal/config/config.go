@@ -22,6 +22,18 @@ type Config struct {
 	DeviceTokenTTL time.Duration
 	RedisURL       string
 	UploadDir      string
+	MQTT           MQTT
+}
+
+// MQTT points the AKCP subscriber at the broker the sensorProbe+ units publish to. An empty
+// BrokerURL leaves the subscriber switched off, which is how an install with only Room Alert
+// units runs.
+type MQTT struct {
+	BrokerURL   string
+	ClientID    string
+	TopicFilter string
+	Username    string
+	Password    string
 }
 
 func Load() (Config, error) {
@@ -43,6 +55,14 @@ func Load() (Config, error) {
 		UploadDir:     def("UPLOAD_DIR", "./data/uploads"),
 	}
 	cfg.JWTSecret = []byte(required("JWT_SECRET", 32))
+
+	cfg.MQTT = MQTT{
+		BrokerURL:   os.Getenv("MQTT_BROKER_URL"),
+		ClientID:    def("MQTT_CLIENT_ID", "monitoring-akcp-ingestor"),
+		TopicFilter: def("MQTT_TOPIC_FILTER", "spp/+/sensor/+/+"),
+		Username:    os.Getenv("MQTT_USERNAME"),
+		Password:    os.Getenv("MQTT_PASSWORD"),
+	}
 
 	port, err := strconv.Atoi(def("PORT", "3000"))
 	if err != nil {
