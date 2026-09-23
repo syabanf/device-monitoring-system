@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -13,6 +14,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/akcp"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/auth"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/httpx"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/store"
@@ -63,11 +65,14 @@ var defaults = Config{
 	Push:        PushConf{Provider: "fcm", Enabled: true},
 }
 
-// Secrets never travel back to the browser; the page shows whether one is set.
+// Secrets never travel back to the browser; the page shows whether one is set. MQTT is read
+// only: the broker lives in the deployment's environment, not in a form, so the page reports
+// the connection rather than offering to change it.
 type ConfigView struct {
 	Config
-	TelegramTokenSet bool      `json:"telegramTokenSet"`
-	UpdatedAt        time.Time `json:"updatedAt"`
+	TelegramTokenSet bool        `json:"telegramTokenSet"`
+	MQTT             akcp.Status `json:"mqtt"`
+	UpdatedAt        time.Time   `json:"updatedAt"`
 }
 
 type LogEntry struct {
@@ -99,9 +104,22 @@ type TestResult struct {
 type Service struct {
 	db     store.DB
 	tenant string
+	// mqtt reports the AKCP subscriber running next to this handler. It is nil in a build
+	// without one, for example the test server.
+	mqtt func() akcp.Status
 }
 
-func NewService(db store.DB, c auth.Ctx) Service { return Service{db: db, tenant: c.Tenant} }
+func NewService(db store.DB, c auth.Ctx, mqtt func() akcp.Status) Service {
+	return Service{db: db, tenant: c.Tenant, mqtt: mqtt}
+}
+
+// subscriber answers with a switched-off status when no subscriber runs in this process.
+func (s Service) subscriber() akcp.Status {
+	if s.mqtt == nil {
+		return akcp.Status{TopicFilter: akcp.TopicFilter}
+	}
+	return s.mqtt()
+}
 
 func (s Service) Get(ctx context.Context) (ConfigView, error) {
 	var raw []byte
@@ -109,7 +127,7 @@ func (s Service) Get(ctx context.Context) (ConfigView, error) {
 	err := s.db.QueryRow(ctx, `SELECT settings, updated_at FROM integration_config WHERE distributor_id = $1`, s.tenant).
 		Scan(&raw, &updatedAt)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return ConfigView{Config: defaults}, nil
+		return ConfigView{Config: defaults, MQTT: s.subscriber()}, nil
 	}
 	if err != nil {
 		return ConfigView{}, err
@@ -118,7 +136,7 @@ func (s Service) Get(ctx context.Context) (ConfigView, error) {
 	if err := json.Unmarshal(raw, &cfg); err != nil {
 		return ConfigView{}, err
 	}
-	view := ConfigView{Config: cfg, TelegramTokenSet: cfg.Telegram.BotToken != "", UpdatedAt: updatedAt}
+	view := ConfigView{Config: cfg, TelegramTokenSet: cfg.Telegram.BotToken != "", MQTT: s.subscriber(), UpdatedAt: updatedAt}
 	view.Telegram.BotToken = ""
 	return view, nil
 }
@@ -221,12 +239,26 @@ func (s Service) Test(ctx context.Context, channel string) (TestResult, error) {
 		} else {
 			result = TestResult{Message: "The IMAP poller is not implemented yet, post to /webhooks/email meanwhile"}
 		}
+	case "akcp":
+		st := s.subscriber()
+		switch {
+		case !st.Enabled:
+			result = TestResult{Message: "No broker configured, set MQTT_BROKER_URL to switch the subscriber on"}
+		case st.Connected:
+			result = TestResult{OK: true, Message: fmt.Sprintf("Subscribed to %s on %s, %d message(s) received", st.TopicFilter, st.BrokerURL, st.Received)}
+		default:
+			why := st.LastError
+			if why == "" {
+				why = "connecting"
+			}
+			result = TestResult{Message: "Not connected to " + st.BrokerURL + ": " + why}
+		}
 	case "telegram":
 		result = TestResult{Message: "No Telegram client yet, the outbox logs the broadcast instead"}
 	case "push":
 		result = TestResult{Message: "No push client yet, the outbox logs the notification instead"}
 	default:
-		return TestResult{}, httpx.BadRequest("UNKNOWN_CHANNEL", "channel must be roomalert, email, telegram or push")
+		return TestResult{}, httpx.BadRequest("UNKNOWN_CHANNEL", "channel must be roomalert, akcp, email, telegram or push")
 	}
 	result.MS = int(time.Since(started).Milliseconds())
 
@@ -247,7 +279,7 @@ func statusOf(ok bool) int {
 }
 
 // Routes mounts under /distributors/{distributorId}/integration.
-func Routes(db store.DB) chi.Router {
+func Routes(db store.DB, mqtt func() akcp.Status) chi.Router {
 	r := chi.NewRouter()
 
 	r.Get("/", func(w http.ResponseWriter, req *http.Request) {
@@ -256,7 +288,7 @@ func Routes(db store.DB) chi.Router {
 			httpx.Fail(w, req, err)
 			return
 		}
-		cfg, err := NewService(db, c).Get(req.Context())
+		cfg, err := NewService(db, c, mqtt).Get(req.Context())
 		if err != nil {
 			httpx.Fail(w, req, err)
 			return
@@ -275,7 +307,7 @@ func Routes(db store.DB) chi.Router {
 			httpx.Fail(w, req, err)
 			return
 		}
-		cfg, err := NewService(db, c).Save(req.Context(), in)
+		cfg, err := NewService(db, c, mqtt).Save(req.Context(), in)
 		if err != nil {
 			httpx.Fail(w, req, err)
 			return
@@ -289,7 +321,7 @@ func Routes(db store.DB) chi.Router {
 			httpx.Fail(w, req, err)
 			return
 		}
-		items, err := NewService(db, c).Log(req.Context(), httpx.Limit(req, 100, 500), req.URL.Query().Get("channel"))
+		items, err := NewService(db, c, mqtt).Log(req.Context(), httpx.Limit(req, 100, 500), req.URL.Query().Get("channel"))
 		if err != nil {
 			httpx.Fail(w, req, err)
 			return
@@ -303,7 +335,7 @@ func Routes(db store.DB) chi.Router {
 			httpx.Fail(w, req, err)
 			return
 		}
-		items, err := NewService(db, c).Unmatched(req.Context(), httpx.Limit(req, 50, 200))
+		items, err := NewService(db, c, mqtt).Unmatched(req.Context(), httpx.Limit(req, 50, 200))
 		if err != nil {
 			httpx.Fail(w, req, err)
 			return
@@ -317,7 +349,7 @@ func Routes(db store.DB) chi.Router {
 			httpx.Fail(w, req, err)
 			return
 		}
-		result, err := NewService(db, c).Test(req.Context(), chi.URLParam(req, "channel"))
+		result, err := NewService(db, c, mqtt).Test(req.Context(), chi.URLParam(req, "channel"))
 		if err != nil {
 			httpx.Fail(w, req, err)
 			return

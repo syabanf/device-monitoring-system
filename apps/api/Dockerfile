@@ -10,7 +10,8 @@ RUN go mod download
 COPY apps/api/ ./
 # CGO stays off so the binaries run on a scratch base.
 RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/api ./cmd/api \
- && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/seed ./cmd/seed
+ && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/seed ./cmd/seed \
+ && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/akcpsim ./cmd/akcpsim
 # The photo directory is created here because distroless has no shell to make it at boot.
 RUN install -d -m 0755 /out/uploads
 
@@ -32,3 +33,10 @@ COPY --from=build /out/seed /app/seed
 COPY packages/fixtures/data /app/fixtures
 USER nonroot:nonroot
 ENTRYPOINT ["/app/seed", "-data", "/app/fixtures"]
+
+# Stands in for an AKCP unit on a bench without hardware: docker compose run --rm akcp-sim
+FROM gcr.io/distroless/static-debian12:nonroot AS akcpsim
+WORKDIR /app
+COPY --from=build /out/akcpsim /app/akcpsim
+USER nonroot:nonroot
+ENTRYPOINT ["/app/akcpsim"]

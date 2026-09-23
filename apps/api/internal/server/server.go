@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/akcp"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/alerts"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/auth"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/config"
@@ -38,6 +39,8 @@ type Deps struct {
 	Queue  jobs.Queue
 	Photos uploads.Store
 	Log    *slog.Logger
+	// MQTT reports the AKCP subscriber this process runs, and stays nil when it runs none.
+	MQTT func() akcp.Status
 }
 
 const version = "0.1.0"
@@ -91,7 +94,7 @@ func New(d Deps) http.Handler {
 			tenant.Mount("/tickets", tickets.Routes(d.DB, d.Queue))
 			tenant.Mount("/readings", readings.Routes(d.DB))
 			tenant.Mount("/stats", stats.Routes(d.DB))
-			tenant.Mount("/integration", integration.Routes(d.DB))
+			tenant.Mount("/integration", integration.Routes(d.DB, d.MQTT))
 		})
 	})
 

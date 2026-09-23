@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/syabanf/device-monitoring-system/apps/api/internal/akcp"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/config"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/jobs"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/notify"
@@ -91,9 +92,25 @@ func run(migrateOnly bool) error {
 	queue.SetHandler(jobs.Dispatcher(db, notify.Noop{Log: log}, log))
 	defer func() { _ = queue.Close() }()
 
+	// The AKCP units publish over MQTT instead of calling a webhook, so the process holds one
+	// subscription to their broker for the whole fleet.
+	var mqttStatus func() akcp.Status
+	if cfg.MQTT.BrokerURL != "" {
+		worker := akcp.New(akcp.Config{
+			BrokerURL:   cfg.MQTT.BrokerURL,
+			ClientID:    cfg.MQTT.ClientID,
+			TopicFilter: cfg.MQTT.TopicFilter,
+			Username:    cfg.MQTT.Username,
+			Password:    cfg.MQTT.Password,
+		}, db, queue, log)
+		worker.Start(context.WithoutCancel(ctx))
+		defer worker.Stop()
+		mqttStatus = worker.Status
+	}
+
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", cfg.Port),
-		Handler:           server.New(server.Deps{Cfg: cfg, DB: db, Queue: queue, Photos: photos, Log: log}),
+		Handler:           server.New(server.Deps{Cfg: cfg, DB: db, Queue: queue, Photos: photos, Log: log, MQTT: mqttStatus}),
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 

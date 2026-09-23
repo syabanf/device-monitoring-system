@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { Link, useSearchParams } from 'react-router';
-import { Activity, ArrowDownLeft, ArrowUpRight, Boxes, Check, Copy, Inbox, Mail, Play, Plug, RefreshCw, Send, Smartphone, Wand2, Zap } from 'lucide-react';
+import { Activity, Antenna, ArrowDownLeft, ArrowUpRight, Boxes, Check, Copy, Inbox, Mail, Play, Plug, RefreshCw, Send, Smartphone, Wand2, Zap } from 'lucide-react';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, EmptyState, FormField, Input, PageHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Tabs, TabsList, TabsTrigger, Textarea, Toggle, cn } from '@monitoring/ui';
 import { API_REFERENCE, SAMPLE_EMAIL, detectAndParse, type AlertEvent } from '@monitoring/integration';
 import { fmtDateTime } from '@monitoring/fixtures';
+import type { MqttStatus } from '@monitoring/api-client';
 import { describeError, useApi, type IntegrationConfig } from '../../state/api';
 import { useScoped } from '../../state/app-state';
 import { AlertStatusBadge } from '../../components/badges';
 
 type View = 'channels' | 'blackbox' | 'log' | 'reference';
-type ChannelKey = 'roomalert' | 'email' | 'push' | 'telegram';
+type ChannelKey = 'roomalert' | 'akcp' | 'email' | 'push' | 'telegram';
 
 const CHANNELS: { key: ChannelKey; title: string; icon: React.ReactNode; desc: string; enabled: (c: IntegrationConfig) => boolean }[] = [
   { key: 'roomalert', title: 'Room Alert cloud → webhook', icon: <Zap />, desc: 'HTTP POST alert action from the AVTECH account hits the ingestion endpoint.', enabled: (c) => c.roomAlert.enabled },
@@ -130,6 +131,7 @@ export function IntegrationPage() {
       {view === 'channels' ? (
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <div className="space-y-4">
+            <MqttCard status={config.mqtt} result={results.akcp} busy={busy === 'akcp'} onTest={() => runTest('akcp')} />
             {CHANNELS.map((ch) => { const r = results[ch.key]; const on = ch.enabled(draft); return (
               <Card key={ch.key}>
                 <CardContent className="flex items-start gap-4 p-5">
@@ -258,6 +260,58 @@ export function IntegrationPage() {
         </Card>
       ) : null}
     </div>
+  );
+}
+
+/** The AKCP units reach the API over MQTT instead of a webhook, and the broker is set in the
+ *  API environment, so this card reports the subscription rather than offering to edit it. */
+function MqttCard({ status, result, busy, onTest }: {
+  status: MqttStatus;
+  result?: { ok: boolean; message: string; ms: number };
+  busy: boolean;
+  onTest: () => void;
+}) {
+  const state = !status.enabled ? 'off' : status.connected ? 'live' : 'down';
+  return (
+    <Card>
+      <CardContent className="space-y-4 p-5">
+        <div className="flex items-start gap-4">
+          <span className={cn('flex size-11 shrink-0 items-center justify-center rounded-2xl [&_svg]:size-5', state === 'live' ? 'bg-ink text-white' : 'bg-surface text-muted')}><Antenna /></span>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <p className="font-semibold">AKCP sensorProbe+ → MQTT</p>
+              <Badge variant={state === 'live' ? 'success' : state === 'down' ? 'brand' : 'muted'} dot={state !== 'off'}>
+                {state === 'live' ? 'connected' : state === 'down' ? 'disconnected' : 'no broker'}
+              </Badge>
+            </div>
+            <p className="mt-0.5 text-sm text-muted">The units publish every reading and status change; the API holds one subscription for the whole fleet.</p>
+            {result ? <p className="mt-1 text-xs text-muted">{result.message}</p> : status.lastError ? <p className="mt-1 text-xs text-brand-700">{status.lastError}</p> : null}
+          </div>
+          <Button size="sm" variant="outline" onClick={onTest} loading={busy}><Play />Test</Button>
+        </div>
+        <dl className="grid grid-cols-2 gap-3 text-xs sm:grid-cols-4">
+          <div className="rounded-2xl bg-surface p-3">
+            <dt className="text-muted">Broker</dt>
+            <dd className="truncate font-mono">{status.brokerUrl || 'MQTT_BROKER_URL is empty'}</dd>
+          </div>
+          <div className="rounded-2xl bg-surface p-3">
+            <dt className="text-muted">Topic filter</dt>
+            <dd className="truncate font-mono">{status.topicFilter}</dd>
+          </div>
+          <div className="rounded-2xl bg-surface p-3">
+            <dt className="text-muted">Messages</dt>
+            <dd className="font-semibold tabular-nums">{status.received} in · {status.stored} stored</dd>
+          </div>
+          <div className="rounded-2xl bg-surface p-3">
+            <dt className="text-muted">Last message</dt>
+            <dd className="truncate">{status.lastMessageAt ? fmtDateTime(status.lastMessageAt) : '—'}</dd>
+          </div>
+        </dl>
+        {status.unmatched > 0 || status.dropped > 0 ? (
+          <p className="text-xs text-muted">{status.unmatched} message(s) matched no sensor{status.dropped > 0 ? `, ${status.dropped} dropped when the queue filled` : ''}. The unmatched list is under the request log.</p>
+        ) : null}
+      </CardContent>
+    </Card>
   );
 }
 
