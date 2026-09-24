@@ -58,7 +58,7 @@ func Load() (Config, error) {
 
 	cfg.MQTT = MQTT{
 		BrokerURL:   os.Getenv("MQTT_BROKER_URL"),
-		ClientID:    def("MQTT_CLIENT_ID", "monitoring-akcp-ingestor"),
+		ClientID:    def("MQTT_CLIENT_ID", clientIDFor(hostname())),
 		TopicFilter: def("MQTT_TOPIC_FILTER", "spp/+/sensor/+/+"),
 		Username:    os.Getenv("MQTT_USERNAME"),
 		Password:    os.Getenv("MQTT_PASSWORD"),
@@ -89,6 +89,29 @@ func Load() (Config, error) {
 		return Config{}, fmt.Errorf("invalid environment, see apps/api/.env.example:\n  %s", strings.Join(missing, "\n  "))
 	}
 	return cfg, nil
+}
+
+// clientIDFor names the MQTT subscriber after the machine it runs on. The broker keeps one
+// session per client id and drops the older connection when a second client arrives with the
+// same id, so two instances sharing a fixed id knock each other off in a loop. A hostname stays
+// the same across restarts, which keeps the persistent session the broker holds for us.
+func clientIDFor(host string) string {
+	host, _, _ = strings.Cut(host, ".")
+	host = strings.Map(func(r rune) rune {
+		if r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= '0' && r <= '9' || r == '-' {
+			return r
+		}
+		return '-'
+	}, host)
+	if host == "" {
+		return "akcp-ingestor"
+	}
+	return "akcp-" + host
+}
+
+func hostname() string {
+	host, _ := os.Hostname()
+	return host
 }
 
 func def(key, fallback string) string {

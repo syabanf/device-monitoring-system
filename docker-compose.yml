@@ -49,6 +49,10 @@ services:
       dockerfile: apps/api/Dockerfile
       target: api
     restart: unless-stopped
+    # A fixed hostname gives the AKCP subscriber the same MQTT client id across container
+    # recreates (akcp-monitoring-api), so the broker keeps its session, and it differs from the
+    # id a local `pnpm dev:api` derives from the laptop's hostname, so the two never collide.
+    hostname: monitoring-api
     depends_on:
       postgres: { condition: service_healthy }
       mosquitto: { condition: service_started }
