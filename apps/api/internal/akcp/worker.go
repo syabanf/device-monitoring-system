@@ -2,6 +2,7 @@ package akcp
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"sync"
 	"time"
@@ -61,8 +62,9 @@ type Worker struct {
 	queue  chan delivery
 	done   chan struct{}
 
-	mu sync.Mutex
-	st Status
+	mu          sync.Mutex
+	st          Status
+	connectedAt time.Time
 }
 
 func New(cfg Config, db store.DB, q jobs.Queue, log *slog.Logger) *Worker {
@@ -106,13 +108,21 @@ func (w *Worker) Start(ctx context.Context) {
 			w.fail("subscribe", err)
 			return
 		}
-		w.mark(func(s *Status) { s.Connected, s.LastError = true, "" })
+		w.mu.Lock()
+		w.st.Connected, w.st.LastError = true, ""
+		w.connectedAt = time.Now()
+		w.mu.Unlock()
 		w.log.Info("akcp subscriber connected", "broker", w.cfg.BrokerURL, "filter", w.cfg.TopicFilter)
 		w.record(ctx, "connected", 200, 0, "Subscribed to "+w.cfg.TopicFilter)
 	})
 	opts.SetConnectionLostHandler(func(_ mqtt.Client, err error) {
-		w.fail("connection lost", err)
-		w.record(ctx, "disconnected", 503, 0, "Connection lost: "+err.Error())
+		w.mu.Lock()
+		up := time.Since(w.connectedAt)
+		w.mu.Unlock()
+		reason := lostReason(err, up, w.cfg.ClientID)
+		w.log.Error("akcp subscriber", "what", "connection lost", "err", err, "reason", reason)
+		w.mark(func(s *Status) { s.Connected, s.LastError = false, reason })
+		w.record(ctx, "disconnected", 503, 0, reason)
 	})
 
 	w.client = mqtt.NewClient(opts)
@@ -204,6 +214,22 @@ func (w *Worker) record(ctx context.Context, path string, status, ms int, summar
 		httpx.NewID("log"), path, status, ms, summary); err != nil {
 		w.log.Error("akcp request log", "err", err)
 	}
+}
+
+// takeoverWindow is how soon after connecting a drop points at a client id clash. A broker that
+// hands our id to another client closes our socket at once, so the loss lands within seconds
+// of every reconnect; a network fault has no reason to track our connect time.
+const takeoverWindow = 10 * time.Second
+
+// lostReason explains a dropped connection. The broker says nothing when it hands our client
+// id to someone else, so the timing is the only clue, and naming it here saves an operator from
+// hunting the network for a fault that is a second process with the same MQTT_CLIENT_ID.
+func lostReason(err error, connectedFor time.Duration, clientID string) string {
+	if connectedFor < takeoverWindow {
+		return fmt.Sprintf("Connection lost %s after connecting (%v). Another client may be using client id %q; "+
+			"give each instance its own MQTT_CLIENT_ID", connectedFor.Round(time.Millisecond), err, clientID)
+	}
+	return "Connection lost: " + err.Error()
 }
 
 func (w *Worker) fail(what string, err error) {
