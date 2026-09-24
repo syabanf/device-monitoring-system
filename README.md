@@ -185,7 +185,9 @@ a reading row holds a temperature and a humidity while the unit sends one at a t
 counterpart keeps the value it last had. When the unit states a verdict, that verdict decides the
 alert: codes 3-7, 14 and 15 open one, `SENSORNORMAL` closes it, and a bare value is judged against
 the limits an admin set, the way the Room Alert push is. Code 17 appears on real units and the
-manual does not define it, so it keeps its number and opens nothing. Without hardware on the
+manual does not define it, so it keeps its number and opens nothing. Give every running
+instance its own `MQTT_CLIENT_ID`: the broker kicks the older session when a second client
+connects with the same id, and both ends then reconnect in a loop. Without hardware on the
 bench, `docker compose run --rm akcp-sim -mac 0080A3000001` publishes what a unit would.
 
 **Integration secrets.** Settings live in `integration_config`, one row per distribution center,
