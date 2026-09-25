@@ -83,10 +83,7 @@ DIST.forEach((d, i) => {
 });
 
 // ---------- device types ----------
-deviceTypes.push(
-  { id: 'dt-ra3s', model: 'RA3S', name: 'Room Alert 3S', vendor: 'AVTECH', ports: [{ kind: 'digital', count: 1 }, { kind: 'switch', count: 1 }], builtInSensors: ['TEMPERATURE'], description: 'Compact monitor with 1 digital sensor port and 1 switch sensor port. Daisy-chain installation for switch sensors. SSL email support, 3 years warranty.', priceIdr: 8_850_000, latestFirmware: 'v2.9.1', maintenanceIntervalDays: 180 },
-  { id: 'dt-ra12s', model: 'RA12S', name: 'Room Alert 12S', vendor: 'AVTECH', ports: [{ kind: 'digital', count: 3 }, { kind: 'switch', count: 4 }, { kind: 'analog', count: 1 }], builtInSensors: ['TEMPERATURE'], description: 'Full-featured monitor with 3 digital, 4 switch and 1 analog port plus relay output and light tower adaptor. Each switch sensor is independently identified. SSL email support, 3 years warranty.', priceIdr: 23_250_000, latestFirmware: 'v3.3.0', maintenanceIntervalDays: 180 },
-);
+deviceTypes.push({ id: 'dt-sp1p', model: 'SP1+', name: 'AKCP sensorProbe1+', vendor: 'AKCP', ports: [{ kind: 'digital', count: 1 }], builtInSensors: [], description: 'Single-port sensorProbe with an intelligent temperature and humidity probe. Publishes every reading and status change over MQTT on spp/<mac>/sensor/<event>/<key>.', priceIdr: 0, latestFirmware: 'v1.0.0', maintenanceIntervalDays: 180 });
 
 // ---------- outlets ----------
 const OUTLET_PLAN: Array<{ dist: string; cityKey: string; count: number }> = [
@@ -122,103 +119,22 @@ for (const plan of OUTLET_PLAN) {
 }
 
 // ---------- devices + sensors ----------
-let devN = 0, senN = 0;
-// Floor-plan anchor points (percent) per sensor name, based on the deck's outlet layout (gudang top, sales area center, kasir bottom-right, teras bottom).
-const FLOOR_POS: Record<string, [number, number]> = {
-  'Sales Area Temp & RH': [50, 52],
-  'Cooler Area Temp & RH': [14, 48],
-  'Front Area Temp & RH': [50, 80],
-  'Front Door': [50, 91],
-  'Back Door': [68, 9],
-  'Warehouse Door': [40, 19],
-  'Sales Area Motion': [52, 36],
-  'Warehouse Motion': [20, 10],
-  'Cashier Motion': [80, 78],
-  'Main Power': [92, 40],
-  'Cashier Panic Button': [84, 86],
-};
-const DEVICE_POS: [number, number][] = [[91, 60], [91, 24]];
-const jitter = (v: number) => Math.max(3, Math.min(97, v + (rnd() - 0.5) * 4));
-const SENSOR_NAMES: Record<string, string[]> = {
-  TEMPERATURE_HUMIDITY: ['Sales Area Temp & RH', 'Cooler Area Temp & RH', 'Front Area Temp & RH'],
-  DOOR: ['Front Door', 'Back Door', 'Warehouse Door'],
-  MOTION: ['Sales Area Motion', 'Warehouse Motion', 'Cashier Motion'],
-  POWER: ['Main Power'],
-  PANIC_BUTTON: ['Cashier Panic Button'],
-};
-function addSensor(dev: any, type: string, portKind: string, portIndex: number, nameIdx = 0) {
-  senN++;
-  const id = `sen-${pad(senN)}`;
-  const unit = type === 'TEMPERATURE_HUMIDITY' ? '°C' : 'state';
-  const sname = SENSOR_NAMES[type]![nameIdx] ?? SENSOR_NAMES[type]![0];
-  const fp = FLOOR_POS[sname] ?? [50, 50];
-  const s: any = { id, deviceId: dev.id, outletId: dev.outletId, name: sname, type, portKind, portIndex, unit, enabled: true, floor: { x: round2(jitter(fp[0])), y: round2(jitter(fp[1])) } };
-  if (type === 'TEMPERATURE_HUMIDITY') s.thresholds = { min: 18, max: 28, humidityMin: 30, humidityMax: 60 };
-  sensors.push(s);
-  const port = dev.ports.find((p: any) => p.kind === portKind && p.index === portIndex);
-  if (port) port.sensorId = id;
-  return s;
+// One AKCP sensorProbe1+ at Indomaret Margorejo 1, where the demo employee works, so the dashboard
+// and the mobile app both show a unit that reports over MQTT. The akcp-demo service in
+// docker-compose publishes as this MAC every 30 seconds, so the unit stays live with nobody
+// pressing anything.
+{
+  const outlet = outlets[0]!;
+  const installedAt = NOW - 170 * DAY; // the semi-annual check falls due in ten days
+  devices.push({
+    id: 'dev-001', outletId: outlet.id, deviceTypeId: 'dt-sp1p', model: 'SP1+', serial: 'SP1P-DE4001',
+    mac: '00:0B:DC:DE:40:01', // published in topics as 000BDCDE4001
+    ip: '192.168.10.51', firmware: 'v1.0.0', status: 'online', lastPushAt: iso(NOW), installedAt: iso(installedAt), pushIntervalSec: 30,
+    ports: [{ index: 1, kind: 'digital', label: 'Digital 1', sensorId: 'sen-001' }], channels: ['app'], warrantyUntil: iso(installedAt + 365 * DAY),
+    lastMaintenanceAt: null, nextMaintenanceAt: iso(installedAt + 180 * DAY), uptimePct: 99.8, sensorFaults: 0, floor: { x: 91, y: 60 },
+  });
+  sensors.push({ id: 'sen-001', deviceId: 'dev-001', outletId: outlet.id, name: 'Sales Area Temp & RH', type: 'TEMPERATURE_HUMIDITY', portKind: 'digital', portIndex: 1, unit: '°C', enabled: true, floor: { x: 50, y: 52 }, thresholds: { min: 18, max: 28, humidityMin: 30, humidityMax: 60 } });
 }
-function makePorts(model: string) {
-  const dt = deviceTypes.find((d) => d.model === model)!;
-  const ports: any[] = [];
-  for (const p of dt.ports) for (let i = 1; i <= p.count; i++) ports.push({ index: i, kind: p.kind, label: `${p.kind[0]!.toUpperCase()}${p.kind.slice(1)} ${i}`, sensorId: null });
-  return ports;
-}
-function addDevice(outlet: any, model: string, secondary = false) {
-  devN++;
-  const dt = deviceTypes.find((d) => d.model === model)!;
-  const hex = () => pad(rint(0, 255).toString(16).toUpperCase(), 2).replace(/^0(?=[0-9A-F]{2})/, '0');
-  const mac = `00:80:A3:${hex()}:${hex()}:${hex()}`;
-  const serial = `${model === 'RA12S' ? 'RA12' : 'RA3'}-F${pad(rint(60000, 99999), 5)}-${model}`;
-  const online = !chance(0.1);
-  const lastPush = online ? NOW - rint(0, 10) * MIN : NOW - rint(3, 30) * HOUR;
-  const dev: any = {
-    id: `dev-${pad(devN)}`,
-    outletId: outlet.id,
-    deviceTypeId: dt.id,
-    model,
-    serial,
-    mac,
-    ip: `192.168.${rint(10, 60)}.${rint(20, 250)}`,
-    firmware: model === 'RA12S' ? (chance(0.7) ? 'v3.3.0' : 'v3.2.1') : (chance(0.7) ? 'v2.9.1' : 'v2.8.4'),
-    status: online ? 'online' : 'offline',
-    lastPushAt: iso(lastPush),
-    installedAt: iso(NOW - rint(60, 400) * DAY),
-    pushIntervalSec: 300,
-    ports: makePorts(model),
-    channels: ['app'],
-    warrantyUntil: '',
-    lastMaintenanceAt: null,
-    nextMaintenanceAt: '',
-    uptimePct: online ? round2(97 + rnd() * 3) : round2(80 + rnd() * 12),
-    sensorFaults: chance(0.12) ? 1 : 0,
-    floor: { x: DEVICE_POS[secondary ? 1 : 0]![0], y: DEVICE_POS[secondary ? 1 : 0]![1] },
-  };
-  const installedMs = Date.parse(dev.installedAt);
-  dev.warrantyUntil = iso(installedMs + 3 * 365 * DAY);
-  const lastM = chance(0.85) ? installedMs + rint(1, 6) * 30 * DAY : null;
-  dev.lastMaintenanceAt = lastM && lastM < NOW ? iso(lastM) : null;
-  dev.nextMaintenanceAt = iso((dev.lastMaintenanceAt ? Date.parse(dev.lastMaintenanceAt) : installedMs) + 180 * DAY);
-  devices.push(dev);
-  if (model === 'RA12S') {
-    addSensor(dev, 'TEMPERATURE_HUMIDITY', 'digital', 1, 0);
-    if (chance(0.4)) addSensor(dev, 'TEMPERATURE_HUMIDITY', 'digital', 2, 1);
-    addSensor(dev, 'DOOR', 'switch', 1, 0);
-    addSensor(dev, 'MOTION', 'switch', 2, 0);
-    if (chance(0.7)) addSensor(dev, 'POWER', 'switch', 3, 0);
-    if (chance(0.5)) addSensor(dev, 'PANIC_BUTTON', 'switch', 4, 0);
-  } else {
-    addSensor(dev, 'TEMPERATURE_HUMIDITY', 'digital', 1, secondary ? 1 : 0);
-    addSensor(dev, secondary ? 'MOTION' : 'DOOR', 'switch', 1, secondary ? 1 : 0);
-  }
-  return dev;
-}
-outlets.forEach((o, i) => {
-  const model = chance(0.6) ? 'RA12S' : 'RA3S';
-  addDevice(o, model);
-  if (i % 5 === 2) addDevice(o, 'RA3S', true); // 6 outlets get a second device
-});
 
 // ---------- employees ----------
 let empN = 0;
@@ -262,6 +178,16 @@ const demoEmployee = {
   avatarColor: '#9b1c1c',
 };
 employees.unshift(demoEmployee);
+// The sign-ins migration 0004 seeds and the README lists, pinned so `pnpm db:seed` loads the same
+// accounts whatever the random draws above produced.
+const PINNED_EMPLOYEES: Record<string, object> = {
+  'emp-101': { name: 'Dewi Kusuma', phone: '086063424748', email: 'dewi.kusuma101@indomaret.co.id', registrationToken: '5519965858', avatarColor: '#4d7c0f' },
+  'emp-136': { name: 'Dian Gunawan', phone: '083212810675', email: 'dian.gunawan136@indomaret.co.id', registrationToken: '3553120696', avatarColor: '#be185d' },
+};
+for (const e of employees) {
+  const pinned = PINNED_EMPLOYEES[e.id];
+  if (pinned) Object.assign(e, pinned, { role: 'store_manager', registrationStatus: 'approved', approvedAt: e.approvedAt ?? e.registeredAt });
+}
 
 // ---------- contact persons ----------
 let cpN = 0;
@@ -278,33 +204,20 @@ for (const s of sensors) sensorsByOutlet.set(s.outletId, [...(sensorsByOutlet.ge
 const employeesByOutlet = new Map<string, any[]>();
 for (const e of employees) for (const oid of e.outletIds) employeesByOutlet.set(oid, [...(employeesByOutlet.get(oid) ?? []), e]);
 
-function makeAlert(outlet: any, triggerMs: number, forceOpen = false) {
-  const outletSensors = sensorsByOutlet.get(outlet.id)!;
-  const hour = localHour(triggerMs);
-  const isOpenHours = hour >= 7 && hour < 22;
-  let category: string, sensor: any, triggerValue: string, clearValue: string, message: string;
-  if (isOpenHours) {
-    category = 'COMFORT';
-    sensor = pick(outletSensors.filter((s) => s.type === 'TEMPERATURE_HUMIDITY'));
-    if (chance(0.7)) {
-      const v = round2(28 + rnd() * 5);
-      triggerValue = `${v.toFixed(2)} °C`; clearValue = `${round2(25 + rnd() * 2.5).toFixed(2)} °C`; message = 'Temperature above 28.00 °C';
-    } else {
-      const v = round2(61 + rnd() * 14);
-      triggerValue = `${v.toFixed(1)} %RH`; clearValue = `${round2(50 + rnd() * 8).toFixed(1)} %RH`; message = 'Humidity above 60.0 %RH';
-    }
+function makeAlert(outlet: any, triggerMs: number) {
+  const sensor = pick(sensorsByOutlet.get(outlet.id)!);
+  const category = 'COMFORT';
+  let triggerValue: string, clearValue: string, message: string;
+  if (chance(0.7)) {
+    const v = round2(28 + rnd() * 5);
+    triggerValue = `${v.toFixed(2)} °C`; clearValue = `${round2(25 + rnd() * 2.5).toFixed(2)} °C`; message = 'Temperature above 28.00 °C';
   } else {
-    category = 'SECURITY';
-    const pool = outletSensors.filter((s) => s.type === 'DOOR' || s.type === 'MOTION' || s.type === 'POWER');
-    sensor = pick(pool);
-    if (sensor.type === 'DOOR') { triggerValue = 'OPEN'; clearValue = 'CLOSED'; message = 'Door opened outside operational hours'; }
-    else if (sensor.type === 'MOTION') { triggerValue = 'MOTION DETECTED'; clearValue = 'NO MOTION'; message = 'Motion detected outside operational hours'; }
-    else { triggerValue = 'POWER LOST'; clearValue = 'POWER OK'; message = 'Main power lost'; }
+    const v = round2(61 + rnd() * 14);
+    triggerValue = `${v.toFixed(1)} %RH`; clearValue = `${round2(50 + rnd() * 8).toFixed(1)} %RH`; message = 'Humidity above 60.0 %RH';
   }
   const age = NOW - triggerMs;
   let status: string;
-  if (forceOpen) status = 'TRIGGERED';
-  else if (age < 2 * DAY) { const r = rnd(); status = r < 0.45 ? 'TRIGGERED' : r < 0.8 ? 'RESPONDED' : 'CLEARED'; }
+  if (age < 2 * DAY) { const r = rnd(); status = r < 0.45 ? 'TRIGGERED' : r < 0.8 ? 'RESPONDED' : 'CLEARED'; }
   else status = 'CLEARED';
 
   let response: any = null;
@@ -317,11 +230,9 @@ function makeAlert(outlet: any, triggerMs: number, forceOpen = false) {
       const emp = pick(responders);
       const notes = pick([
         'Checked the area, AC unit restarted. Temperature normalising.',
-        'Door was left ajar by delivery staff. Closed and locked.',
-        'False alarm, motion from cleaning crew. Verified via CCTV.',
-        'Power tripped at MCB, reset and confirmed all equipment running.',
+        'Chiller door left open during restock. Closed it, temperature dropping.',
         'Cooler area humid after mopping, ventilation turned on.',
-        'Verified on site, no anomaly found. Sensor cable re-seated.',
+        'Verified on site, no anomaly found. Probe cable re-seated.',
       ]);
       response = { employeeId: emp.id, notes, photoUrls: chance(0.35) ? [`photos/proof-0${rint(1, 3)}.svg`] : [], respondedAt: iso(respondedAt), responseDurationSec: durSec };
     } else if (status === 'RESPONDED') status = 'TRIGGERED';
@@ -351,7 +262,7 @@ function makeAlert(outlet: any, triggerMs: number, forceOpen = false) {
   });
 }
 const todayStart = startOfLocalDay(NOW);
-for (const o of outlets) {
+for (const o of outlets.filter((x) => sensorsByOutlet.has(x.id))) {
   for (let d = 29; d >= 0; d--) {
     const dayStart = todayStart - d * DAY;
     const r = rnd();
@@ -362,13 +273,6 @@ for (const o of outlets) {
     }
   }
 }
-// guarantee >= 3 open alerts on the demo employee's outlets, recent
-const demoOutlets = outlets.filter((o) => demoEmployee.outletIds.includes(o.id));
-const openOnDemo = () => alerts.filter((a) => demoEmployee.outletIds.includes(a.outletId) && a.status === 'TRIGGERED').length;
-let guard = 0;
-while (openOnDemo() < 4 && guard++ < 20) makeAlert(pick(demoOutlets), NOW - rint(6, 300) * MIN, true);
-// one alert that is exactly "Today, 13:24" style (6 minutes ago) on out-001 for the mockup
-makeAlert(outlets[0], NOW - 6 * MIN, true);
 
 alerts.sort((a, b) => Date.parse(a.triggerTime) - Date.parse(b.triggerTime));
 alerts.forEach((a, i) => (a.id = 5723509 + i));
@@ -400,16 +304,19 @@ for (const s of sensors.filter((x) => x.type === 'TEMPERATURE_HUMIDITY')) {
 const technicians: any[] = [];
 let techN = 0;
 for (const d of DIST) {
-  for (const spec of ['Room Alert hardware', 'Network & connectivity', 'Sensor calibration']) {
+  for (const spec of ['AKCP hardware', 'Network & connectivity', 'Sensor calibration']) {
     techN++;
     const tname = `${pick(FIRST)} ${pick(LAST)}`;
     technicians.push({ id: `tech-${pad(techN)}`, distributorId: d.id, name: tname, phone: phone(), specialty: spec, avatarColor: pick(AVATAR), email: `${tname.toLowerCase().replace(/\s+/g, '.')}@wit.id`, registrationToken: token() });
   }
 }
-// demo technician account
-technicians[0].name = 'Andi Saputra';
-technicians[0].email = 'tech@wit.id';
-technicians[0].registrationToken = '2468013579';
+// The technician sign-ins migration 0004 seeds and the README lists, pinned like the employees.
+const PINNED_TECHNICIANS: Record<string, object> = {
+  'tech-001': { name: 'Andi Saputra', phone: '086811216865', avatarColor: '#6d28d9', email: 'tech@wit.id', registrationToken: '2468013579' },
+  'tech-004': { name: 'Eko Purnama', phone: '086711176657', avatarColor: '#9b1c1c', email: 'eko.purnama@wit.id', registrationToken: '6893220859' },
+  'tech-007': { name: 'Intan Pratama', phone: '089516427089', avatarColor: '#4d7c0f', email: 'intan.pratama@wit.id', registrationToken: '4589475365' },
+};
+for (const t of technicians) Object.assign(t, PINNED_TECHNICIANS[t.id] ?? {});
 const techsByDist = new Map<string, any[]>();
 for (const t of technicians) techsByDist.set(t.distributorId, [...(techsByDist.get(t.distributorId) ?? []), t]);
 
@@ -448,7 +355,7 @@ for (const dev of devices) {
   }
   // outdated firmware -> firmware ticket
   if (dev.firmware !== dt.latestFirmware) {
-    addTicket(dev, 'FIRMWARE', 'LOW', chance(0.6) ? 'OPEN' : 'SCHEDULED', `Firmware ${dev.firmware} → ${dt.latestFirmware}`, 'Download the latest firmware from the Room Alert account and flash the unit during operational hours.', { createdAgoDays: rint(2, 20), scheduledInDays: rint(3, 21) });
+    addTicket(dev, 'FIRMWARE', 'LOW', chance(0.6) ? 'OPEN' : 'SCHEDULED', `Firmware ${dev.firmware} → ${dt.latestFirmware}`, 'Download the latest firmware from AKCP support and flash the unit during operational hours.', { createdAgoDays: rint(2, 20), scheduledInDays: rint(3, 21) });
   }
   // sensor fault -> replacement
   if (dev.sensorFaults) {
@@ -458,7 +365,7 @@ for (const dev of devices) {
   // overdue / upcoming preventive
   const nextMs = Date.parse(dev.nextMaintenanceAt);
   if (nextMs < NOW + 30 * DAY) {
-    addTicket(dev, 'PREVENTIVE', nextMs < NOW ? 'MEDIUM' : 'LOW', nextMs < NOW ? 'OPEN' : 'SCHEDULED', 'Semi-annual preventive check', 'Clean the unit, verify all sensor readings against a reference thermometer, test door/motion contacts, confirm push interval and email/HTTP alert delivery.', { createdAgoDays: rint(1, 5), scheduledInDays: Math.max(1, Math.round((nextMs - NOW) / DAY)) });
+    addTicket(dev, 'PREVENTIVE', nextMs < NOW ? 'MEDIUM' : 'LOW', nextMs < NOW ? 'OPEN' : 'SCHEDULED', 'Semi-annual preventive check', 'Clean the unit and the probe, verify the readings against a reference thermometer, and confirm the unit still publishes to the MQTT broker.', { createdAgoDays: rint(1, 5), scheduledInDays: Math.max(1, Math.round((nextMs - NOW) / DAY)) });
   }
   // history: completed tickets
   if (dev.lastMaintenanceAt) {

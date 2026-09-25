@@ -4,7 +4,7 @@ import { Map as MapIcon, Radio, Wifi, WifiOff } from 'lucide-react';
 import type { Sensor } from '@monitoring/types';
 import { SENSOR_STATE_LABEL, SENSOR_TYPE_LABEL } from '@monitoring/types';
 import { Badge, FloorLegend, FloorPlan, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@monitoring/ui';
-import { deviceHealth, fmtAgo, outsideLimits } from '@monitoring/fixtures';
+import { deviceHealth, fmtAgo, outsideLimits, unitName } from '@monitoring/fixtures';
 import { latestReadingBySensor } from '../state/readings';
 import { useAuth } from '../auth/auth';
 import { useMobileScope } from '../state/app-state';
@@ -37,7 +37,7 @@ export function DevicesPage() {
   if (!outlets.length) return null;
   return (
     <div className="space-y-5">
-      <header className="pt-3"><h1 className="text-[28px] font-bold leading-tight tracking-tight">Devices<span className="text-brand-600">.</span></h1><p className="mt-0.5 text-sm text-muted">Room Alert units at your outlets</p></header>
+      <header className="pt-3"><h1 className="text-[28px] font-bold leading-tight tracking-tight">Devices<span className="text-brand-600">.</span></h1><p className="mt-0.5 text-sm text-muted">AKCP units at your outlets</p></header>
       <Tabs value={tab} onValueChange={(v) => { setTab(v); setMarkerId(null); }}>
         <TabsList variant="pill" className="w-full overflow-x-auto p-1.5">{outlets.map((o) => <TabsTrigger key={o.id} value={o.id} className="h-10 flex-1">{o.name.replace('Indomaret ', '')}</TabsTrigger>)}</TabsList>
         {outlets.map((o) => (
@@ -64,7 +64,7 @@ export function DevicesPage() {
                   <div className="flex items-center gap-3">
                     <span className={cn('flex size-11 items-center justify-center rounded-full', online ? 'bg-ink text-white' : 'bg-surface text-muted')}>{online ? <Wifi className="size-5" /> : <WifiOff className="size-5" />}</span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[15px] font-bold">Room Alert {d.model.replace('RA', '')}</p>
+                      <p className="truncate text-[15px] font-bold">{unitName(d.model)}</p>
                       <p className="truncate font-mono text-[11px] text-muted">{d.serial}</p>
                     </div>
                     {(() => { const h = deviceHealth(d); return <Badge variant={h.status === 'healthy' ? 'success' : h.status === 'attention' ? 'warning' : 'brand'} dot>{h.status === 'healthy' ? 'Healthy' : h.status === 'attention' ? 'Attention' : 'Critical'}</Badge>; })()}

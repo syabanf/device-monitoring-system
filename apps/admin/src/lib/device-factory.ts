@@ -11,7 +11,12 @@ export const DEFAULT_SENSORS: { type: SensorType; name: string; portKind: 'digit
 ];
 const hex = () => Math.floor(Math.random() * 256).toString(16).toUpperCase().padStart(2, '0');
 
-export function buildDevice(opts: { outletId: string; type: DeviceType; serial?: string; ip?: string; sensorTypes: SensorType[]; secondary?: boolean }): { device: Device; sensors: Sensor[] } {
+/** A serial in the shape AKCP prints on its units, for example SP1P-DE4001. */
+export function defaultSerial(model: string): string {
+  return `${model.replace('+', 'P')}-${hex()}${hex()}${hex()}`;
+}
+
+export function buildDevice(opts: { outletId: string; type: DeviceType; serial?: string; mac?: string; ip?: string; sensorTypes: SensorType[]; secondary?: boolean }): { device: Device; sensors: Sensor[] } {
   const { outletId, type } = opts;
   const id = newId('dev');
   const ports: Device['ports'] = [];
@@ -28,7 +33,7 @@ export function buildDevice(opts: { outletId: string; type: DeviceType; serial?:
     sensors.push({ id: sid, deviceId: id, outletId, name: s.name, type: s.type, portKind: s.portKind, portIndex: counters[s.portKind], unit: s.portKind === 'digital' ? '°C' : 'state', thresholds: s.portKind === 'digital' ? { min: 18, max: 28, humidityMin: 30, humidityMax: 60 } : undefined, enabled: true, floor: { x: s.x, y: s.y } });
   }
   const device: Device = {
-    id, outletId, deviceTypeId: type.id, model: type.model, serial: opts.serial?.trim() || `${type.model.replace(/[SEW]$/, '')}-F${Math.floor(60000 + Math.random() * 39999)}-${type.model}`, mac: `00:80:A3:${hex()}:${hex()}:${hex()}`, ip: opts.ip?.trim() || `192.168.${10 + Math.floor(Math.random() * 50)}.${20 + Math.floor(Math.random() * 230)}`, firmware: type.latestFirmware, status: 'online', lastPushAt: nowIso(), installedAt: nowIso(), pushIntervalSec: 300, ports, channels: ['app'],
+    id, outletId, deviceTypeId: type.id, model: type.model, serial: opts.serial?.trim() || defaultSerial(type.model), mac: opts.mac?.trim() ?? '', ip: opts.ip?.trim() || `192.168.${10 + Math.floor(Math.random() * 50)}.${20 + Math.floor(Math.random() * 230)}`, firmware: type.latestFirmware, status: 'online', lastPushAt: nowIso(), installedAt: nowIso(), pushIntervalSec: 300, ports, channels: ['app'],
     warrantyUntil: '2029-09-07T00:00:00+07:00', lastMaintenanceAt: null, nextMaintenanceAt: '2027-03-06T00:00:00+07:00', uptimePct: 100, sensorFaults: 0, floor: { x: 91, y: opts.secondary ? 24 : 60 },
   };
   return { device, sensors };

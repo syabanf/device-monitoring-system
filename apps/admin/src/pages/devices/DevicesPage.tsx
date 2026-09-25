@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import type { Device } from '@monitoring/types';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, DataTable, FloorLegend, FloorPlan, Input, PageHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, cn, type Column } from '@monitoring/ui';
 import { useFloorMarkers } from '../../components/useFloorMarkers';
-import { fmtAgo } from '@monitoring/fixtures';
+import { fmtAgo, unitName } from '@monitoring/fixtures';
 import { outletById } from '../../state/lookups';
 import { useScoped } from '../../state/app-state';
 import { DeviceStatusBadge } from '../../components/badges';
@@ -34,7 +34,7 @@ export function DevicesPage() {
 
   const columns: Column<Device>[] = [
     { key: 'serial', header: 'Device', cell: (d) => <div><p className="font-mono text-xs font-semibold">{d.serial}</p><p className="font-mono text-[11px] text-muted">{d.mac}</p></div>, sortValue: (d) => d.serial },
-    { key: 'model', header: 'Model', cell: (d) => `Room Alert ${d.model.replace('RA', '')}`, sortValue: (d) => d.model },
+    { key: 'model', header: 'Model', cell: (d) => unitName(d.model), sortValue: (d) => d.model },
     { key: 'outlet', header: 'Outlet', cell: (d) => outletById.get(d.outletId)?.name ?? d.outletId, sortValue: (d) => outletById.get(d.outletId)?.name ?? '' },
     { key: 'ip', header: 'IP', cell: (d) => <span className="font-mono text-xs">{d.ip}</span> },
     { key: 'sensors', header: 'Sensors', cell: (d) => (sensorsByDevice.get(d.id) ?? []).length, sortValue: (d) => (sensorsByDevice.get(d.id) ?? []).length },
@@ -55,7 +55,7 @@ export function DevicesPage() {
     <div>
       <PageHeader
         title="Devices"
-        description={`${all.length} Room Alert units · ${all.filter((d) => d.status === 'offline').length} offline`}
+        description={`${all.length} AKCP unit${all.length === 1 ? '' : 's'} · ${all.filter((d) => d.status === 'offline').length} offline`}
         actions={
           <>
             <Select value={status} onValueChange={(v) => update({ status: v === 'all' ? null : v })}>
@@ -91,7 +91,7 @@ export function DevicesPage() {
               {all.filter((d) => d.outletId === floorOutlet).map((d) => (
                 <div key={d.id} className={cn('rounded-2xl p-3', markerId === d.id ? 'bg-ink text-white' : 'bg-surface-2')}>
                   <button type="button" onClick={() => setMarkerId(d.id)} className="flex w-full items-center gap-3 text-left">
-                    <span className="min-w-0 flex-1"><span className="block font-mono text-xs font-semibold">{d.serial}</span><span className={cn('block text-xs', markerId === d.id ? 'text-white/70' : 'text-muted')}>Room Alert {d.model.replace('RA', '')} · x {d.floor.x}% y {d.floor.y}%</span></span>
+                    <span className="min-w-0 flex-1"><span className="block font-mono text-xs font-semibold">{d.serial}</span><span className={cn('block text-xs', markerId === d.id ? 'text-white/70' : 'text-muted')}>{unitName(d.model)} · x {d.floor.x}% y {d.floor.y}%</span></span>
                     <DeviceStatusBadge status={d.status} />
                   </button>
                   <div className="mt-2 flex flex-wrap gap-1.5">

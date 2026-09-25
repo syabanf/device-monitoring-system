@@ -40,7 +40,6 @@ const (
 	techMail     = "tech@test.id"
 	employeeTok  = "1111111111"
 	techTok      = "2222222222"
-	hookSecret   = "test-webhook-secret"
 )
 
 var (
@@ -69,7 +68,7 @@ func TestMain(m *testing.M) {
 	}
 
 	cfg := config.Config{
-		Env: "test", LogLevel: "error", JWTSecret: []byte(strings.Repeat("k", 40)), WebhookSecret: hookSecret,
+		Env: "test", LogLevel: "error", JWTSecret: []byte(strings.Repeat("k", 40)),
 		CORSOrigins: []string{"http://localhost:5173"}, AccessTokenTTL: time.Hour, DeviceTokenTTL: time.Hour,
 	}
 	uploadDir, err := os.MkdirTemp("", "monitoring-uploads")

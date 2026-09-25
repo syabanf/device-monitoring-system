@@ -92,7 +92,7 @@ func run(migrateOnly bool) error {
 	queue.SetHandler(jobs.Dispatcher(db, notify.Noop{Log: log}, log))
 	defer func() { _ = queue.Close() }()
 
-	// The AKCP units publish over MQTT instead of calling a webhook, so the process holds one
+	// The AKCP units publish over MQTT rather than calling this API, so the process holds one
 	// subscription to their broker for the whole fleet.
 	var mqttStatus func() akcp.Status
 	if cfg.MQTT.BrokerURL != "" {

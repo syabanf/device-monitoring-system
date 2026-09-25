@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -21,29 +20,12 @@ import (
 )
 
 // Config mirrors the shape the admin app already uses, minus the adapter mode, which belongs
-// to the browser rather than the server.
+// to the browser rather than the server. The MQTT broker is not here: it lives in the API
+// environment, and ConfigView reports its connection instead.
 type Config struct {
-	APIBaseURL  string        `json:"apiBaseUrl"`
-	WebhookPath string        `json:"webhookPath"`
-	RoomAlert   RoomAlertConf `json:"roomAlert"`
-	IMAP        IMAPConf      `json:"imap"`
-	Telegram    TelegramConf  `json:"telegram"`
-	Push        PushConf      `json:"push"`
-}
-
-type RoomAlertConf struct {
-	AccountEmail    string `json:"accountEmail"`
-	PushIntervalSec int    `json:"pushIntervalSec"`
-	Enabled         bool   `json:"enabled"`
-}
-
-type IMAPConf struct {
-	Host    string `json:"host"`
-	Port    int    `json:"port"`
-	User    string `json:"user"`
-	Folder  string `json:"folder"`
-	PollSec int    `json:"pollSec"`
-	Enabled bool   `json:"enabled"`
+	APIBaseURL string       `json:"apiBaseUrl"`
+	Telegram   TelegramConf `json:"telegram"`
+	Push       PushConf     `json:"push"`
 }
 
 type TelegramConf struct {
@@ -58,11 +40,8 @@ type PushConf struct {
 }
 
 var defaults = Config{
-	APIBaseURL:  "http://localhost:3000",
-	WebhookPath: "/webhooks/roomalert",
-	RoomAlert:   RoomAlertConf{AccountEmail: "", PushIntervalSec: 300, Enabled: true},
-	IMAP:        IMAPConf{Host: "imap.gmail.com", Port: 993, Folder: "INBOX/RoomAlert", PollSec: 60},
-	Push:        PushConf{Provider: "fcm", Enabled: true},
+	APIBaseURL: "http://localhost:3000",
+	Push:       PushConf{Provider: "fcm", Enabled: true},
 }
 
 // Secrets never travel back to the browser; the page shows whether one is set. MQTT is read
@@ -220,25 +199,8 @@ func (s Service) Unmatched(ctx context.Context, limit int) ([]UnmatchedEvent, er
 // push have no client yet, so they say so rather than pretending to succeed.
 func (s Service) Test(ctx context.Context, channel string) (TestResult, error) {
 	started := time.Now()
-	cfg, err := s.stored(ctx)
-	if err != nil {
-		return TestResult{}, err
-	}
 	result := TestResult{}
 	switch channel {
-	case "roomalert":
-		var recent int
-		if err := s.db.QueryRow(ctx, `SELECT count(*) FROM request_log WHERE channel = 'roomalert' AND at > now() - interval '24 hours'`).
-			Scan(&recent); err != nil {
-			return TestResult{}, err
-		}
-		result = TestResult{OK: true, Message: "Webhook endpoint is mounted, " + strconv.Itoa(recent) + " call(s) in the last 24 hours"}
-	case "email":
-		if !cfg.IMAP.Enabled {
-			result = TestResult{Message: "IMAP is disabled in the settings"}
-		} else {
-			result = TestResult{Message: "The IMAP poller is not implemented yet, post to /webhooks/email meanwhile"}
-		}
 	case "akcp":
 		st := s.subscriber()
 		switch {
@@ -258,7 +220,7 @@ func (s Service) Test(ctx context.Context, channel string) (TestResult, error) {
 	case "push":
 		result = TestResult{Message: "No push client yet, the outbox logs the notification instead"}
 	default:
-		return TestResult{}, httpx.BadRequest("UNKNOWN_CHANNEL", "channel must be roomalert, akcp, email, telegram or push")
+		return TestResult{}, httpx.BadRequest("UNKNOWN_CHANNEL", "channel must be akcp, telegram or push")
 	}
 	result.MS = int(time.Since(started).Milliseconds())
 

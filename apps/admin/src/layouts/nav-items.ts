@@ -40,5 +40,5 @@ export function pageTitle(pathname: string): string {
   if (pathname.startsWith('/reports')) return 'Reports';
   if (pathname.startsWith('/integration')) return 'API Integration';
   if (pathname.startsWith('/setup')) return 'Setup Wizard';
-  return 'Room Alert';
+  return 'Outlet Monitoring';
 }

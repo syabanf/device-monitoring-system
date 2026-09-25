@@ -37,7 +37,10 @@ func main() {
 }
 
 func run(broker, mac string, every time.Duration, critical, once bool) error {
-	opts := mqtt.NewClientOptions().AddBroker(broker).SetClientID("akcp-sim-" + mac).SetConnectTimeout(10 * time.Second)
+	// A random suffix keeps a one-off run from knocking the always-on demo publisher off the broker
+	// when both use the same MAC: the broker allows one connection per client id.
+	id := fmt.Sprintf("akcp-sim-%s-%04x", mac, rand.IntN(1<<16))
+	opts := mqtt.NewClientOptions().AddBroker(broker).SetClientID(id).SetConnectTimeout(10 * time.Second)
 	client := mqtt.NewClient(opts)
 	token := client.Connect()
 	token.Wait()
@@ -73,7 +76,9 @@ func publish(client mqtt.Client, mac string, critical bool) {
 		"timestamp": time.Now().Unix(), "value": round(temp, 1), "status": status,
 	})
 	send(client, mac, "value_change", "0.1.0.5.1", map[string]any{
-		"timestamp": time.Now().Unix(), "value": round(60+rand.Float64()*8, 0),
+		// 50-58 %RH stays under the 60 %RH limit the demo sensors carry, so a round opens no
+		// humidity alert of its own and the temperature verdict is what the alerts show.
+		"timestamp": time.Now().Unix(), "value": round(50+rand.Float64()*8, 0),
 	})
 }
 

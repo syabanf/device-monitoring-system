@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link } from 'react-router';
 import { ChevronRight, Cpu, Plus, Wrench } from 'lucide-react';
 import { HEALTH_LABEL } from '@monitoring/types';
-import { Avatar, Badge, Button, EmptyState, cn } from '@monitoring/ui';
+import { Avatar, Button, EmptyState, cn } from '@monitoring/ui';
 import { deviceHealth, isTicketOpen, isTicketOverdue } from '@monitoring/fixtures';
 import { outletById } from '../state/lookups';
 import { useAuth } from '../auth/auth';
@@ -74,7 +74,6 @@ export function MaintenancePage() {
       {!isTech ? (
         <Link to="/devices" className="flex items-center gap-3 rounded-[24px] bg-sky-100 p-4"><span className="flex size-10 items-center justify-center rounded-full bg-white text-sky-500"><Cpu className="size-5" /></span><span className="min-w-0 flex-1"><span className="block text-sm font-semibold">Where is everything installed?</span><span className="block text-xs text-body/70">Open the floor plan under Devices</span></span><ChevronRight className="size-4 text-body/50" /></Link>
       ) : null}
-      <Badge variant="muted" className="mx-auto flex w-fit">Session-only data · no backend yet</Badge>
     </div>
   );
 }

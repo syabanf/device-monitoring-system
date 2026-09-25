@@ -32,11 +32,14 @@ var defaultSensors = []sensorSpec{
 }
 
 type CreateInput struct {
-	OutletID     string              `json:"outletId"`
-	DeviceTypeID string              `json:"deviceTypeId"`
-	Serial       string              `json:"serial"`
-	IP           string              `json:"ip"`
-	SensorTypes  []domain.SensorType `json:"sensorTypes"`
+	OutletID     string `json:"outletId"`
+	DeviceTypeID string `json:"deviceTypeId"`
+	Serial       string `json:"serial"`
+	// MAC is the address printed on the unit. It publishes the same address in every MQTT topic,
+	// which is how a message finds its device, so a real unit needs it. Empty gets a placeholder.
+	MAC         string              `json:"mac"`
+	IP          string              `json:"ip"`
+	SensorTypes []domain.SensorType `json:"sensorTypes"`
 }
 
 func (i CreateInput) Validate() error {
@@ -96,7 +99,10 @@ func validLimits(t *domain.SensorThresholds) error {
 
 // UpdateInput is what the edit dialog and the shopfloor position editor send.
 type UpdateInput struct {
-	OutletID          string              `json:"outletId"`
+	OutletID string `json:"outletId"`
+	// Serial and MAC keep their stored value when left empty.
+	Serial            string              `json:"serial"`
+	MAC               string              `json:"mac"`
 	IP                string              `json:"ip"`
 	Firmware          string              `json:"firmware"`
 	Status            domain.DeviceStatus `json:"status"`
@@ -219,6 +225,16 @@ func (s Service) Create(ctx context.Context, in CreateInput) (WithSensors, error
 		sensors = append(sensors, sensor)
 	}
 
+	serial, mac := orGenerated(in.Serial, string(deviceType.Model)), randomMAC()
+	if in.MAC != "" {
+		if mac, err = normalizeMAC(in.MAC); err != nil {
+			return WithSensors{}, err
+		}
+	}
+	if err := s.checkIdentity(ctx, serial, mac, ""); err != nil {
+		return WithSensors{}, err
+	}
+
 	atOutlet, err := s.repo.CountAtOutlet(ctx, in.OutletID)
 	if err != nil {
 		return WithSensors{}, err
@@ -226,7 +242,7 @@ func (s Service) Create(ctx context.Context, in CreateInput) (WithSensors, error
 	now := s.ctx.Now
 	device := domain.Device{
 		ID: deviceID, OutletID: in.OutletID, DeviceTypeID: deviceType.ID, Model: deviceType.Model,
-		Serial: orGenerated(in.Serial, string(deviceType.Model)), MAC: randomMAC(), IP: orGeneratedIP(in.IP),
+		Serial: serial, MAC: mac, IP: orGeneratedIP(in.IP),
 		Firmware: deviceType.LatestFirmware, Status: domain.DeviceOnline, LastPushAt: now, InstalledAt: now,
 		PushIntervalSec: 300, Ports: ports, Channels: []domain.Channel{"app"},
 		WarrantyUntil:     now.AddDate(3, 0, 0),
@@ -255,6 +271,18 @@ func (s Service) Update(ctx context.Context, id string, in UpdateInput) (WithSen
 	}
 	if !ok {
 		return WithSensors{}, httpx.NotFound("Outlet", in.OutletID)
+	}
+
+	if serial := strings.TrimSpace(in.Serial); serial != "" {
+		device.Serial = serial
+	}
+	if in.MAC != "" {
+		if device.MAC, err = normalizeMAC(in.MAC); err != nil {
+			return WithSensors{}, err
+		}
+	}
+	if err := s.checkIdentity(ctx, device.Serial, device.MAC, id); err != nil {
+		return WithSensors{}, err
 	}
 
 	device.OutletID = in.OutletID
@@ -347,14 +375,43 @@ func randomInt(max int64) int64 {
 }
 
 func randomMAC() string {
-	return fmt.Sprintf("00:80:A3:%02X:%02X:%02X", randomInt(256), randomInt(256), randomInt(256))
+	return fmt.Sprintf("00:0B:DC:%02X:%02X:%02X", randomInt(256), randomInt(256), randomInt(256)) // AKCP's prefix
 }
 
 func orGenerated(serial, model string) string {
 	if s := strings.TrimSpace(serial); s != "" {
 		return s
 	}
-	return fmt.Sprintf("%s-F%05d-%s", strings.TrimSuffix(model, "S"), 60000+randomInt(39999), model)
+	return fmt.Sprintf("%s-%06X", strings.ReplaceAll(model, "+", "P"), randomInt(1<<24)) // SP1P-DE4001
+}
+
+// normalizeMAC accepts a MAC typed with colons, dashes, dots or nothing between the pairs, in
+// either case, and stores it one way, so the device list reads the same whoever typed it.
+func normalizeMAC(v string) (string, error) {
+	hex := strings.ToUpper(strings.NewReplacer(":", "", "-", "", ".", "", " ", "").Replace(v))
+	if len(hex) != 12 || strings.Trim(hex, "0123456789ABCDEF") != "" {
+		return "", httpx.BadRequest("INVALID_MAC", "MAC must be 12 hexadecimal digits, for example 00:0B:DC:DE:40:01")
+	}
+	pairs := make([]string, 6)
+	for i := range pairs {
+		pairs[i] = hex[i*2 : i*2+2]
+	}
+	return strings.Join(pairs, ":"), nil
+}
+
+// checkIdentity refuses a serial or MAC another device already holds. Both are unique across every
+// distribution center, since a unit is one physical box wherever it is installed.
+func (s Service) checkIdentity(ctx context.Context, serial, mac, exceptID string) error {
+	field, err := s.repo.Clash(ctx, serial, mac, exceptID)
+	switch {
+	case err != nil:
+		return err
+	case field == "mac":
+		return httpx.Conflict("MAC_ALREADY_USED", "Another device already uses MAC "+mac)
+	case field == "serial":
+		return httpx.Conflict("SERIAL_ALREADY_USED", "Another device already uses serial "+serial)
+	}
+	return nil
 }
 
 func orGeneratedIP(ip string) string {

@@ -159,7 +159,7 @@ export function DashboardPage() {
       {showSetup ? (
         <div className="flex flex-wrap items-center gap-3 rounded-card bg-sky-100 px-4 py-3">
           <span className="flex size-9 items-center justify-center rounded-full bg-white text-sky-500"><WandIcon className="size-4" /></span>
-          <p className="min-w-[12rem] flex-1 text-sm"><span className="font-semibold">New distribution center?</span> <span className="text-body/70">Run the setup wizard to add outlets, Room Alert units, employees and the API integration in one go.</span></p>
+          <p className="min-w-[12rem] flex-1 text-sm"><span className="font-semibold">New distribution center?</span> <span className="text-body/70">Run the setup wizard to add outlets, AKCP units, employees and the notification channels in one go.</span></p>
           <Button asChild size="sm"><Link to="/setup">Start setup</Link></Button>
           <Button variant="ghost" size="icon" className="size-8" aria-label="Dismiss" onClick={() => setShowSetup(false)}><X /></Button>
         </div>

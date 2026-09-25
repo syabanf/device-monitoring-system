@@ -45,7 +45,7 @@ export function AlertDetailPage() {
   const targetSeconds = alert.category === 'SECURITY' ? 5 * 60 : 15 * 60;
   const elapsedSeconds = alert.response?.responseDurationSec ?? ongoingSeconds(alert.triggerTime, alert.clearTime);
   const overdue = active && elapsedSeconds > targetSeconds;
-  const action = alert.sensorType === 'DOOR' ? 'Check the entrance and confirm it is secure.' : alert.sensorType === 'MOTION' ? 'Inspect the detected area before acknowledging.' : alert.sensorType === 'POWER' ? 'Check mains power and the Room Alert unit.' : alert.sensorType === 'PANIC_BUTTON' ? 'Contact the store manager and verify staff safety.' : 'Inspect the sensor area and verify the current conditions.';
+  const action = alert.sensorType === 'DOOR' ? 'Check the entrance and confirm it is secure.' : alert.sensorType === 'MOTION' ? 'Inspect the detected area before acknowledging.' : alert.sensorType === 'POWER' ? 'Check mains power and the AKCP unit.' : alert.sensorType === 'PANIC_BUTTON' ? 'Contact the store manager and verify staff safety.' : 'Inspect the sensor area and verify the current conditions.';
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();

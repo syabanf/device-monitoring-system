@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Router } from 'lucide-react';
 import type { FloorMarker } from '@monitoring/ui';
-import { deviceHealth, isSolved } from '@monitoring/fixtures';
+import { deviceHealth, isSolved, unitName } from '@monitoring/fixtures';
 import { useScoped } from '../state/app-state';
 import { SensorIcon } from './badges';
 
@@ -16,7 +16,7 @@ export function useFloorMarkers(outletId: string | null | undefined): FloorMarke
     const out: FloorMarker[] = [];
     for (const d of devices) {
       const h = deviceHealth(d);
-      out.push({ id: d.id, x: d.floor.x, y: d.floor.y, kind: 'device', label: `Room Alert ${d.model.replace('RA', '')}`, sublabel: `${d.serial} · ${d.status}`, status: d.status === 'offline' ? 'offline' : h.status === 'critical' ? 'fault' : 'normal', icon: <Router /> });
+      out.push({ id: d.id, x: d.floor.x, y: d.floor.y, kind: 'device', label: unitName(d.model), sublabel: `${d.serial} · ${d.status}`, status: d.status === 'offline' ? 'offline' : h.status === 'critical' ? 'fault' : 'normal', icon: <Router /> });
       for (const s of sensorsByDevice.get(d.id) ?? []) {
         const open = openBySensor.get(s.id) ?? 0;
         out.push({ id: s.id, x: s.floor.x, y: s.floor.y, kind: 'sensor', label: s.name, sublabel: `${s.portKind} port ${s.portIndex}`, status: d.status === 'offline' ? 'offline' : open ? 'alarm' : 'normal', icon: <SensorIcon type={s.type} />, badge: open || undefined });

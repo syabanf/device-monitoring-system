@@ -5,7 +5,7 @@ import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
 import { newId } from '@monitoring/fixtures';
 import { useScoped } from '../../state/app-state';
 
-export const emptyDeviceType = (): DeviceType => ({ id: '', model: 'RA3S', name: '', vendor: 'AVTECH', ports: [{ kind: 'digital', count: 1 }, { kind: 'switch', count: 1 }], builtInSensors: ['TEMPERATURE'], description: '', priceIdr: 0, latestFirmware: 'v1.0.0', maintenanceIntervalDays: 180 });
+export const emptyDeviceType = (): DeviceType => ({ id: '', model: 'SP1+', name: '', vendor: 'AKCP', ports: [{ kind: 'digital', count: 1 }], builtInSensors: [], description: '', priceIdr: 0, latestFirmware: 'v1.0.0', maintenanceIntervalDays: 180 });
 
 export function DeviceTypeDialog({ deviceType, onClose }: { deviceType: DeviceType | null; onClose: () => void }) {
   const { dispatch } = useScoped();
@@ -24,7 +24,7 @@ export function DeviceTypeDialog({ deviceType, onClose }: { deviceType: DeviceTy
         <form onSubmit={submit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <FormField label="Model code" htmlFor="dt-model"><Input id="dt-model" value={d.model} onChange={(e) => set({ model: e.target.value.toUpperCase() as DeviceType['model'] })} required className="[&_input]:font-mono" /></FormField>
-            <FormField label="Name" htmlFor="dt-name" className="sm:col-span-2"><Input id="dt-name" value={d.name} onChange={(e) => set({ name: e.target.value })} required placeholder="Room Alert 32S" /></FormField>
+            <FormField label="Name" htmlFor="dt-name" className="sm:col-span-2"><Input id="dt-name" value={d.name} onChange={(e) => set({ name: e.target.value })} required placeholder="AKCP sensorProbe1+" /></FormField>
           </div>
           <FormField label="Description" htmlFor="dt-desc"><Textarea id="dt-desc" value={d.description} onChange={(e) => set({ description: e.target.value })} className="min-h-20" /></FormField>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">

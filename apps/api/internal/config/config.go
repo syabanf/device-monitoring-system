@@ -16,7 +16,6 @@ type Config struct {
 	LogLevel       string
 	DatabaseURL    string
 	JWTSecret      []byte
-	WebhookSecret  string
 	CORSOrigins    []string
 	AccessTokenTTL time.Duration
 	DeviceTokenTTL time.Duration
@@ -26,8 +25,7 @@ type Config struct {
 }
 
 // MQTT points the AKCP subscriber at the broker the sensorProbe+ units publish to. An empty
-// BrokerURL leaves the subscriber switched off, which is how an install with only Room Alert
-// units runs.
+// BrokerURL leaves the subscriber switched off, so no sensor data arrives.
 type MQTT struct {
 	BrokerURL   string
 	ClientID    string
@@ -47,12 +45,11 @@ func Load() (Config, error) {
 	}
 
 	cfg := Config{
-		Env:           def("APP_ENV", "development"),
-		LogLevel:      def("LOG_LEVEL", "info"),
-		DatabaseURL:   required("DATABASE_URL", 1),
-		WebhookSecret: required("WEBHOOK_SECRET", 8),
-		RedisURL:      os.Getenv("REDIS_URL"),
-		UploadDir:     def("UPLOAD_DIR", "./data/uploads"),
+		Env:         def("APP_ENV", "development"),
+		LogLevel:    def("LOG_LEVEL", "info"),
+		DatabaseURL: required("DATABASE_URL", 1),
+		RedisURL:    os.Getenv("REDIS_URL"),
+		UploadDir:   def("UPLOAD_DIR", "./data/uploads"),
 	}
 	cfg.JWTSecret = []byte(required("JWT_SECRET", 32))
 

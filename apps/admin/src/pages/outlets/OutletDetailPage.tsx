@@ -4,7 +4,7 @@ import { Clock, ExternalLink, MapPin, Pencil, Phone, Trash2 } from 'lucide-react
 import { useNavigate } from 'react-router';
 import { EMPLOYEE_ROLE_LABEL } from '@monitoring/types';
 import { Avatar, Badge, Button, Card, CardContent, CardHeader, CardTitle, EmptyState, FloorLegend, FloorPlan, Tabs, TabsContent, TabsList, TabsTrigger } from '@monitoring/ui';
-import { fmtAgo, isSolved } from '@monitoring/fixtures';
+import { fmtAgo, isSolved, unitName } from '@monitoring/fixtures';
 import { outletById } from '../../state/lookups';
 import { useFloorMarkers } from '../../components/useFloorMarkers';
 import { OutletDialog } from '../../components/master/OutletDialog';
@@ -91,7 +91,7 @@ export function OutletDetailPage() {
               <CardHeader className="flex-row items-start justify-between space-y-0">
                 <div>
                   <CardTitle><Link to={`/devices/${d.id}`} className="hover:text-brand-700">{d.serial}</Link></CardTitle>
-                  <p className="text-xs text-muted">Room Alert {d.model.replace('RA', '')} · {d.mac} · {d.ip}</p>
+                  <p className="text-xs text-muted">{unitName(d.model)} · {d.mac} · {d.ip}</p>
                   <p className="text-xs text-muted">Last push {fmtAgo(d.lastPushAt)}</p>
                 </div>
                 <DeviceStatusBadge status={d.status} />

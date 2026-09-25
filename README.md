@@ -1,7 +1,7 @@
 # Monitoring System
 
-Monorepo for an outlet environment & security monitoring system (Room Alert IoT devices), modelled
-on the Indomaret RoomAlert proposal deck, in the Indomaret palette sampled from the client's
+Monorepo for an outlet environment monitoring system built on AKCP sensorProbe+ units that
+publish over MQTT, modelled on the Indomaret monitoring proposal deck, in the Indomaret palette sampled from the client's
 logo: blue `#006AB3` for the dark surfaces, red `#D61D25` as the single accent, yellow `#FFCF20`
 for the brand stripe, set in DM Sans with the smart-home dashboard layout. The tokens live in
 `packages/tailwind-config/theme.css`, and `BRAND` in `packages/ui` mirrors them for charts, map
@@ -29,7 +29,7 @@ a humidity column with the same, and a state dial for door, motion, power and pa
 admin shows them per device and on the shopfloor marker; the phone opens them in a bottom sheet
 when an employee taps a point.
 
-Admin pages: Setup wizard (`/setup`, distribution center → outlets → units & sensors → employees → integration), API Integration (`/integration`, channel settings, blackbox console to replay webhook / e-mail payloads into the alert engine, request log, endpoint reference), Dashboard (Operations and Maintenance points of view, with a hardware-health strip in both), Outlet (with floor plan tab), Shopfloor (OpenStreetMap of all installation points + in-store floor plan with sensor markers), Contact Person, Device Type, Device Info (table or shopfloor view, add / edit / remove devices and sensors), Device Maintenance (hardware health, tickets, schedule, technicians), User Management, Alerts, Analysis, Report (CSV export). The sidebar rail expands to show labels.
+Admin pages: Setup wizard (`/setup`, distribution center → outlets → units & sensors → employees → integration), API Integration (`/integration`, the MQTT subscription status, notification channel settings, request log, unmatched messages, endpoint reference), Dashboard (Operations and Maintenance points of view, with a hardware-health strip in both), Outlet (with floor plan tab), Shopfloor (OpenStreetMap of all installation points + in-store floor plan with sensor markers), Contact Person, Device Type, Device Info (table or shopfloor view, add / edit / remove devices and sensors), Device Maintenance (hardware health, tickets, schedule, technicians), User Management, Alerts, Analysis, Report (CSV export). The sidebar rail expands to show labels.
 
 Mobile screens: Login (employee or technician), Alerts (outlet filter, needs-response / responded / cleared), Alert detail with notes + photo proof response, Devices per outlet with floor plan, Maintenance (hardware health, tickets, report an issue; technicians start / complete tickets with notes and photos), Account with install banner.
 
@@ -38,7 +38,7 @@ Mobile screens: Login (employee or technician), Alerts (outlet filter, needs-res
 - `packages/types` – domain TypeScript types
 - `packages/api-client` – the typed HTTP client both apps use: problem+json errors, cursor paging, photo upload, and `loadSnapshot` for the whole tenant
 - `packages/fixtures` – generated JSON seed data, formatting/KPI/maintenance helpers, and the reducer that holds the loaded tenant
-- `packages/integration` – Room Alert webhook / e-mail parsers and the endpoint reference the Integration page lists
+- `packages/integration` – the endpoint reference the Integration page lists
 - `packages/ui` – shared component kit (Radix + Tailwind v4, shadcn-style)
 - `packages/tailwind-config` – Indomaret theme tokens (`theme.css`)
 - `packages/tsconfig` – shared TS configs
@@ -51,7 +51,7 @@ pnpm stack:up         # everything in containers: admin :8080, mobile :8081, API
 pnpm stack:seed       # load the demo data into the containerised database
 pnpm stack:down
 
-pnpm infra:up         # or run the apps from source: postgres :5442, redis :6382, mailpit :8025
+pnpm infra:up         # or run the apps from source: postgres :5442, redis :6382, mosquitto :1883
 pnpm db:migrate       # apply the embedded migrations, including the three admin accounts
 pnpm db:seed          # optional: load the full demo data, shifted so the newest row lands now
 pnpm dev:api          # API on :3000
@@ -101,7 +101,6 @@ apps/api
   internal/auth           JWT claims, Ctx{tenant,userId,kind,outletIds}, tenant and admin guards
   internal/httpx          problem+json, JSON decode with unknown-field rejection, cursors
   internal/<feature>      handler (HTTP only) -> service (rules) -> repo (SQL, tenant-scoped)
-  internal/ingest         webhook and e-mail parsing, device matching, alert engine
   internal/akcp           MQTT subscriber for AKCP sensorProbe+ units: topic and payload
                           parsing, sensor matching, readings and status-driven alerts
   internal/jobs           queue and outbox dispatcher; internal/notify hides the channels
@@ -111,18 +110,18 @@ apps/api
 Run it locally:
 
 ```bash
-pnpm infra:up                                  # postgres on 5442, redis on 6382, mailpit on 8025
-cp apps/api/.env.example apps/api/.env         # fill DATABASE_URL, JWT_SECRET, WEBHOOK_SECRET
+pnpm infra:up                                  # postgres on 5442, redis on 6382, mosquitto on 1883
+cp apps/api/.env.example apps/api/.env         # fill DATABASE_URL, JWT_SECRET, MQTT_BROKER_URL
 set -a && . apps/api/.env && set +a
 pnpm --filter @monitoring/api db:migrate       # embedded migrations, applied once each
-pnpm db:seed                                   # 30 outlets, 36 devices, 643 alerts, 81 tickets
+pnpm db:seed                                   # 30 outlets, 1 AKCP unit, 13 alerts, 1 ticket
 pnpm dev:api                                   # http://localhost:3000
 ```
 
 Master data CRUD is complete: outlets, device types, devices with nested sensors, employees
 (plus approve, issue token, revoke), technicians (plus token rotation) and contact persons.
 Alerts carry the full lifecycle with a first-responder claim, tickets follow their own status
-flow, and `POST /webhooks/roomalert` and `/webhooks/email` ingest signed payloads.
+flow, and sensor data arrives over MQTT rather than through an HTTP endpoint.
 
 | Area | Endpoints |
 |---|---|
@@ -142,7 +141,7 @@ flow, and `POST /webhooks/roomalert` and `/webhooks/email` ingest signed payload
 | Stats | `GET …/stats?period=today\|7d\|30d\|all` |
 | Integration | `GET,PUT …/integration`, `GET …/integration/request-log`, `GET …/integration/unmatched`, `POST …/integration/test/{channel}` |
 | Photos | `POST /uploads` (multipart `file`), `GET /uploads/{name}` |
-| Ingestion | `POST /webhooks/roomalert`, `POST /webhooks/email`, `POST /webhooks/readings`, MQTT `spp/+/sensor/+/+` |
+| Ingestion | MQTT subscription to `spp/+/sensor/+/+` on the broker in `MQTT_BROKER_URL` |
 
 Conventions: JSON with camelCase keys, ISO-8601 timestamps, prefixed string ids, cursor
 pagination as `{items, nextCursor}`, and `application/problem+json` for every non-2xx answer.
@@ -174,8 +173,7 @@ browser. `GET /uploads/{name}` needs no token because an `<img>` tag cannot send
 file name is what keeps a photo private. The disk driver writes to `UPLOAD_DIR`, and
 `uploads.Store` is the seam where a deployment swaps in object storage.
 
-**AKCP hardware over MQTT.** The AVTECH units call a webhook, while AKCP sensorProbe+ units
-publish instead: one message per event on `spp/<mac>/sensor/<status_change|value_change>/<compound
+**AKCP hardware over MQTT.** AKCP sensorProbe+ units publish one message per event on `spp/<mac>/sensor/<status_change|value_change>/<compound
 id>`, carrying `{timestamp, value, status}`. Set `MQTT_BROKER_URL` and the API holds one QoS 1
 subscription for the whole fleet; leave it empty and the subscriber stays off. A message matches a
 sensor by the unit's MAC and then by `sensor.external_key`, falling back to the compound ids the
@@ -183,27 +181,34 @@ probe ships with (`0.1.0.5.0` temperature, `0.1.0.5.1` humidity); anything else 
 `unmatched_event` where the Integration page shows it. A value is stored as a reading, and because
 a reading row holds a temperature and a humidity while the unit sends one at a time, the
 counterpart keeps the value it last had. When the unit states a verdict, that verdict decides the
-alert: codes 3-7, 14 and 15 open one, `SENSORNORMAL` closes it, and a bare value is judged against
-the limits an admin set, the way the Room Alert push is. Code 17 appears on real units and the
+alert: codes 3-7, 14 and 15 open one, `SENSORNORMAL` closes the one its own key opened (the
+temperature key saying normal leaves a humidity breach open), and a bare value is judged against
+the limits an admin set. Code 17 appears on real units and the
 manual does not define it, so it keeps its number and opens nothing. The broker kicks the
 older session when a second client connects with the same client id, so the API names itself
 `akcp-<hostname>` unless `MQTT_CLIENT_ID` says otherwise, and compose pins the container's
 hostname so its id survives a recreate. When a drop lands within ten seconds of connecting, the
-Integration page names a client id clash as the likely cause. Without hardware on the
-bench, `docker compose run --rm akcp-sim -mac 0080A3000001` publishes what a unit would.
+Integration page names a client id clash as the likely cause. The demo data
+carries one unit, `SP1P-DE4001` at Indomaret Margorejo 1, and the `akcp-demo` service publishes
+as it every 30 seconds from `docker compose up` on, restarting on its own when the broker goes
+away, so the unit stays live with nobody pressing anything. For a one-off round,
+`docker compose run --rm akcp-sim -mac 000BDCDE4001 -once -critical` publishes what a unit
+reporting HIGHCRITICAL would. [docs/how-to-use.md](docs/how-to-use.md) walks an admin, an outlet
+employee and a technician through the system, and [docs/how-to-test-akcp.md](docs/how-to-test-akcp.md)
+covers the tests, the simulator, the edge cases and a real SP1+ unit.
 
 **Integration secrets.** Settings live in `integration_config`, one row per distribution center,
 rather than in a single browser's localStorage. The Telegram bot token is write-only: a read
 returns an empty string plus `telegramTokenSet: true`, and saving an empty token keeps the stored
 one while applying the other edits. `POST …/integration/test/{channel}` reports what a channel can
-do today, so `roomalert` answers `ok: true` with its recent call count while `telegram` and `push`
-answer `ok: false` and name the missing client.
+do today, so `akcp` answers with the broker connection and its message count while `telegram` and
+`push` answer `ok: false` and name the missing client.
 
 ### Tests
 
 `apps/api/internal` holds table-driven unit tests for the rules that need no database: the alert
-and ticket lifecycles, outlet scoping, password hashing, the period window and the two payload
-parsers. `apps/api/test` drives the whole HTTP surface against a real PostgreSQL through
+and ticket lifecycles, outlet scoping, password hashing, the period window, and the MQTT topic
+and payload parsing. `apps/api/test` drives the whole HTTP surface against a real PostgreSQL through
 `httptest`, which is the only place the repo queries, cursors and scope clauses run.
 
 ```bash
@@ -220,8 +225,8 @@ database.
 
 ### Containers
 
-`docker-compose.yml` runs the whole system: PostgreSQL, Redis, Mailpit, the API, the admin
-dashboard and the mobile PWA.
+`docker-compose.yml` runs the whole system: PostgreSQL, Redis, the Mosquitto broker, the API, the
+admin dashboard, the mobile PWA and the `akcp-demo` publisher.
 
 ```bash
 docker compose up -d --build     # or: pnpm stack:up
@@ -233,7 +238,7 @@ docker compose run --rm seed     # or: pnpm stack:seed   (load the demo data onc
 | Admin dashboard | http://localhost:8080 | nginx on the built SPA, 79 MB |
 | Mobile PWA | http://localhost:8081 | nginx on the built PWA, 78 MB |
 | API | http://localhost:3300 | distroless static binary, 22 MB |
-| Mailpit | http://localhost:8025 | |
+| MQTT broker | tcp://localhost:1883 | eclipse-mosquitto 2 |
 
 The API image builds in `golang:1.26-alpine` and runs on distroless as `nonroot`, with no shell
 inside; its health check calls `api -health`, which asks the running server for `/health`. A second
@@ -283,9 +288,9 @@ admin can still rename one or move it on the floor plan. `ENABLED_SENSOR_TYPES` 
 
 **Sensor limits.** Every sensor carries its own band: a lower and an upper limit for temperature
 and for humidity, edited in the sensor dialog and stored with the sensor. The API judges each
-pushed reading against that band. A sample outside it opens one alert naming the limit that was
+reading against that band. A sample outside it opens one alert naming the limit that was
 crossed ("Temperature above the 28.0 °C limit"), a later sample back inside resolves that alert,
-and a sensor never holds more than one open alert, so a unit pushing every five minutes cannot
+and a sensor never holds more than one open alert, so a unit publishing every 30 seconds cannot
 flood an outlet. Saving a band where a lower limit sits above its upper one answers 400.
 
 **Alert lifecycle.** An employee who acknowledges an alert or starts an inspection takes
@@ -293,6 +298,6 @@ responsibility for it, and the alert records them as the assignee. Another emplo
 outlet is then refused, which is the no-double-response rule from the deck. Saving the field
 report resolves the alert; an admin verifies it afterwards.
 
-Still open: push through FCM with a device-token endpoint, the Telegram bot and its `/register` flow, the IMAP poller, a scheduled job
-that marks a device offline when its push status stops, a Redis-backed queue in place of the
+Still open: push through FCM with a device-token endpoint, the Telegram bot and its `/register` flow, a scheduled job
+that marks a device offline when it stops publishing, a form to bind an AKCP sensor key (`external_key`) in the admin, a Redis-backed queue in place of the
 inline dispatcher, refresh tokens, and an OpenAPI document at `/docs`.

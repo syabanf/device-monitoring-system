@@ -295,3 +295,12 @@ func ChannelsText(v []Channel) []string {
 	}
 	return out
 }
+
+// CategoryOf files temperature and humidity alarms under comfort, and door, motion, power and
+// panic alarms under security, which is how the dashboard splits its alert counts.
+func CategoryOf(t SensorType) AlertCategory {
+	if t == SensorTemperature || t == SensorTempHumidity {
+		return CategoryComfort
+	}
+	return CategorySecurity
+}

@@ -45,7 +45,7 @@ export function AccountPage() {
         </section>
       ) : null}
       <Button variant="outline" size="lg" className="w-full border-0 bg-white text-brand-600 shadow-card" onClick={() => { logout(); navigate('/login'); }}><LogOut />Sign out</Button>
-      <p className="text-center text-[11px] text-muted">RA Monitor · v0.1.0 · WIT.ID</p>
+      <p className="text-center text-[11px] text-muted">Outlet Monitor · v0.1.0 · WIT.ID</p>
     </div>
   );
 }

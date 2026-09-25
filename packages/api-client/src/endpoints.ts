@@ -51,13 +51,15 @@ export interface DeviceCreateInput {
   outletId: string;
   deviceTypeId: string;
   serial?: string;
+  /** The address printed on the unit; empty gets a placeholder the admin can edit later. */
+  mac?: string;
   ip?: string;
   sensorTypes: SensorType[];
 }
 
 export type DeviceUpdateInput = Pick<
   Device,
-  'outletId' | 'ip' | 'firmware' | 'status' | 'pushIntervalSec' | 'warrantyUntil' | 'lastMaintenanceAt' | 'nextMaintenanceAt' | 'sensorFaults' | 'floor' | 'channels'
+  'outletId' | 'serial' | 'mac' | 'ip' | 'firmware' | 'status' | 'pushIntervalSec' | 'warrantyUntil' | 'lastMaintenanceAt' | 'nextMaintenanceAt' | 'sensorFaults' | 'floor' | 'channels'
 >;
 
 export type SensorInput = Omit<Sensor, 'id' | 'deviceId' | 'outletId'>;
@@ -108,9 +110,6 @@ export interface MqttStatus {
 
 export interface IntegrationConfigView {
   apiBaseUrl: string;
-  webhookPath: string;
-  roomAlert: { accountEmail: string; pushIntervalSec: number; enabled: boolean };
-  imap: { host: string; port: number; user: string; folder: string; pollSec: number; enabled: boolean };
   telegram: { botToken: string; chatId: string; enabled: boolean };
   push: { provider: 'fcm' | 'webpush'; enabled: boolean };
   telegramTokenSet: boolean;
@@ -122,7 +121,7 @@ export interface RequestLogEntry {
   id: string;
   at: string;
   direction: 'inbound' | 'outbound';
-  channel: 'roomalert' | 'akcp' | 'email' | 'telegram' | 'push' | 'api';
+  channel: 'akcp' | 'telegram' | 'push' | 'api';
   method: string;
   path: string;
   status: number;

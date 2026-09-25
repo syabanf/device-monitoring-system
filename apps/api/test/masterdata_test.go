@@ -62,14 +62,14 @@ func TestDeviceTypeCRUD(t *testing.T) {
 	admin := as(t, f.AdminToken)
 
 	body := map[string]any{
-		"model": "RA32S", "name": "Room Alert 32S", "vendor": "AVTECH",
+		"model": "SP2+", "name": "AKCP sensorProbe2+", "vendor": "AKCP",
 		"ports":          []map[string]any{{"kind": "digital", "count": 8}},
 		"builtInSensors": []string{"TEMPERATURE"}, "description": "Bigger unit",
 		"priceIdr": 40000000, "latestFirmware": "v1.0.0", "maintenanceIntervalDays": 180,
 	}
 	id := admin.post("/device-types", body).expect(http.StatusCreated).str("id")
 
-	body["name"] = "Room Alert 32S rev B"
+	body["name"] = "AKCP sensorProbe2+ rev B"
 	admin.put("/device-types/"+id, body).expect(http.StatusOK)
 
 	// The seeded model is installed, so it must refuse to disappear.
@@ -337,4 +337,55 @@ func TestInstalledSensorOutsideTheRolloutStaysEditable(t *testing.T) {
 	if got := renamed.str("name"); got != "Front Door (west)" {
 		t.Errorf("the rename did not stick, got %q", got)
 	}
+}
+
+func TestDeviceMACAndSerialAreTheUnitsIdentity(t *testing.T) {
+	f := reset(t)
+	admin := as(t, f.AdminToken)
+	create := func(serial, mac string) response {
+		return admin.post(f.path("/devices"), map[string]any{
+			"outletId": f.OutletB, "deviceTypeId": f.DeviceTypeID, "serial": serial, "mac": mac,
+			"sensorTypes": []string{"TEMPERATURE_HUMIDITY"},
+		})
+	}
+
+	// The unit publishes its MAC without separators; whatever an admin types is stored one way.
+	created := create("SP1P-BBBBBB", "000bdc-aa-bb-cc").expect(http.StatusCreated)
+	if got := created.str("device.mac"); got != "00:0B:DC:AA:BB:CC" {
+		t.Errorf("stored MAC %q", got)
+	}
+	id := created.str("device.id")
+
+	if code := create("SP1P-DDDDDD", "00:0B:DC:AA:BB:CC").expect(http.StatusConflict).code(); code != "MAC_ALREADY_USED" {
+		t.Errorf("a second device on the same MAC answered %s", code)
+	}
+	if code := create("SP1P-BBBBBB", "").expect(http.StatusConflict).code(); code != "SERIAL_ALREADY_USED" {
+		t.Errorf("a second device on the same serial answered %s", code)
+	}
+	if code := create("SP1P-EEEEEE", "not-a-mac").expect(http.StatusBadRequest).code(); code != "INVALID_MAC" {
+		t.Errorf("a malformed MAC answered %s", code)
+	}
+
+	update := map[string]any{
+		"outletId": f.OutletB, "ip": "10.1.2.3", "firmware": "v1.0.0", "status": "online",
+		"pushIntervalSec": 30, "warrantyUntil": "2031-02-03T00:00:00Z", "lastMaintenanceAt": nil,
+		"nextMaintenanceAt": "2027-03-04T00:00:00Z", "sensorFaults": 0,
+		"floor": map[string]any{"x": 21, "y": 43}, "channels": []string{"app"},
+		"serial": "SP1P-FFFFFF", "mac": "000BDC112233",
+	}
+	edited := admin.put(f.path("/devices/"+id), update).expect(http.StatusOK)
+	if edited.str("device.mac") != "00:0B:DC:11:22:33" || edited.str("device.serial") != "SP1P-FFFFFF" {
+		t.Errorf("the edit kept serial %q and MAC %q", edited.str("device.serial"), edited.str("device.mac"))
+	}
+
+	// Left empty, both keep what is stored.
+	update["serial"], update["mac"] = "", ""
+	kept := admin.put(f.path("/devices/"+id), update).expect(http.StatusOK)
+	if kept.str("device.mac") != "00:0B:DC:11:22:33" || kept.str("device.serial") != "SP1P-FFFFFF" {
+		t.Errorf("an empty edit changed serial %q and MAC %q", kept.str("device.serial"), kept.str("device.mac"))
+	}
+
+	// Moving onto another device's MAC is refused too.
+	update["mac"] = "00:0B:DC:00:00:01"
+	admin.put(f.path("/devices/"+id), update).expect(http.StatusConflict)
 }

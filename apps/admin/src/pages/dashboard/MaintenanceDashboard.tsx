@@ -40,7 +40,7 @@ export function MaintenanceDashboard() {
         <Card className="relative flex flex-col overflow-hidden bg-ink text-white">
           <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-brand-600/30 blur-3xl" />
           <CardHeader className="relative flex-row items-start justify-between space-y-0">
-            <div><p className="text-xs font-medium text-sidebar-muted">Maintenance overview</p><CardTitle className="text-2xl text-white">Fleet hardware health</CardTitle><p className="mt-1 text-xs text-sidebar-muted">{devices.length} Room Alert units across your outlets</p></div>
+            <div><p className="text-xs font-medium text-sidebar-muted">Maintenance overview</p><CardTitle className="text-2xl text-white">Fleet hardware health</CardTitle><p className="mt-1 text-xs text-sidebar-muted">{devices.length} AKCP unit{devices.length === 1 ? '' : 's'} across your outlets</p></div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold"><Activity className="size-3.5" />{avgUptime.toFixed(1)}% uptime</span>
           </CardHeader>
           <CardContent className="relative flex flex-1 flex-col gap-5">

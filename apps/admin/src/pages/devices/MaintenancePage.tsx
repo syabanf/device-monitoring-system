@@ -62,7 +62,7 @@ export function MaintenancePage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader title="Device Maintenance" description="Hardware health, service tickets and the technician schedule for every Room Alert unit" actions={<Button onClick={() => setCreating(true)}><Plus />New ticket</Button>} />
+      <PageHeader title="Device Maintenance" description="Hardware health, service tickets and the technician schedule for every AKCP unit" actions={<Button onClick={() => setCreating(true)}><Plus />New ticket</Button>} />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Critical hardware" value={critical} hint={`${attention} more need attention`} icon={<ShieldAlert />} tone="danger" />
         <StatCard label="Open tickets" value={openTickets.length} hint={`${counts.overdue} overdue · ${counts.IN_PROGRESS} in progress`} icon={<Wrench />} tone="warning" />

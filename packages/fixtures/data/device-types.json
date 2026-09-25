@@ -1,52 +1,19 @@
 [
   {
-    "id": "dt-ra3s",
-    "model": "RA3S",
-    "name": "Room Alert 3S",
-    "vendor": "AVTECH",
+    "id": "dt-sp1p",
+    "model": "SP1+",
+    "name": "AKCP sensorProbe1+",
+    "vendor": "AKCP",
     "ports": [
       {
         "kind": "digital",
         "count": 1
-      },
-      {
-        "kind": "switch",
-        "count": 1
       }
     ],
-    "builtInSensors": [
-      "TEMPERATURE"
-    ],
-    "description": "Compact monitor with 1 digital sensor port and 1 switch sensor port. Daisy-chain installation for switch sensors. SSL email support, 3 years warranty.",
-    "priceIdr": 8850000,
-    "latestFirmware": "v2.9.1",
-    "maintenanceIntervalDays": 180
-  },
-  {
-    "id": "dt-ra12s",
-    "model": "RA12S",
-    "name": "Room Alert 12S",
-    "vendor": "AVTECH",
-    "ports": [
-      {
-        "kind": "digital",
-        "count": 3
-      },
-      {
-        "kind": "switch",
-        "count": 4
-      },
-      {
-        "kind": "analog",
-        "count": 1
-      }
-    ],
-    "builtInSensors": [
-      "TEMPERATURE"
-    ],
-    "description": "Full-featured monitor with 3 digital, 4 switch and 1 analog port plus relay output and light tower adaptor. Each switch sensor is independently identified. SSL email support, 3 years warranty.",
-    "priceIdr": 23250000,
-    "latestFirmware": "v3.3.0",
+    "builtInSensors": [],
+    "description": "Single-port sensorProbe with an intelligent temperature and humidity probe. Publishes every reading and status change over MQTT on spp/<mac>/sensor/<event>/<key>.",
+    "priceIdr": 0,
+    "latestFirmware": "v1.0.0",
     "maintenanceIntervalDays": 180
   }
 ]
