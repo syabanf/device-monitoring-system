@@ -21,7 +21,6 @@ import (
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/distributors"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/employees"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/httpx"
-	"github.com/syabanf/device-monitoring-system/apps/api/internal/ingest"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/integration"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/jobs"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/outlets"
@@ -47,7 +46,8 @@ const version = "0.1.0"
 
 var startedAt = time.Now()
 
-// New returns the full router: public health, auth and webhooks, everything else behind a token.
+// New returns the full router: public health and auth, everything else behind a token. Sensor
+// data arrives over MQTT through internal/akcp, not through this router.
 func New(d Deps) http.Handler {
 	signer := auth.NewSigner(d.Cfg.JWTSecret)
 
@@ -73,7 +73,6 @@ func New(d Deps) http.Handler {
 	r.Mount("/auth", auth.Routes(d.DB, signer, d.Cfg.AccessTokenTTL, d.Cfg.DeviceTokenTTL))
 	// A photo is fetched by an <img> tag, which cannot carry a token; the random name is the secret.
 	r.Get("/uploads/{name}", uploads.Download(d.Photos))
-	r.Mount("/webhooks", ingest.Routes(d.DB, d.Queue, d.Cfg.WebhookSecret, d.Cfg.Env == "production", d.Log))
 
 	r.Group(func(private chi.Router) {
 		private.Use(signer.Middleware)

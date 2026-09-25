@@ -217,7 +217,7 @@ func run(dataDir, password string, maxReadings int, live bool) error {
 			}
 		}
 	}
-	// Alert ids come from the Room Alert cloud, so move the sequence past them.
+	// The fixtures carry their own alert ids, so move the sequence past them.
 	if _, err := db.Exec(ctx, `SELECT setval(pg_get_serial_sequence('alert', 'id'), $1, false)`, maxAlertID+1); err != nil {
 		return err
 	}

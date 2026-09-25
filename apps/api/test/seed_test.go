@@ -48,7 +48,7 @@ func reset(t *testing.T) fixture {
 	now := time.Date(2026, 9, 16, 8, 0, 0, 0, time.UTC)
 	f := fixture{
 		OutletA: "out-a", OutletB: "out-b", OutletC: "out-c",
-		DeviceA: "dev-a", SensorA: "sen-a", DeviceTypeID: "dt-ra3s",
+		DeviceA: "dev-a", SensorA: "sen-a", DeviceTypeID: "dt-sp1p",
 		TechnicianID: "tech-1", EmployeeID: "emp-1",
 	}
 
@@ -82,18 +82,18 @@ func reset(t *testing.T) fixture {
 
 	exec(`INSERT INTO device_type (id, model, name, vendor, ports, built_in_sensors, description, price_idr,
 		latest_firmware, maintenance_interval_days)
-		VALUES ($1,'RA3S','Room Alert 3S','AVTECH','[{"kind":"digital","count":1},{"kind":"switch","count":1}]',
-		'{TEMPERATURE}','Compact monitor',8850000,'v2.9.1',180)`, f.DeviceTypeID)
+		VALUES ($1,'SP1+','AKCP sensorProbe1+','AKCP','[{"kind":"digital","count":1}]',
+		'{}','Single-port sensorProbe',0,'v1.0.0',180)`, f.DeviceTypeID)
 
 	// Two devices: one at an outlet the employee covers, one at an outlet they do not.
 	for _, d := range []struct{ id, outlet, serial, mac string }{
-		{f.DeviceA, f.OutletA, "RA3-AAA-RA3S", "00:80:A3:00:00:01"},
-		{"dev-c", f.OutletC, "RA3-CCC-RA3S", "00:80:A3:00:00:02"},
+		{f.DeviceA, f.OutletA, "SP1P-AAAAAA", "00:0B:DC:00:00:01"},
+		{"dev-c", f.OutletC, "SP1P-CCCCCC", "00:0B:DC:00:00:02"},
 	} {
 		exec(`INSERT INTO device (id, distributor_id, outlet_id, device_type_id, model, serial, mac, ip, firmware,
 			status, last_push_at, installed_at, push_interval_sec, ports, channels, warranty_until, next_maintenance_at,
 			uptime_pct, sensor_faults, floor_x, floor_y)
-			VALUES ($1,$2,$3,$4,'RA3S',$5,$6,'192.168.1.10','v2.9.1','online',$7,$7,300,
+			VALUES ($1,$2,$3,$4,'SP1+',$5,$6,'192.168.1.10','v1.0.0','online',$7,$7,30,
 			'[{"index":1,"kind":"digital","label":"Digital 1","sensorId":null}]','{app}',$8,$8,100,0,91,60)`,
 			d.id, tenant, d.outlet, f.DeviceTypeID, d.serial, d.mac, now, now.AddDate(1, 0, 0))
 	}
@@ -109,7 +109,7 @@ func reset(t *testing.T) fixture {
 	}
 
 	exec(`INSERT INTO technician (id, distributor_id, name, phone, specialty, avatar_color, email, registration_token)
-		VALUES ($1,$2,'Test Teknisi','0813','Room Alert hardware','#101112',$3,$4)`,
+		VALUES ($1,$2,'Test Teknisi','0813','AKCP hardware','#101112',$3,$4)`,
 		f.TechnicianID, tenant, techMail, techTok)
 	exec(`INSERT INTO employee (id, distributor_id, primary_outlet_id, name, phone, email, role, registration_token,
 		registration_status, registered_at, approved_at, avatar_color)

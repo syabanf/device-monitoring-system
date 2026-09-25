@@ -36,6 +36,7 @@ export async function perform(api: Endpoints, state: AppState, action: AppAction
         outletId: action.device.outletId,
         deviceTypeId: action.device.deviceTypeId,
         serial: action.device.serial,
+        mac: action.device.mac,
         ip: action.device.ip,
         sensorTypes: action.sensors.map((s) => s.type),
       });
@@ -168,7 +169,7 @@ const deviceTypeInput = (t: DeviceType) => ({
 });
 
 const deviceInput = (d: Device) => ({
-  outletId: d.outletId, ip: d.ip, firmware: d.firmware, status: d.status, pushIntervalSec: d.pushIntervalSec,
+  outletId: d.outletId, serial: d.serial, mac: d.mac, ip: d.ip, firmware: d.firmware, status: d.status, pushIntervalSec: d.pushIntervalSec,
   warrantyUntil: d.warrantyUntil, lastMaintenanceAt: d.lastMaintenanceAt, nextMaintenanceAt: d.nextMaintenanceAt,
   sensorFaults: d.sensorFaults, floor: d.floor, channels: d.channels,
 });

@@ -156,11 +156,13 @@ func (r Repo) InsertWithSensors(ctx context.Context, d domain.Device, sensors []
 func (r Repo) Update(ctx context.Context, d domain.Device) (domain.Device, error) {
 	row := r.db.QueryRow(ctx, `
 		UPDATE device SET outlet_id=$3, ip=$4, firmware=$5, status=$6, push_interval_sec=$7, warranty_until=$8,
-			last_maintenance_at=$9, next_maintenance_at=$10, sensor_faults=$11, floor_x=$12, floor_y=$13, channels=$14
+			last_maintenance_at=$9, next_maintenance_at=$10, sensor_faults=$11, floor_x=$12, floor_y=$13, channels=$14,
+			serial=$15, mac=$16
 		WHERE id = $1 AND distributor_id = $2
 		RETURNING `+deviceColumns,
 		d.ID, r.tenant, d.OutletID, d.IP, d.Firmware, d.Status, d.PushIntervalSec, d.WarrantyUntil,
-		d.LastMaintenanceAt, d.NextMaintenanceAt, d.SensorFaults, d.Floor.X, d.Floor.Y, domain.ChannelsText(d.Channels))
+		d.LastMaintenanceAt, d.NextMaintenanceAt, d.SensorFaults, d.Floor.X, d.Floor.Y, domain.ChannelsText(d.Channels),
+		d.Serial, d.MAC)
 	out, err := scanDevice(row)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return domain.Device{}, httpx.NotFound("Device", d.ID)
@@ -169,6 +171,18 @@ func (r Repo) Update(ctx context.Context, d domain.Device) (domain.Device, error
 }
 
 // MoveSensors follows a device to another outlet so the floor plan stays consistent.
+// Clash reports which identity another device already holds, "mac" or "serial", across every
+// tenant, because the unique indexes on both columns span the whole table.
+func (r Repo) Clash(ctx context.Context, serial, mac, exceptID string) (string, error) {
+	var field string
+	err := r.db.QueryRow(ctx, `SELECT CASE WHEN mac = $2 THEN 'mac' ELSE 'serial' END FROM device
+		WHERE id <> $3 AND (serial = $1 OR mac = $2) LIMIT 1`, serial, mac, exceptID).Scan(&field)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", nil
+	}
+	return field, err
+}
+
 func (r Repo) MoveSensors(ctx context.Context, deviceID, outletID string) error {
 	_, err := r.db.Exec(ctx, `UPDATE sensor SET outlet_id = $2 WHERE device_id = $1`, deviceID, outletID)
 	return err

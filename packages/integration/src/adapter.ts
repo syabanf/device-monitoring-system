@@ -1,13 +1,11 @@
 /** The endpoints both frontends call, listed on the Integration page. */
 export const API_REFERENCE: { method: string; path: string; description: string; direction: 'inbound' | 'outbound' }[] = [
-  { method: 'POST', path: '/webhooks/roomalert', description: 'Room Alert cloud HTTP POST alert action (triggered / cleared), signed with the webhook secret.', direction: 'inbound' },
-  { method: 'POST', path: '/webhooks/email', description: 'Alert mail forwarded by the IMAP poller, parsed into the same event.', direction: 'inbound' },
-  { method: 'POST', path: '/webhooks/readings', description: 'Periodic sensor push from a unit, which also keeps it marked online.', direction: 'inbound' },
+  { method: 'MQTT', path: 'spp/{mac}/sensor/{status_change|value_change}/{key}', description: 'AKCP units publish readings and status codes to the broker; the API holds one subscription for the fleet.', direction: 'inbound' },
   { method: 'POST', path: '/auth/admin/login', description: 'Admin sign-in with a password; the token carries the distribution center.', direction: 'outbound' },
   { method: 'POST', path: '/auth/token/login', description: 'Employee and technician sign-in with the registration token their admin issued.', direction: 'outbound' },
   { method: 'GET', path: '/distributors/{id}', description: 'The distribution center and its outlet count.', direction: 'outbound' },
   { method: 'GET', path: '/distributors/{id}/outlets', description: 'Master data: outlets, with create, update and delete.', direction: 'outbound' },
-  { method: 'GET', path: '/device-types', description: 'Room Alert models, their ports and built-in sensors.', direction: 'outbound' },
+  { method: 'GET', path: '/device-types', description: 'AKCP models, their ports and built-in sensors.', direction: 'outbound' },
   { method: 'GET', path: '/distributors/{id}/devices', description: 'Registered units; a device answers with its sensors and port map.', direction: 'outbound' },
   { method: 'GET', path: '/distributors/{id}/sensors', description: 'Every sensor in one call, which is what the floor plans draw.', direction: 'outbound' },
   { method: 'GET', path: '/distributors/{id}/employees', description: 'Accounts, plus approve, issue token and revoke.', direction: 'outbound' },

@@ -1,5 +1,5 @@
 // Package readings serves the sensor time series the dashboard, analysis, shopfloor and report
-// screens draw, and accepts the periodic push the Room Alert units send.
+// screens draw, and stores the samples the AKCP subscriber hands it.
 package readings
 
 import (
@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -147,30 +146,18 @@ func (s Service) Series(ctx context.Context, o SeriesOpts) ([]Bucket, error) {
 	return out, rows.Err()
 }
 
-// Push is the periodic status the units send: it stores the samples and keeps the device row
-// marked online, which is what the health score reads.
+// Push is a batch of samples from one unit, named by the MAC master data holds for it. Storing
+// it also keeps the device row marked online, which is what the health score reads.
 type Push struct {
-	DeviceSerial string        `json:"deviceSerial"`
-	MAC          string        `json:"mac"`
-	Readings     []PushReading `json:"readings"`
+	MAC      string
+	Readings []PushReading
 }
 
 type PushReading struct {
-	SensorID     string     `json:"sensorId"`
-	SensorName   string     `json:"sensorName"`
-	At           *time.Time `json:"at"`
-	TemperatureC float64    `json:"temperatureC"`
-	HumidityPct  float64    `json:"humidityPct"`
-}
-
-func (p Push) Validate() error {
-	if strings.TrimSpace(p.DeviceSerial) == "" && strings.TrimSpace(p.MAC) == "" {
-		return fmt.Errorf("deviceSerial or mac is required")
-	}
-	if len(p.Readings) == 0 {
-		return fmt.Errorf("readings must hold at least one sample")
-	}
-	return nil
+	SensorID     string
+	At           *time.Time
+	TemperatureC float64
+	HumidityPct  float64
 }
 
 type PushResult struct {
@@ -189,18 +176,16 @@ type sensorRow struct {
 	thresholds                                  *domain.SensorThresholds
 }
 
-// Store writes the samples the unit pushed, then judges each sensor's newest sample against the
-// limits an admin set for it. It resolves the sensor by id or by name so an installer never has
-// to copy ids from the dashboard into the device.
+// Store writes the samples a unit sent, then judges each sensor's newest sample against the
+// limits an admin set for it.
 func Store(ctx context.Context, db store.DB, q jobs.Queue, p Push) (PushResult, error) {
 	var deviceID string
-	err := db.QueryRow(ctx, `SELECT id FROM device WHERE ($1 <> '' AND serial = $1) OR ($2 <> '' AND mac = $2) LIMIT 1`,
-		p.DeviceSerial, strings.ToUpper(p.MAC)).Scan(&deviceID)
+	err := db.QueryRow(ctx, `SELECT id FROM device WHERE mac = $1`, p.MAC).Scan(&deviceID)
 	if err != nil {
-		return PushResult{Reason: "No device matches serial \"" + p.DeviceSerial + "\" or MAC \"" + p.MAC + "\""}, nil
+		return PushResult{Reason: "No device matches MAC \"" + p.MAC + "\""}, nil
 	}
 
-	sensors, byName, err := sensorsOf(ctx, db, deviceID)
+	sensors, err := sensorsOf(ctx, db, deviceID)
 	if err != nil {
 		return PushResult{}, err
 	}
@@ -210,9 +195,6 @@ func Store(ctx context.Context, db store.DB, q jobs.Queue, p Push) (PushResult, 
 	newest := map[string]Reading{}
 	for _, r := range p.Readings {
 		sensorID := r.SensorID
-		if sensorID == "" {
-			sensorID = byName[strings.ToLower(r.SensorName)]
-		}
 		sensor, ok := sensors[sensorID]
 		if !ok {
 			continue // the unit reported a sensor this device does not have
@@ -252,30 +234,28 @@ func Store(ctx context.Context, db store.DB, q jobs.Queue, p Push) (PushResult, 
 	return result, nil
 }
 
-func sensorsOf(ctx context.Context, db store.DB, deviceID string) (map[string]sensorRow, map[string]string, error) {
+func sensorsOf(ctx context.Context, db store.DB, deviceID string) (map[string]sensorRow, error) {
 	rows, err := db.Query(ctx, `SELECT id, name, device_id, outlet_id, distributor_id, type, thresholds FROM sensor WHERE device_id = $1`, deviceID)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	defer rows.Close()
 
 	sensors := map[string]sensorRow{}
-	byName := map[string]string{}
 	for rows.Next() {
 		var s sensorRow
 		var thresholds []byte
 		if err := rows.Scan(&s.id, &s.name, &s.deviceID, &s.outletID, &s.distributorID, &s.kind, &thresholds); err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		if len(thresholds) > 0 {
 			if err := json.Unmarshal(thresholds, &s.thresholds); err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 		}
 		sensors[s.id] = s
-		byName[strings.ToLower(s.name)] = s.id
 	}
-	return sensors, byName, rows.Err()
+	return sensors, rows.Err()
 }
 
 // judge opens an alert when a sample leaves the sensor's band and resolves the open one when a

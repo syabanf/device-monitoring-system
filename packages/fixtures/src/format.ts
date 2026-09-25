@@ -91,6 +91,11 @@ export function initials(name: string): string {
     .map((p) => p[0]?.toUpperCase() ?? '')
     .join('');
 }
+/** How a unit's model reads in the UI, for example "AKCP SP1+". */
+export function unitName(model: string): string {
+  return `AKCP ${model}`;
+}
+
 export function maskToken(token: string | null): string {
   if (!token) return '—';
   return `${token.slice(0, 2)}••••••${token.slice(-2)}`;

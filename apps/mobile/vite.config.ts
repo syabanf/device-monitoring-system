@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.svg', 'icons/*.png', 'photos/*.svg'],
       manifest: {
-        name: 'Room Alert Monitoring',
-        short_name: 'RA Monitor',
+        name: 'Outlet Monitoring',
+        short_name: 'Outlet Monitor',
         description: 'Outlet environment and security alert response app',
         theme_color: '#006ab3',
         background_color: '#ffffff',

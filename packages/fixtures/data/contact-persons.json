@@ -2,9 +2,9 @@
   {
     "id": "cp-001",
     "outletId": "out-001",
-    "name": "Mega Kusuma",
-    "phone": "084947394418",
-    "email": "korlap1@indomaret.co.id",
+    "name": "Dimas Anggraini",
+    "phone": "088034072360",
+    "email": null,
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
@@ -15,33 +15,33 @@
   {
     "id": "cp-002",
     "outletId": "out-001",
-    "name": "Rina Kusuma",
-    "phone": "081501990171",
-    "email": null,
+    "name": "Rina Firmansyah",
+    "phone": "088784598951",
+    "email": "korlap2@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
-    "channels": [
-      "app"
-    ]
-  },
-  {
-    "id": "cp-003",
-    "outletId": "out-002",
-    "name": "Fajar Santoso",
-    "phone": "082721875790",
-    "email": "korlap3@indomaret.co.id",
-    "role": "Area Supervisor",
-    "isPrimary": true,
     "channels": [
       "app",
       "telegram"
     ]
   },
   {
+    "id": "cp-003",
+    "outletId": "out-002",
+    "name": "Maya Pratama",
+    "phone": "082238798008",
+    "email": "korlap3@indomaret.co.id",
+    "role": "Area Supervisor",
+    "isPrimary": true,
+    "channels": [
+      "app"
+    ]
+  },
+  {
     "id": "cp-004",
     "outletId": "out-002",
-    "name": "Rizky Santoso",
-    "phone": "087357954040",
+    "name": "Putri Pratama",
+    "phone": "081795361365",
     "email": "korlap4@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
@@ -52,22 +52,21 @@
   {
     "id": "cp-005",
     "outletId": "out-003",
-    "name": "Eko Kusuma",
-    "phone": "088850275164",
+    "name": "Joko Firmansyah",
+    "phone": "084603248731",
     "email": "korlap5@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
-      "app",
-      "telegram"
+      "app"
     ]
   },
   {
     "id": "cp-006",
     "outletId": "out-003",
-    "name": "Teguh Firmansyah",
-    "phone": "086301676758",
-    "email": null,
+    "name": "Rizky Susanto",
+    "phone": "082717151422",
+    "email": "korlap6@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
@@ -78,21 +77,20 @@
   {
     "id": "cp-007",
     "outletId": "out-004",
-    "name": "Dimas Kusuma",
-    "phone": "088369589687",
+    "name": "Rudi Saputra",
+    "phone": "081657641987",
     "email": "korlap7@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
-      "app",
-      "telegram"
+      "app"
     ]
   },
   {
     "id": "cp-008",
     "outletId": "out-004",
-    "name": "Wulan Pratama",
-    "phone": "087850069560",
+    "name": "Wulan Gunawan",
+    "phone": "087755140261",
     "email": "korlap8@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
@@ -104,8 +102,8 @@
   {
     "id": "cp-009",
     "outletId": "out-005",
-    "name": "Arif Halim",
-    "phone": "085291934921",
+    "name": "Arif Santoso",
+    "phone": "085020618518",
     "email": "korlap9@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
@@ -117,34 +115,34 @@
   {
     "id": "cp-010",
     "outletId": "out-005",
-    "name": "Teguh Setiawan",
-    "phone": "083477782169",
+    "name": "Nur Saputra",
+    "phone": "088794955878",
     "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
+    "channels": [
+      "app"
+    ]
+  },
+  {
+    "id": "cp-011",
+    "outletId": "out-006",
+    "name": "Ayu Mahendra",
+    "phone": "088540489331",
+    "email": "korlap11@indomaret.co.id",
+    "role": "Area Supervisor",
+    "isPrimary": true,
     "channels": [
       "app",
       "telegram"
     ]
   },
   {
-    "id": "cp-011",
-    "outletId": "out-006",
-    "name": "Maya Firmansyah",
-    "phone": "084596098579",
-    "email": null,
-    "role": "Area Supervisor",
-    "isPrimary": true,
-    "channels": [
-      "app"
-    ]
-  },
-  {
     "id": "cp-012",
     "outletId": "out-006",
-    "name": "Bayu Nugroho",
-    "phone": "082777790668",
-    "email": "korlap12@indomaret.co.id",
+    "name": "Joko Anggraini",
+    "phone": "088901381225",
+    "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
@@ -155,9 +153,9 @@
   {
     "id": "cp-013",
     "outletId": "out-007",
-    "name": "Yusuf Permata",
-    "phone": "086867533612",
-    "email": null,
+    "name": "Agus Ramadhan",
+    "phone": "089757703991",
+    "email": "korlap13@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
@@ -168,8 +166,8 @@
   {
     "id": "cp-014",
     "outletId": "out-007",
-    "name": "Intan Kusuma",
-    "phone": "089370443200",
+    "name": "Maya Anggraini",
+    "phone": "083413789712",
     "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
@@ -180,8 +178,8 @@
   {
     "id": "cp-015",
     "outletId": "out-008",
-    "name": "Eko Anggraini",
-    "phone": "085898959875",
+    "name": "Mega Anggraini",
+    "phone": "086915515878",
     "email": "korlap15@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
@@ -193,35 +191,33 @@
   {
     "id": "cp-016",
     "outletId": "out-008",
-    "name": "Fajar Halim",
-    "phone": "081430481306",
-    "email": "korlap16@indomaret.co.id",
+    "name": "Rudi Santoso",
+    "phone": "087746089000",
+    "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
-      "app",
-      "telegram"
+      "app"
     ]
   },
   {
     "id": "cp-017",
     "outletId": "out-009",
-    "name": "Intan Gunawan",
-    "phone": "086936482459",
-    "email": null,
+    "name": "Siti Saputra",
+    "phone": "085509005561",
+    "email": "korlap17@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
-      "app",
-      "telegram"
+      "app"
     ]
   },
   {
     "id": "cp-018",
     "outletId": "out-009",
-    "name": "Ratna Anggraini",
-    "phone": "083989937889",
-    "email": "korlap18@indomaret.co.id",
+    "name": "Intan Halim",
+    "phone": "087498151662",
+    "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
@@ -231,21 +227,22 @@
   {
     "id": "cp-019",
     "outletId": "out-010",
-    "name": "Nur Sulistyo",
-    "phone": "086079176326",
+    "name": "Bayu Nugroho",
+    "phone": "085790050095",
     "email": "korlap19@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
-      "app"
+      "app",
+      "telegram"
     ]
   },
   {
     "id": "cp-020",
     "outletId": "out-010",
-    "name": "Dewi Hidayat",
-    "phone": "082825892922",
-    "email": null,
+    "name": "Mega Wijaya",
+    "phone": "082338177375",
+    "email": "korlap20@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
@@ -255,9 +252,9 @@
   {
     "id": "cp-021",
     "outletId": "out-011",
-    "name": "Agus Nugroho",
-    "phone": "085413717593",
-    "email": null,
+    "name": "Hendra Santoso",
+    "phone": "085045904035",
+    "email": "korlap21@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
@@ -268,8 +265,8 @@
   {
     "id": "cp-022",
     "outletId": "out-011",
-    "name": "Hendra Saputra",
-    "phone": "088801092856",
+    "name": "Putri Permata",
+    "phone": "087060665090",
     "email": "korlap22@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
@@ -281,9 +278,9 @@
   {
     "id": "cp-023",
     "outletId": "out-012",
-    "name": "Rina Kusuma",
-    "phone": "081270849828",
-    "email": "korlap23@indomaret.co.id",
+    "name": "Dimas Kusuma",
+    "phone": "085903057683",
+    "email": null,
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
@@ -294,21 +291,20 @@
   {
     "id": "cp-024",
     "outletId": "out-012",
-    "name": "Lestari Kusuma",
-    "phone": "082912885487",
+    "name": "Rudi Purnama",
+    "phone": "082947666860",
     "email": "korlap24@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
-      "app",
-      "telegram"
+      "app"
     ]
   },
   {
     "id": "cp-025",
     "outletId": "out-013",
-    "name": "Teguh Hidayat",
-    "phone": "082527568114",
+    "name": "Budi Setiawan",
+    "phone": "082825027315",
     "email": "korlap25@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
@@ -320,9 +316,9 @@
   {
     "id": "cp-026",
     "outletId": "out-013",
-    "name": "Sari Nugroho",
-    "phone": "085685205563",
-    "email": "korlap26@indomaret.co.id",
+    "name": "Siti Permata",
+    "phone": "084489562134",
+    "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
@@ -333,21 +329,20 @@
   {
     "id": "cp-027",
     "outletId": "out-014",
-    "name": "Fajar Rahayu",
-    "phone": "084585045891",
-    "email": "korlap27@indomaret.co.id",
+    "name": "Andi Nugroho",
+    "phone": "082801961881",
+    "email": null,
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
-      "app",
-      "telegram"
+      "app"
     ]
   },
   {
     "id": "cp-028",
     "outletId": "out-014",
-    "name": "Intan Permata",
-    "phone": "086818511473",
+    "name": "Putri Setiawan",
+    "phone": "088401722342",
     "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
@@ -358,35 +353,33 @@
   {
     "id": "cp-029",
     "outletId": "out-015",
-    "name": "Siti Wijaya",
-    "phone": "089391343361",
-    "email": "korlap29@indomaret.co.id",
+    "name": "Rizky Pratama",
+    "phone": "088986860419",
+    "email": null,
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
-      "app",
-      "telegram"
+      "app"
     ]
   },
   {
     "id": "cp-030",
     "outletId": "out-015",
-    "name": "Eko Gunawan",
-    "phone": "085327732350",
-    "email": "korlap30@indomaret.co.id",
+    "name": "Hendra Halim",
+    "phone": "089407372055",
+    "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
-      "app",
-      "telegram"
+      "app"
     ]
   },
   {
     "id": "cp-031",
     "outletId": "out-016",
-    "name": "Fajar Santoso",
-    "phone": "088767458200",
-    "email": null,
+    "name": "Joko Purnama",
+    "phone": "087451307744",
+    "email": "korlap31@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
@@ -396,32 +389,34 @@
   {
     "id": "cp-032",
     "outletId": "out-016",
-    "name": "Agus Pratama",
-    "phone": "081481234635",
+    "name": "Joko Hidayat",
+    "phone": "089647191641",
     "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
-      "app"
+      "app",
+      "telegram"
     ]
   },
   {
     "id": "cp-033",
     "outletId": "out-017",
-    "name": "Dian Purnama",
-    "phone": "081934651054",
-    "email": "korlap33@indomaret.co.id",
+    "name": "Nur Nugroho",
+    "phone": "081179843566",
+    "email": null,
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
-      "app"
+      "app",
+      "telegram"
     ]
   },
   {
     "id": "cp-034",
     "outletId": "out-017",
-    "name": "Rizky Pratama",
-    "phone": "085176781859",
+    "name": "Joko Wijaya",
+    "phone": "088408026765",
     "email": "korlap34@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
@@ -433,20 +428,21 @@
   {
     "id": "cp-035",
     "outletId": "out-018",
-    "name": "Hendra Hidayat",
-    "phone": "085465250168",
+    "name": "Joko Wijaya",
+    "phone": "082266574135",
     "email": "korlap35@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
-      "app"
+      "app",
+      "telegram"
     ]
   },
   {
     "id": "cp-036",
     "outletId": "out-018",
-    "name": "Intan Susanto",
-    "phone": "084839580833",
+    "name": "Dian Utami",
+    "phone": "084785371170",
     "email": "korlap36@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
@@ -457,8 +453,8 @@
   {
     "id": "cp-037",
     "outletId": "out-019",
-    "name": "Ayu Gunawan",
-    "phone": "087124632521",
+    "name": "Yusuf Nugroho",
+    "phone": "085891836550",
     "email": "korlap37@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
@@ -470,8 +466,8 @@
   {
     "id": "cp-038",
     "outletId": "out-019",
-    "name": "Arif Pratama",
-    "phone": "087897571583",
+    "name": "Putri Saputra",
+    "phone": "083699859896",
     "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
@@ -483,8 +479,8 @@
   {
     "id": "cp-039",
     "outletId": "out-020",
-    "name": "Intan Sulistyo",
-    "phone": "089171904033",
+    "name": "Ratna Setiawan",
+    "phone": "087179520751",
     "email": "korlap39@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
@@ -496,9 +492,9 @@
   {
     "id": "cp-040",
     "outletId": "out-020",
-    "name": "Rizky Setiawan",
-    "phone": "083950772641",
-    "email": "korlap40@indomaret.co.id",
+    "name": "Wulan Mahendra",
+    "phone": "082641024085",
+    "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
@@ -509,8 +505,8 @@
   {
     "id": "cp-041",
     "outletId": "out-021",
-    "name": "Rizky Permata",
-    "phone": "085495484832",
+    "name": "Arif Susanto",
+    "phone": "087041863821",
     "email": "korlap41@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
@@ -522,22 +518,21 @@
   {
     "id": "cp-042",
     "outletId": "out-021",
-    "name": "Rudi Mahendra",
-    "phone": "087881927759",
+    "name": "Adi Setiawan",
+    "phone": "089288103898",
     "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
-      "app",
-      "telegram"
+      "app"
     ]
   },
   {
     "id": "cp-043",
     "outletId": "out-022",
-    "name": "Lestari Saputra",
-    "phone": "087150499258",
-    "email": "korlap43@indomaret.co.id",
+    "name": "Maya Permata",
+    "phone": "082098403215",
+    "email": null,
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
@@ -548,8 +543,8 @@
   {
     "id": "cp-044",
     "outletId": "out-022",
-    "name": "Hendra Susanto",
-    "phone": "084802673461",
+    "name": "Rudi Utami",
+    "phone": "081972908417",
     "email": "korlap44@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
@@ -561,8 +556,8 @@
   {
     "id": "cp-045",
     "outletId": "out-023",
-    "name": "Rizky Anggraini",
-    "phone": "089746445583",
+    "name": "Yusuf Anggraini",
+    "phone": "082898783772",
     "email": "korlap45@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
@@ -573,70 +568,21 @@
   {
     "id": "cp-046",
     "outletId": "out-023",
-    "name": "Lestari Wijaya",
-    "phone": "086965208240",
-    "email": null,
+    "name": "Wulan Firmansyah",
+    "phone": "082461542271",
+    "email": "korlap46@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
-      "app",
-      "telegram"
+      "app"
     ]
   },
   {
     "id": "cp-047",
     "outletId": "out-024",
-    "name": "Sari Nugroho",
-    "phone": "089754990822",
+    "name": "Ratna Pratama",
+    "phone": "082998635552",
     "email": "korlap47@indomaret.co.id",
-    "role": "Area Supervisor",
-    "isPrimary": true,
-    "channels": [
-      "app"
-    ]
-  },
-  {
-    "id": "cp-048",
-    "outletId": "out-024",
-    "name": "Hendra Susanto",
-    "phone": "086135355942",
-    "email": "korlap48@indomaret.co.id",
-    "role": "Field Coordinator",
-    "isPrimary": false,
-    "channels": [
-      "app"
-    ]
-  },
-  {
-    "id": "cp-049",
-    "outletId": "out-025",
-    "name": "Agus Setiawan",
-    "phone": "082590304101",
-    "email": "korlap49@indomaret.co.id",
-    "role": "Area Supervisor",
-    "isPrimary": true,
-    "channels": [
-      "app"
-    ]
-  },
-  {
-    "id": "cp-050",
-    "outletId": "out-025",
-    "name": "Maya Rahayu",
-    "phone": "087152027632",
-    "email": null,
-    "role": "Field Coordinator",
-    "isPrimary": false,
-    "channels": [
-      "app"
-    ]
-  },
-  {
-    "id": "cp-051",
-    "outletId": "out-026",
-    "name": "Ratna Susanto",
-    "phone": "086154177911",
-    "email": "korlap51@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
@@ -645,22 +591,74 @@
     ]
   },
   {
-    "id": "cp-052",
-    "outletId": "out-026",
-    "name": "Adi Utami",
-    "phone": "083190234953",
-    "email": null,
+    "id": "cp-048",
+    "outletId": "out-024",
+    "name": "Intan Nugroho",
+    "phone": "081790443468",
+    "email": "korlap48@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
+    "channels": [
+      "app",
+      "telegram"
+    ]
+  },
+  {
+    "id": "cp-049",
+    "outletId": "out-025",
+    "name": "Intan Halim",
+    "phone": "087126431351",
+    "email": "korlap49@indomaret.co.id",
+    "role": "Area Supervisor",
+    "isPrimary": true,
+    "channels": [
+      "app",
+      "telegram"
+    ]
+  },
+  {
+    "id": "cp-050",
+    "outletId": "out-025",
+    "name": "Arif Purnama",
+    "phone": "083215749054",
+    "email": "korlap50@indomaret.co.id",
+    "role": "Field Coordinator",
+    "isPrimary": false,
+    "channels": [
+      "app",
+      "telegram"
+    ]
+  },
+  {
+    "id": "cp-051",
+    "outletId": "out-026",
+    "name": "Ratna Setiawan",
+    "phone": "081139932807",
+    "email": null,
+    "role": "Area Supervisor",
+    "isPrimary": true,
     "channels": [
       "app"
     ]
   },
   {
+    "id": "cp-052",
+    "outletId": "out-026",
+    "name": "Fitri Sulistyo",
+    "phone": "085270199116",
+    "email": "korlap52@indomaret.co.id",
+    "role": "Field Coordinator",
+    "isPrimary": false,
+    "channels": [
+      "app",
+      "telegram"
+    ]
+  },
+  {
     "id": "cp-053",
     "outletId": "out-027",
-    "name": "Maya Hidayat",
-    "phone": "085644154406",
+    "name": "Eko Kusuma",
+    "phone": "082030884863",
     "email": null,
     "role": "Area Supervisor",
     "isPrimary": true,
@@ -671,9 +669,9 @@
   {
     "id": "cp-054",
     "outletId": "out-027",
-    "name": "Nur Nugroho",
-    "phone": "088982151311",
-    "email": "korlap54@indomaret.co.id",
+    "name": "Adi Hidayat",
+    "phone": "089526683098",
+    "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
@@ -684,8 +682,8 @@
   {
     "id": "cp-055",
     "outletId": "out-028",
-    "name": "Ayu Permata",
-    "phone": "086082394002",
+    "name": "Agus Wijaya",
+    "phone": "081234522017",
     "email": "korlap55@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
@@ -697,33 +695,35 @@
   {
     "id": "cp-056",
     "outletId": "out-028",
-    "name": "Lestari Rahayu",
-    "phone": "089320884386",
-    "email": null,
+    "name": "Bayu Firmansyah",
+    "phone": "085818786019",
+    "email": "korlap56@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
-      "app"
+      "app",
+      "telegram"
     ]
   },
   {
     "id": "cp-057",
     "outletId": "out-029",
-    "name": "Wulan Susanto",
-    "phone": "086999464161",
+    "name": "Lestari Firmansyah",
+    "phone": "083249139900",
     "email": "korlap57@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
-      "app"
+      "app",
+      "telegram"
     ]
   },
   {
     "id": "cp-058",
     "outletId": "out-029",
-    "name": "Eko Pratama",
-    "phone": "081689615519",
-    "email": null,
+    "name": "Nur Santoso",
+    "phone": "088585608068",
+    "email": "korlap58@indomaret.co.id",
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
@@ -733,25 +733,27 @@
   {
     "id": "cp-059",
     "outletId": "out-030",
-    "name": "Fitri Anggraini",
-    "phone": "083353967285",
+    "name": "Andi Sulistyo",
+    "phone": "084656893844",
     "email": "korlap59@indomaret.co.id",
     "role": "Area Supervisor",
     "isPrimary": true,
     "channels": [
-      "app"
+      "app",
+      "telegram"
     ]
   },
   {
     "id": "cp-060",
     "outletId": "out-030",
-    "name": "Arif Setiawan",
-    "phone": "085099859850",
+    "name": "Arif Saputra",
+    "phone": "088217769806",
     "email": null,
     "role": "Field Coordinator",
     "isPrimary": false,
     "channels": [
-      "app"
+      "app",
+      "telegram"
     ]
   }
 ]

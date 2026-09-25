@@ -14,7 +14,7 @@ export function DeviceTypesPage() {
   const [removing, setRemoving] = React.useState<DeviceType | null>(null);
   return (
     <div>
-      <PageHeader title="Device Types" description="Room Alert models approved for outlet installation" actions={<Button onClick={() => setEditing(emptyDeviceType())}><Plus />Add device type</Button>} />
+      <PageHeader title="Device Types" description="Monitoring unit models approved for outlet installation" actions={<Button onClick={() => setEditing(emptyDeviceType())}><Plus />Add device type</Button>} />
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {deviceTypes.map((t) => {
           const count = installed.filter((d) => d.deviceTypeId === t.id).length;
@@ -38,7 +38,7 @@ export function DeviceTypesPage() {
                 </div>
                 <div>
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Built-in sensors</p>
-                  <div className="flex flex-wrap gap-2">{t.builtInSensors.map((s) => <Badge key={s} variant="info">{SENSOR_TYPE_LABEL[s]}</Badge>)}</div>
+                  <div className="flex flex-wrap gap-2">{t.builtInSensors.length ? t.builtInSensors.map((s) => <Badge key={s} variant="info">{SENSOR_TYPE_LABEL[s]}</Badge>) : <span className="text-sm text-muted">None, sensors plug into the ports</span>}</div>
                 </div>
                 <SplitStats className="pt-0" items={[{ label: 'Installed', value: count }, { label: 'Ports', value: t.ports.reduce((n, p) => n + p.count, 0) }, { label: 'Unit price', value: fmtIdr(t.priceIdr) }]} />
               </CardContent>

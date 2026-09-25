@@ -16,7 +16,7 @@
     "test": "turbo test",
     "db:migrate": "pnpm --filter @monitoring/api db:migrate",
     "db:seed": "pnpm --filter @monitoring/api db:seed",
-    "infra:up": "docker compose up -d postgres redis mailpit",
+    "infra:up": "docker compose up -d postgres redis mosquitto",
     "infra:down": "docker compose down",
     "stack:up": "docker compose up -d --build",
     "stack:seed": "docker compose run --rm seed",

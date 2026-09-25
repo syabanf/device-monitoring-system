@@ -4,7 +4,7 @@ import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
 import { generateToken, newId } from '@monitoring/fixtures';
 import { useScoped } from '../../state/app-state';
 
-const SPECIALTIES = ['Room Alert hardware', 'Network & connectivity', 'Sensor calibration', 'Electrical & power'];
+const SPECIALTIES = ['AKCP hardware', 'Network & connectivity', 'Sensor calibration', 'Electrical & power'];
 export const emptyTechnician = (distributorId: string): Technician => ({ id: '', distributorId, name: '', phone: '', specialty: SPECIALTIES[0]!, avatarColor: BRAND.ink, email: '', registrationToken: generateToken() });
 
 export function TechnicianDialog({ technician, onClose }: { technician: Technician | null; onClose: () => void }) {

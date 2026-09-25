@@ -12,8 +12,8 @@ import (
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/store"
 )
 
-// Opening is one alert about to be written. Both the Room Alert webhook and the reading push
-// raise alerts, so they fill this in and share the insert and the fan-out below.
+// Opening is one alert about to be written. Both the unit's own verdict and the limits a reading
+// breaks raise alerts, so they fill this in and share the insert and the fan-out below.
 type Opening struct {
 	ExternalID    string
 	DistributorID string

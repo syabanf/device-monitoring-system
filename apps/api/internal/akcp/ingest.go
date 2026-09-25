@@ -11,7 +11,6 @@ import (
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/alerts"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/domain"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/httpx"
-	"github.com/syabanf/device-monitoring-system/apps/api/internal/ingest"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/jobs"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/readings"
 	"github.com/syabanf/device-monitoring-system/apps/api/internal/store"
@@ -55,8 +54,8 @@ type target struct {
 
 // Handle turns one published message into stored data: it matches the topic to a sensor, keeps
 // the value as a reading and lets the status code open or close an alert. A message that
-// matches nothing is parked in unmatched_event, the same place the webhook parks its misses,
-// so an installer can see what the unit sent before the mapping existed.
+// matches nothing is parked in unmatched_event, where the Integration page lists it, so an
+// installer can see what the unit sent before the mapping existed.
 func Handle(ctx context.Context, db store.DB, q jobs.Queue, topic string, body []byte, retained bool, arrived time.Time) (Outcome, error) {
 	t, err := ParseTopic(topic)
 	if err != nil {
@@ -79,7 +78,7 @@ func Handle(ctx context.Context, db store.DB, q jobs.Queue, topic string, body [
 	value := ""
 	if p.Value != nil {
 		// When the unit states a verdict, that verdict decides the alert on its own. Only a bare
-		// value is judged against the limits an admin set here, the way the Room Alert push is.
+		// value is judged against the limits an admin set here.
 		stored, formatted, err := store1(ctx, db, q, tgt, t.Compound, *p.Value, p.At, retained, p.Status == nil)
 		if err != nil {
 			return Outcome{}, err
@@ -87,7 +86,7 @@ func Handle(ctx context.Context, db store.DB, q jobs.Queue, topic string, body [
 		out.Stored, value = stored, formatted
 	}
 	if p.Status != nil {
-		if err := judge(ctx, db, q, tgt, *p.Status, value, p.At, &out); err != nil {
+		if err := judge(ctx, db, q, tgt, t.Compound, *p.Status, value, p.At, &out); err != nil {
 			return Outcome{}, err
 		}
 	}
@@ -229,23 +228,28 @@ func latest(ctx context.Context, db store.DB, sensorID string) (temp, hum float6
 
 // judge acts on the status code the unit reported. The unit watches its own limits, so a
 // warning or a critical opens an alert even when the value still sits inside the limits an
-// admin set here, and SENSORNORMAL closes the one that is open.
-func judge(ctx context.Context, db store.DB, q jobs.Queue, tgt target, code int, value string, at time.Time, out *Outcome) error {
-	openID, open, err := alerts.OpenOn(ctx, db, tgt.sensorID)
-	if err != nil {
-		return err
-	}
+// admin set here. A sensor holds one open alert at a time, whoever opened it.
+//
+// SENSORNORMAL closes only the alert the same key's verdict opened. The temperature key saying
+// normal tells nothing about a humidity breach the limits here caught, nor about an alarm the
+// humidity key raised, so those stay open until their own source clears them.
+func judge(ctx context.Context, db store.DB, q jobs.Queue, tgt target, compound string, code int, value string, at time.Time, out *Outcome) error {
+	own := "akcp-" + tgt.sensorID + "-" + compound + "-"
 	switch {
-	case alarms[code] && !open:
+	case alarms[code]:
+		_, open, err := alerts.OpenOn(ctx, db, tgt.sensorID)
+		if err != nil || open {
+			return err
+		}
 		id, err := alerts.Raise(ctx, db, q, alerts.Opening{
-			ExternalID:    fmt.Sprintf("akcp-%s-%s-%d", tgt.sensorID, at.UTC().Format(time.RFC3339), code),
+			ExternalID:    fmt.Sprintf("%s%s-%d", own, at.UTC().Format(time.RFC3339), code),
 			DistributorID: tgt.distributorID,
 			OutletID:      tgt.outletID,
 			DeviceID:      tgt.deviceID,
 			SensorID:      tgt.sensorID,
 			SensorName:    tgt.sensorName,
 			SensorType:    tgt.kind,
-			Category:      ingest.CategoryFor(tgt.kind),
+			Category:      domain.CategoryOf(tgt.kind),
 			TriggerValue:  orDash(value),
 			TriggerTime:   at,
 			Message:       "Unit reported " + StatusLabel(code),
@@ -254,11 +258,20 @@ func judge(ctx context.Context, db store.DB, q jobs.Queue, tgt target, code int,
 			return err
 		}
 		out.Raised = &id
-	case code == 2 && open:
-		if err := alerts.Close(ctx, db, q, openID, tgt.outletID, value, at); err != nil {
+	case code == 2:
+		var id int64
+		err := db.QueryRow(ctx, `SELECT id FROM alert WHERE sensor_id = $1 AND status NOT IN ('RESOLVED','VERIFIED')
+			AND starts_with(external_alert_id, $2) ORDER BY trigger_time DESC LIMIT 1`, tgt.sensorID, own).Scan(&id)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil
+		}
+		if err != nil {
 			return err
 		}
-		out.Cleared = &openID
+		if err := alerts.Close(ctx, db, q, id, tgt.outletID, value, at); err != nil {
+			return err
+		}
+		out.Cleared = &id
 	}
 	return nil
 }

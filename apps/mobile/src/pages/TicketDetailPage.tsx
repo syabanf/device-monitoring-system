@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { ArrowLeft, Check, ExternalLink, MapPin, Phone, Play, Wrench } from 'lucide-react';
 import { MAINTENANCE_TYPE_LABEL, TICKET_STATUS_LABEL } from '@monitoring/types';
 import { Avatar, Badge, Button, FormField, Textarea, cn } from '@monitoring/ui';
-import { fmtDateTimeLong, isTicketOverdue } from '@monitoring/fixtures';
+import { fmtDateTimeLong, isTicketOverdue, unitName } from '@monitoring/fixtures';
 import { outletById, technicianById } from '../state/lookups';
 import { useAuth } from '../auth/auth';
 import { useAppState } from '../state/app-state';
@@ -20,7 +20,10 @@ export function TicketDetailPage() {
   const [photos, setPhotos] = React.useState<string[]>([]);
   const [completing, setCompleting] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
-  if (!ticket || !user || !user.outletIds.includes(ticket.outletId)) {
+  // A technician's token names no outlets because it covers the whole distribution center, the
+  // same reading useMobileScope gives an empty list.
+  const covers = !!ticket && !!user && (user.outletIds.length === 0 || user.outletIds.includes(ticket.outletId));
+  if (!ticket || !user || !covers) {
     return <div className="pt-6"><Button asChild variant="ghost"><Link to="/maintenance"><ArrowLeft />Back</Link></Button><p className="mt-6 text-sm text-muted">Ticket not found.</p></div>;
   }
   const outlet = outletById.get(ticket.outletId)!;
@@ -56,7 +59,7 @@ export function TicketDetailPage() {
 
       <dl className="divide-y divide-border rounded-[24px] bg-white px-5 py-1 shadow-card">
         <Row label="Outlet"><span className="font-medium">{outlet.name}</span><a href={outlet.mapsUrl} target="_blank" rel="noreferrer" className="mt-0.5 flex items-center gap-1 text-xs text-muted"><MapPin className="size-3" />{outlet.address}<ExternalLink className="size-3" /></a></Row>
-        <Row label="Device"><span className="font-mono text-xs">{device?.serial ?? '—'}</span>{device ? <span className="block text-xs text-muted">Room Alert {device.model.replace('RA', '')} · {device.status}</span> : null}</Row>
+        <Row label="Device"><span className="font-mono text-xs">{device?.serial ?? '—'}</span>{device ? <span className="block text-xs text-muted">{unitName(device.model)} · {device.status}</span> : null}</Row>
         <Row label="Scheduled">{ticket.scheduledAt ? fmtDateTimeLong(ticket.scheduledAt) : <span className="text-muted">Not scheduled</span>}</Row>
         <Row label="Created">{fmtDateTimeLong(ticket.createdAt)}</Row>
         {ticket.completedAt ? <Row label="Completed">{fmtDateTimeLong(ticket.completedAt)}</Row> : null}

@@ -4,7 +4,7 @@
     "distributorId": "dst-sby",
     "name": "Andi Saputra",
     "phone": "086811216865",
-    "specialty": "Room Alert hardware",
+    "specialty": "AKCP hardware",
     "avatarColor": "#6d28d9",
     "email": "tech@wit.id",
     "registrationToken": "2468013579"
@@ -12,29 +12,29 @@
   {
     "id": "tech-002",
     "distributorId": "dst-sby",
-    "name": "Maya Utami",
-    "phone": "088954337555",
+    "name": "Rina Purnama",
+    "phone": "082375939075",
     "specialty": "Network & connectivity",
-    "avatarColor": "#b45309",
-    "email": "maya.utami@wit.id",
-    "registrationToken": "9258360605"
+    "avatarColor": "#1d4ed8",
+    "email": "rina.purnama@wit.id",
+    "registrationToken": "4773889562"
   },
   {
     "id": "tech-003",
     "distributorId": "dst-sby",
-    "name": "Ayu Rahayu",
-    "phone": "085439772144",
+    "name": "Putri Gunawan",
+    "phone": "081128560334",
     "specialty": "Sensor calibration",
-    "avatarColor": "#6d28d9",
-    "email": "ayu.rahayu@wit.id",
-    "registrationToken": "9525698192"
+    "avatarColor": "#1d4ed8",
+    "email": "putri.gunawan@wit.id",
+    "registrationToken": "3766203471"
   },
   {
     "id": "tech-004",
     "distributorId": "dst-jkt",
     "name": "Eko Purnama",
     "phone": "086711176657",
-    "specialty": "Room Alert hardware",
+    "specialty": "AKCP hardware",
     "avatarColor": "#9b1c1c",
     "email": "eko.purnama@wit.id",
     "registrationToken": "6893220859"
@@ -42,29 +42,29 @@
   {
     "id": "tech-005",
     "distributorId": "dst-jkt",
-    "name": "Joko Susanto",
-    "phone": "087668197439",
+    "name": "Ayu Kusuma",
+    "phone": "082254871639",
     "specialty": "Network & connectivity",
-    "avatarColor": "#9b1c1c",
-    "email": "joko.susanto@wit.id",
-    "registrationToken": "7313702512"
+    "avatarColor": "#047857",
+    "email": "ayu.kusuma@wit.id",
+    "registrationToken": "8474748443"
   },
   {
     "id": "tech-006",
     "distributorId": "dst-jkt",
-    "name": "Hendra Susanto",
-    "phone": "084864063057",
+    "name": "Dimas Saputra",
+    "phone": "083581140332",
     "specialty": "Sensor calibration",
-    "avatarColor": "#6d28d9",
-    "email": "hendra.susanto@wit.id",
-    "registrationToken": "8562639097"
+    "avatarColor": "#047857",
+    "email": "dimas.saputra@wit.id",
+    "registrationToken": "6912008528"
   },
   {
     "id": "tech-007",
     "distributorId": "dst-dps",
     "name": "Intan Pratama",
     "phone": "089516427089",
-    "specialty": "Room Alert hardware",
+    "specialty": "AKCP hardware",
     "avatarColor": "#4d7c0f",
     "email": "intan.pratama@wit.id",
     "registrationToken": "4589475365"
@@ -72,21 +72,21 @@
   {
     "id": "tech-008",
     "distributorId": "dst-dps",
-    "name": "Mega Purnama",
-    "phone": "089125435906",
+    "name": "Fajar Rahayu",
+    "phone": "088658915692",
     "specialty": "Network & connectivity",
-    "avatarColor": "#6d28d9",
-    "email": "mega.purnama@wit.id",
-    "registrationToken": "2471626217"
+    "avatarColor": "#9b1c1c",
+    "email": "fajar.rahayu@wit.id",
+    "registrationToken": "5669016092"
   },
   {
     "id": "tech-009",
     "distributorId": "dst-dps",
-    "name": "Intan Sulistyo",
-    "phone": "088672788493",
+    "name": "Arif Halim",
+    "phone": "082714737923",
     "specialty": "Sensor calibration",
-    "avatarColor": "#9b1c1c",
-    "email": "intan.sulistyo@wit.id",
-    "registrationToken": "7107641381"
+    "avatarColor": "#0e7490",
+    "email": "arif.halim@wit.id",
+    "registrationToken": "1553942602"
   }
 ]

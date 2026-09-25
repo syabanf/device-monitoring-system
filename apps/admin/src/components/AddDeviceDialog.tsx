@@ -1,21 +1,23 @@
 import * as React from 'react';
+import { Link } from 'react-router';
 import type { DeviceModel } from '@monitoring/types';
 import { SENSOR_TYPE_LABEL, isSensorTypeEnabled } from '@monitoring/types';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, FormField, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Toggle, cn } from '@monitoring/ui';
-import { DEFAULT_SENSORS, buildDevice } from '../lib/device-factory';
+import { DEFAULT_SENSORS, buildDevice, defaultSerial } from '../lib/device-factory';
 import { useScoped } from '../state/app-state';
 
 
 export function AddDeviceDialog({ open, onClose, outletId }: { open: boolean; onClose: () => void; outletId?: string }) {
   const { outlets, devices, deviceTypes, dispatch } = useScoped();
   const [outlet, setOutlet] = React.useState(outletId ?? outlets[0]?.id ?? '');
-  const [model, setModel] = React.useState<DeviceModel>('RA12S');
+  const [model, setModel] = React.useState<DeviceModel>('SP1+');
   const [serial, setSerial] = React.useState('');
+  const [mac, setMac] = React.useState('');
   const [ip, setIp] = React.useState('');
   const [enabled, setEnabled] = React.useState<Record<string, boolean>>({ TEMPERATURE_HUMIDITY: true });
   const [created, setCreated] = React.useState<string | null>(null);
   React.useEffect(() => { if (outletId) setOutlet(outletId); }, [outletId]);
-  React.useEffect(() => { if (open) { setSerial(`${model.replace(/[SEW]$/, '')}-F${Math.floor(60000 + Math.random() * 39999)}-${model}`); setIp(`192.168.${10 + Math.floor(Math.random() * 50)}.${20 + Math.floor(Math.random() * 230)}`); setCreated(null); } }, [open, model]);
+  React.useEffect(() => { if (open) { setSerial(defaultSerial(model)); setMac(''); setIp(`192.168.${10 + Math.floor(Math.random() * 50)}.${20 + Math.floor(Math.random() * 230)}`); setCreated(null); } }, [open, model]);
   const type = deviceTypes.find((t) => t.model === model) ?? deviceTypes[0];
   const capacity = { digital: type?.ports.find((p) => p.kind === 'digital')?.count ?? 0, switch: type?.ports.find((p) => p.kind === 'switch')?.count ?? 0 };
   const chosen = DEFAULT_SENSORS.filter((s) => enabled[s.type] && isSensorTypeEnabled(s.type));
@@ -27,7 +29,7 @@ export function AddDeviceDialog({ open, onClose, outletId }: { open: boolean; on
     e.preventDefault();
     if (overCapacity || !outlet || !type) return;
     const secondary = devices.filter((d) => d.outletId === outlet).length > 0;
-    const { device, sensors } = buildDevice({ outletId: outlet, type, serial, ip, sensorTypes: chosen.map((c) => c.type), secondary });
+    const { device, sensors } = buildDevice({ outletId: outlet, type, serial, mac, ip, sensorTypes: chosen.map((c) => c.type), secondary });
     dispatch({ type: 'devices/add', device, sensors });
     setCreated(serial);
   };
@@ -35,8 +37,14 @@ export function AddDeviceDialog({ open, onClose, outletId }: { open: boolean; on
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent size="lg">
-        <DialogHeader><DialogTitle>Add Room Alert device</DialogTitle><DialogDescription>Register a new unit for an outlet and place its default sensors on the floor plan. Session only, no backend yet.</DialogDescription></DialogHeader>
-        {created ? (
+        <DialogHeader><DialogTitle>Add AKCP unit</DialogTitle><DialogDescription>Register a unit for an outlet and place its default sensors on the floor plan. Its MQTT messages find it by the MAC, so copy that from the unit's label.</DialogDescription></DialogHeader>
+        {!type ? (
+          // A fresh install has no device types until an admin adds one, and a unit needs a model.
+          <div className="space-y-4">
+            <p className="text-sm text-muted">No device type exists yet. Add the AKCP model under Device Types first, then register its units here.</p>
+            <DialogFooter><Button variant="outline" onClick={onClose}>Close</Button><Button asChild><Link to="/devices/types" onClick={onClose}>Open Device Types</Link></Button></DialogFooter>
+          </div>
+        ) : created ? (
           <div className="space-y-4">
             <div className="rounded-2xl bg-ink p-5 text-white"><p className="text-xs text-sidebar-muted">Device registered</p><p className="mt-1 font-mono text-lg font-bold">{created}</p><p className="mt-1 text-xs text-sidebar-muted">{outlets.find((o) => o.id === outlet)?.name} · {chosen.length} sensors placed on the floor plan</p></div>
             <DialogFooter><Button variant="outline" onClick={() => setCreated(null)}>Add another</Button><Button onClick={onClose}>Done</Button></DialogFooter>
@@ -47,6 +55,7 @@ export function AddDeviceDialog({ open, onClose, outletId }: { open: boolean; on
               <FormField label="Outlet"><Select value={outlet} onValueChange={setOutlet}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{outlets.map((o) => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent></Select></FormField>
               <FormField label="Model"><Select value={model} onValueChange={(v) => setModel(v as DeviceModel)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{deviceTypes.map((t) => <SelectItem key={t.id} value={t.model}>{t.name}</SelectItem>)}</SelectContent></Select></FormField>
               <FormField label="Serial" htmlFor="dev-serial"><Input id="dev-serial" value={serial} onChange={(e) => setSerial(e.target.value)} required className="[&_input]:font-mono [&_input]:text-xs" /></FormField>
+              <FormField label="MAC address" htmlFor="dev-mac" hint="Printed on the unit. Leave empty for a placeholder you can edit later."><Input id="dev-mac" value={mac} onChange={(e) => setMac(e.target.value)} placeholder="00:0B:DC:…" className="[&_input]:font-mono [&_input]:text-xs" /></FormField>
               <FormField label="IP address" htmlFor="dev-ip"><Input id="dev-ip" value={ip} onChange={(e) => setIp(e.target.value)} required className="[&_input]:font-mono [&_input]:text-xs" /></FormField>
             </div>
             <div>

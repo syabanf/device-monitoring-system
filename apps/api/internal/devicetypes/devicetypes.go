@@ -1,4 +1,4 @@
-// Package devicetypes is master data for the Room Alert models approved for installation.
+// Package devicetypes is master data for the AKCP models approved for installation.
 // Models are shared across distribution centers, so only an admin may change them.
 package devicetypes
 

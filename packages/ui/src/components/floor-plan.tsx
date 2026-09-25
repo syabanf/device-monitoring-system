@@ -104,7 +104,7 @@ export function FloorLegend({ className }: { className?: string }) {
   return (
     <ul className={cn('flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted', className)}>
       {items.map(([s, l]) => <li key={s} className="flex items-center gap-1.5"><span className={cn('size-2.5 rounded-full', statusCls[s].split(' ')[0])} />{l}</li>)}
-      <li className="flex items-center gap-1.5"><span className="size-2.5 rounded-[3px] bg-ink" />Room Alert unit</li>
+      <li className="flex items-center gap-1.5"><span className="size-2.5 rounded-[3px] bg-ink" />AKCP unit</li>
     </ul>
   );
 }

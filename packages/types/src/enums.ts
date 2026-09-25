@@ -7,7 +7,7 @@ export type SensorType =
   | 'PANIC_BUTTON';
 
 export type PortKind = 'digital' | 'switch' | 'analog';
-export type DeviceModel = 'RA3S' | 'RA12S';
+export type DeviceModel = 'SP1+';
 export type DeviceStatus = 'online' | 'offline';
 export type AlertStatus = 'UNACKNOWLEDGED' | 'ACKNOWLEDGED' | 'RESPONDING' | 'RESOLVED' | 'VERIFIED';
 export type AlertCategory = 'COMFORT' | 'SECURITY';

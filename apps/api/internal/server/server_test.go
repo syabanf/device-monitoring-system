@@ -22,7 +22,7 @@ func newRouter(t *testing.T) (http.Handler, auth.Signer) {
 	t.Helper()
 	cfg := config.Config{
 		Env: "test", Port: 0, LogLevel: "error",
-		JWTSecret: []byte(strings.Repeat("x", 40)), WebhookSecret: "webhook-secret",
+		JWTSecret:   []byte(strings.Repeat("x", 40)),
 		CORSOrigins: []string{"http://localhost:5173"}, AccessTokenTTL: 15 * time.Minute, DeviceTokenTTL: time.Hour,
 	}
 	log := slog.New(slog.NewTextHandler(io.Discard, nil))
@@ -141,15 +141,6 @@ func TestUnknownFieldsAreRejected(t *testing.T) {
 	rec := do(t, h, http.MethodPost, "/auth/token/login", "", `{"email":"a@b.id","token":"1234567890","admin":true}`)
 	if rec.Code != http.StatusBadRequest {
 		t.Fatalf("want 400 for an unknown field, got %d", rec.Code)
-	}
-}
-
-func TestProductionWebhookNeedsASignature(t *testing.T) {
-	cfg := config.Config{Env: "production", JWTSecret: []byte(strings.Repeat("x", 40)), WebhookSecret: "s3cret"}
-	h := server.New(server.Deps{Cfg: cfg, DB: nil, Queue: jobs.NewInlineQueue(), Log: slog.New(slog.NewTextHandler(io.Discard, nil))})
-	rec := do(t, h, http.MethodPost, "/webhooks/roomalert", "", `{"event":"triggered"}`)
-	if rec.Code != http.StatusUnauthorized {
-		t.Fatalf("want 401 without a signature, got %d", rec.Code)
 	}
 }
 

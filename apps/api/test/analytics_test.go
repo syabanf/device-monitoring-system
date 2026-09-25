@@ -122,11 +122,9 @@ func TestIntegrationConfigHidesTheTelegramToken(t *testing.T) {
 	}
 
 	body := map[string]any{
-		"apiBaseUrl": "http://localhost:3000", "webhookPath": "/webhooks/roomalert",
-		"roomAlert": map[string]any{"accountEmail": "ops@test.id", "pushIntervalSec": 300, "enabled": true},
-		"imap":      map[string]any{"host": "imap.test.id", "port": 993, "user": "ops@test.id", "folder": "INBOX", "pollSec": 60, "enabled": true},
-		"telegram":  map[string]any{"botToken": "123:SECRET", "chatId": "-100123", "enabled": true},
-		"push":      map[string]any{"provider": "fcm", "enabled": true},
+		"apiBaseUrl": "http://localhost:3000",
+		"telegram":   map[string]any{"botToken": "123:SECRET", "chatId": "-100123", "enabled": true},
+		"push":       map[string]any{"provider": "fcm", "enabled": true},
 	}
 	saved := admin.put(f.path("/integration"), body).expect(http.StatusOK)
 	if got := saved.str("telegram.botToken"); got != "" {
@@ -161,6 +159,9 @@ func TestIntegrationTestButton(t *testing.T) {
 	f := reset(t)
 	admin := as(t, f.AdminToken)
 
-	admin.post(f.path("/integration/test/roomalert"), map[string]any{}).expect(http.StatusOK)
+	// The test server runs no subscriber, so the channel answers that no broker is set.
+	if admin.post(f.path("/integration/test/akcp"), map[string]any{}).expect(http.StatusOK).field("ok") != false {
+		t.Error("akcp reports ok with no broker configured")
+	}
 	admin.post(f.path("/integration/test/nonsense"), map[string]any{}).expect(http.StatusBadRequest)
 }

@@ -7,7 +7,7 @@ import { ExternalLink, MapPin, Plus, Router, Search, Wrench } from 'lucide-react
 import type { Outlet } from '@monitoring/types';
 import { SENSOR_TYPE_LABEL } from '@monitoring/types';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, EmptyState, FloorLegend, FloorPlan, Input, KeyValue, PageHeader, cn, BRAND } from '@monitoring/ui';
-import { deviceHealth, fmtAgo, fmtDateTime, isSolved } from '@monitoring/fixtures';
+import { deviceHealth, fmtAgo, fmtDateTime, isSolved, unitName } from '@monitoring/fixtures';
 import { useScoped } from '../../state/app-state';
 import { SensorPoint } from '../../components/SensorPoint';
 import { useFloorMarkers } from '../../components/useFloorMarkers';
@@ -71,7 +71,7 @@ export function ShopfloorPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader title="Shopfloor" description="Where every Room Alert unit and sensor is installed: outlet map and in-store floor plan" actions={<Button onClick={() => setAdding(true)}><Plus />Add device</Button>} />
+      <PageHeader title="Shopfloor" description="Where every AKCP unit and sensor is installed: outlet map and in-store floor plan" actions={<Button onClick={() => setAdding(true)}><Plus />Add device</Button>} />
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
         <div className="space-y-4">
           <Card className="overflow-hidden">
@@ -147,13 +147,13 @@ export function ShopfloorPage() {
               </Card>
 
               <Card>
-                <CardHeader className="pb-2"><CardTitle>{markerDevice ? 'Room Alert unit' : markerSensor ? 'Installation point' : 'Installed equipment'}</CardTitle></CardHeader>
+                <CardHeader className="pb-2"><CardTitle>{markerDevice ? 'AKCP unit' : markerSensor ? 'Installation point' : 'Installed equipment'}</CardTitle></CardHeader>
                 <CardContent>
                   {markerDevice ? (
                     <div>
                       <div className="flex flex-wrap items-center gap-2"><span className="font-mono text-sm font-semibold">{markerDevice.serial}</span><DeviceStatusBadge status={markerDevice.status} /><HealthBadge status={deviceHealth(markerDevice).status} /></div>
                       <dl className="mt-2 divide-y divide-border">
-                        <KeyValue label="Model">Room Alert {markerDevice.model.replace('RA', '')}</KeyValue>
+                        <KeyValue label="Model">{unitName(markerDevice.model)}</KeyValue>
                         <KeyValue label="Network"><span className="font-mono text-xs">{markerDevice.ip} · {markerDevice.mac}</span></KeyValue>
                         <KeyValue label="Last push">{fmtDateTime(markerDevice.lastPushAt)} ({fmtAgo(markerDevice.lastPushAt)})</KeyValue>
                         <KeyValue label="Sensors">{(sensorsByDevice.get(markerDevice.id) ?? []).length} connected</KeyValue>
