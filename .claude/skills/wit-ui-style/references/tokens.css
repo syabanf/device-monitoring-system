@@ -1,55 +1,151 @@
 /* Semantic tokens for the WIT UI style (Tailwind v4 @theme). Colour-agnostic:
-   fill in the three "project supplies" values; everything else is a neutral ladder.
-   Usage in classes: bg-accent, text-ink, bg-surface, bg-card, border-border, text-muted, bg-info-soft … */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&display=swap');
+   fill in the "project supplies" block; keep the neutral ladder.
+   A client brand maps its logo colours with references/branding.md: a dark brand colour may take the ink,
+   a third colour becomes the highlight, and the ladder and the shadows then take a trace of the ink hue.
+   Keep lib/brand.ts (the BRAND hex mirror for charts, maps and SVG) in step with these values.
+   Classes: bg-accent, bg-accent-strong, text-ink, bg-surface, bg-card, border-border, text-muted, bg-info-soft …
+
+   Load the fonts from index.html, not with a CSS @import, so the browser can preconnect:
+     <link rel="preconnect" href="https://fonts.googleapis.com" />
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+   Each app's index.css:
+     @import 'tailwindcss';
+     @import '@scope/tailwind-config/theme.css';
+     @source '../../../packages/ui/src';   (so kit classes are generated) */
 @import 'tw-animate-css';
 
 @theme {
   --font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* --- project supplies --- */
-  --color-accent: #000000;        /* the ONE highlight colour (CTA, active nav, urgent) */
-  --color-accent-strong: #000000; /* hover/pressed of accent (≈10% darker) */
-  --color-accent-soft: #f1f0f1;   /* tint for accent surfaces (≈8% accent on white) */
-  --color-info: #6b7280;          /* calm second hue for informational states */
-  --color-info-soft: #f3f4f6;     /* tint of info */
+  /* --- project supplies ---
+     accent        the ONE highlight: icons, dots, chart highlight, large display numbers, accent cards
+     accent-strong ≈12% darker; any solid accent fill that carries small white text (primary button,
+                   accent badge, active bottom-bar tile, count badge) so the text passes WCAG AA 4.5:1
+     accent-dark   hover/pressed of accent-strong
+     accent-soft   ≈8% accent tint on white (danger tiles, urgent attention tiles)
+     info          the only second hue, for neutral-informational states
+     highlight     optional third brand colour: the stripe in app icons and marks, the selected ring on a
+                   map; never text, never a state. Falls back to the accent.
+     Example, WIT red: #ed1c24 / #c9141b / #a80f15 / #fdeced, info #2f6db5 / #eaf0f8
+     Example, Indomaret (sampled from the logo, see branding.md): #d61d25 / #b3161d / #93151b / #fdf1f1,
+     info #1763bf / #edf5fe, highlight #ffcf20, with the blue #006ab3 as the ink */
+  --color-accent: #000000;
+  --color-accent-strong: #000000;
+  --color-accent-dark: #000000;
+  --color-accent-soft: #f1f0f1;
+  --color-info: #6b7280;
+  --color-info-soft: #f3f4f6;
+  --color-highlight: var(--color-accent);
+  --color-highlight-soft: var(--color-accent-soft);
 
-  /* --- neutral ladder (keep) --- */
+  /* --- neutral ladder (keep) ---
+     A client's dark brand colour may replace the ink when white text on it reaches 4.5:1 (Indomaret
+     #006ab3 / #0b77c0 / #1a84cc). on-ink-muted then becomes a pale tint of that hue (#d9e8f7 is the
+     4.5:1 floor on #006ab3), and the greys below move toward it (#f2f5f9 / #f6f8fb / #e3e8ef /
+     #b8c2ce / #5f6b7a / #2b3440 / #0e1a2b). */
   --color-ink: #101112;
   --color-ink-2: #1b1c1e;
   --color-ink-3: #26282b;
   --color-on-ink: #ffffff;
-  --color-on-ink-muted: #8b8b8b;
+  --color-on-ink-muted: #b8b8b8; /* AA on ink */
 
   --color-surface: #f1f0f1;
   --color-surface-2: #f5f4f6;
   --color-card: #ffffff;
   --color-border: #e6e5e7;
-  --color-silver: #c0c0c0;
-  --color-muted: #8b8b8b;
+  --color-silver: #c0c0c0; /* disabled marks and timestamps only, never body text */
+  --color-muted: #686868; /* AA for normal text on card and surface */
   --color-body: #333333;
   --color-foreground: #101112;
 
-  /* status tints (soft on cards, solid only on dots / the single most urgent card) */
-  --color-success: #059669;  --color-success-soft: #d1fae5;
-  --color-warning: #d97706;  --color-warning-soft: #fef3c7;
-  --color-danger: var(--color-accent); --color-danger-soft: var(--color-accent-soft);
+  /* status: soft on cards, solid only on dots, bars or the single most urgent card.
+     The solid values are dark enough to pass AA as text on their own soft tint. */
+  --color-success: #047857;
+  --color-success-soft: #d1fae5;
+  --color-warning: #975000;
+  --color-warning-soft: #fef3c7;
+  --color-danger: var(--color-accent);
+  --color-danger-soft: var(--color-accent-soft);
 
-  --radius-card: 1.5rem;                 /* 24px cards */
-  --radius-hero: 1.75rem;                /* 28px hero / dialog / rail */
+  /* chart de-emphasis grey: context marks beside the one highlighted value */
+  --color-chart-muted: #d4d3d6;
+
+  --radius-card: 1.5rem; /* 24px cards */
+  --radius-hero: 1.75rem; /* 28px ink hero, dialog-size panels, rail, right sheet */
   --radius-pill: 9999px;
+
+  /* Shadow colour is a deep shade of the ink hue: rgb(16 17 18) for near-black, rgb(0 55 110) with
+     0.04 / 0.14 / 0.3 alphas for the Indomaret blue. shadow-glow mixes the accent token, so it follows
+     a palette swap; write any other glow the same way, never as an rgb literal in a class. */
   --shadow-card: 0 1px 2px rgb(16 17 18 / 0.03), 0 8px 24px -12px rgb(16 17 18 / 0.12);
   --shadow-float: 0 12px 40px -12px rgb(16 17 18 / 0.25);
   --shadow-glow: 0 8px 20px -8px color-mix(in srgb, var(--color-accent) 60%, transparent);
+  --shadow-up: 0 -10px 30px -14px rgb(16 17 18 / 0.25); /* bottom tab bar, sticky footers */
 }
 
 @layer base {
-  html { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-feature-settings: 'ss01', 'cv11'; }
-  body { background-color: var(--color-surface); color: var(--color-foreground); }
-  * { border-color: var(--color-border); }
-  ::selection { background: var(--color-accent); color: #fff; }
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'ss01', 'cv11';
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-foreground);
+  }
+  *,
+  ::after,
+  ::before {
+    border-color: var(--color-border);
+  }
+  ::selection {
+    background: var(--color-accent);
+    color: #fff;
+  }
+  /* Tailwind v4 dropped the pointer cursor on buttons. */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
-/* mobile PWA helpers */
-.safe-b { padding-bottom: env(safe-area-inset-bottom); }
-.safe-t { padding-top: env(safe-area-inset-top); }
+@utility safe-b {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+@utility safe-t {
+  padding-top: env(safe-area-inset-top);
+}
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Phone PWAs only (put it in the app's index.css, unlayered so it beats text-sm):
+   iOS Safari zooms into any field under 16px.
+   @media (pointer: coarse) { input, textarea, select { font-size: 16px; } } */
+
+/* Strong focus ring, for a coloured ink (a brand blue) or other dark surfaces where ring-accent/40
+   fades (monitoring-system ships it). Add it inside @layer base: a white gap plus an ink ring reads on
+   card, ink and accent alike, and it overrides the per-component ring classes.
+   :where(a, button, input, textarea, select, [role='button'], [tabindex]):focus-visible {
+     outline: 3px solid #fff !important;
+     outline-offset: 2px !important;
+     box-shadow: 0 0 0 5px var(--color-ink) !important;
+   } */
